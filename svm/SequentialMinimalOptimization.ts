@@ -978,26 +978,22 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
         for (var i in this.I0.items)
         {
-            if (0 < this.alphaB[i] && this.alphaB[i] < this.cost
-                && this.errors[i] + epsilon > this.biasLower)
+            if (0 < this.alphaB[i] && this.alphaB[i] < this.cost && this.errors[i] + epsilon > this.biasLower)
             {
                 this.biasLower = this.errors[i] + epsilon;
                 this.biasLowerIndex = i;
             }
-            else if (0 < this.alphaA[i] && this.alphaA[i] < this.cost
-                && this.errors[i] - epsilon > this.biasLower)
+            else if (0 < this.alphaA[i] && this.alphaA[i] < this.cost && this.errors[i] - epsilon > this.biasLower)
             {
                 this.biasLower = this.errors[i] - epsilon;
                 this.biasLowerIndex = i;
             }
-            if (0 < this.alphaA[i] && this.alphaA[i] < this.cost
-                && this.errors[i] - epsilon < this.biasUpper)
+            if (0 < this.alphaA[i] && this.alphaA[i] < this.cost && this.errors[i] - epsilon < this.biasUpper)
             {
                 this.biasUpper = this.errors[i] - epsilon;
                 this.biasUpperIndex = i;
             }
-            else if (0 < this.alphaB[i] && this.alphaB[i] < this.cost
-                && this.errors[i] + epsilon < this.biasUpper)
+            else if (0 < this.alphaB[i] && this.alphaB[i] < this.cost && this.errors[i] + epsilon < this.biasUpper)
             {
                 this.biasUpper = this.errors[i] + epsilon;
                 this.biasUpperIndex = i;

@@ -4,7 +4,7 @@
 
 class HashSet {
 
-    public items:any[] = [];
+    public items:number[] = [];
 
     public add(whatever:any):void
     {
