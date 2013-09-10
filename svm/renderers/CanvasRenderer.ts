@@ -2,9 +2,19 @@
  * Created by davidatborresen on 09.09.13.
  */
 
-///<reference path='../../sge/sge.ts' />
+///<reference path='../../lib/sge/sge.ts' />
+///<reference path='../../definitions/underscore.d.ts' />
+
+///<reference path='../KernelSupportVectorMachine.ts' />
 ///<reference path='../KernelSupportVectorMachine.ts' />
 ///<reference path='../SequentialMinimalOptimization.ts' />
+
+interface CanvasRendererOptions extends SGEOptions {
+    ss:number;
+    density:number;
+    smo:SequentialMinimalOptimization;
+    svm:KernelSupportVectorMachine;
+}
 
 
 class CanvasRenderer extends SGE {
@@ -12,28 +22,64 @@ class CanvasRenderer extends SGE {
     private svm:KernelSupportVectorMachine;
     private smo:SequentialMinimalOptimization;
 
-    private density:number = 4.0;
-    private ss:number = 45;
+    private density:number;
+    private ss:number;
+    private hasDrawn:boolean;
 
-    constructor(smo:SequentialMinimalOptimization, svm:KernelSupportVectorMachine, options:SGEOptions)
+
+    /**
+     * @param options
+     */
+    constructor(options:CanvasRendererOptions)
     {
+        console.time('CanvasRenderer::finished');
+
+        options = _.extend(options, {
+            draw: this.onDraw
+        });
+
+        this.ss = options.ss || 45;
+        this.density = options.density || 4.0;
+        this.svm = options.svm;
+        this.smo = options.smo;
+        this.hasDrawn = false;
+
         super(options);
 
-        this.svm = svm;
-        this.smo = smo;
+        console.timeEnd('CanvasRenderer::finished');
+    }
+
+    private onDraw():void
+    {
+        if(this.hasDrawn)
+        {
+            return;
+        }
+
+        this.drawDecisionBackground();
+        this.drawAxis();
+        this.drawDataPoints();
+        this.drawStatus();
+
+        this.hasDrawn = true;
     }
 
     /**
      * Paints the canvas with the desicion background
      */
-    public drawDesicionBackground():void
+    private drawDecisionBackground():void
     {
         for(var x = 0.0; x <= this.width; x += this.density)
         {
             for(var y = 0.0; y <= this.height; y += this.density)
             {
-                var dec = this.svm.compute([(x - this.width / 2) / this.ss, (y - this.height / 2) / this.ss]);
-                if(dec > 0)
+                var vX = (x - this.width / 2) / this.ss,
+                    vY = (y - this.height / 2) / this.ss,
+                    decision = this.svm.compute([vX,vY]);
+
+                console.log('decision %d', decision);
+
+                if(decision > 0)
                 {
                     this.ctx.fillStyle = 'rgb(150,250,150)';
                 }
@@ -41,6 +87,7 @@ class CanvasRenderer extends SGE {
                 {
                     this.ctx.fillStyle = 'rgb(250,150,150)';
                 }
+
                 this.ctx.fillRect(x - this.density / 2 - 1, y - this.density - 1, this.density + 2, this.density + 2);
             }
         }
@@ -49,7 +96,7 @@ class CanvasRenderer extends SGE {
     /**
      * Draw the axis on the canvas
      */
-    public drawAxis():void
+    private drawAxis():void
     {
         this.ctx.beginPath();
         this.ctx.strokeStyle = 'rgb(50,50,50)';
@@ -61,14 +108,15 @@ class CanvasRenderer extends SGE {
         this.ctx.stroke();
     }
 
-    public drawDataPoints():void
+    /**
+     * Draw the datapoints using the smo and svm
+     */
+    private drawDataPoints():void
     {
         this.ctx.strokeStyle = 'rgb(0,0,0)';
 
         for(var i = 0; i < this.smo.inputs.length; i++)
         {
-            console.log(this.smo.outputs);
-
             if(this.smo.outputs[i] == 1)
             {
                 this.ctx.fillStyle = 'rgb(100,200,100)';
@@ -88,7 +136,11 @@ class CanvasRenderer extends SGE {
                 this.ctx.lineWidth = 1;
             }
 
-            this.drawCircle(this.smo.inputs[i][0] * this.ss + this.width / 2, this.smo.inputs[i][1] * this.ss + this.height / 2, Math.floor(3 + this.smo.alphaA[i] * 5.0 / this.smo.getComplexity()));
+            var posX = this.smo.inputs[i][0] * this.ss + this.width / 2,
+                posY = this.smo.inputs[i][1] * this.ss + this.height / 2,
+                radius = Math.floor(3 + this.smo.alphaA[i] * 5.0 / this.smo.getComplexity());
+
+            this.drawCircle(posX, posY, radius);
         }
 
         // if linear kernel, draw decision boundary and margin lines
@@ -124,6 +176,7 @@ class CanvasRenderer extends SGE {
                 {
                     continue;
                 }
+
                 if(this.smo.outputs[i] == 1)
                 {
                     ys[0] = (1 - this.smo.biasLower - this.svm.weights[0] * xs[0]) / this.svm.weights[1];
@@ -134,12 +187,18 @@ class CanvasRenderer extends SGE {
                     ys[0] = (-1 - this.smo.biasLower - this.svm.weights[0] * xs[0]) / this.svm.weights[1];
                     ys[1] = (-1 - this.smo.biasLower - this.svm.weights[0] * xs[1]) / this.svm.weights[1];
                 }
-                var u = (this.smo.inputs[i][0] - xs[0]) * (xs[1] - xs[0]) + (this.smo.inputs[i][1] - ys[0]) * (ys[1] - ys[0]);
-                u = u / ((xs[0] - xs[1]) * (xs[0] - xs[1]) + (ys[0] - ys[1]) * (ys[0] - ys[1]));
-                var xi = xs[0] + u * (xs[1] - xs[0]);
-                var yi = ys[0] + u * (ys[1] - ys[0]);
-                this.ctx.moveTo(this.smo.inputs[i][0] * this.ss + this.width / 2, this.smo.inputs[i][1] * this.ss + this.height / 2);
-                this.ctx.lineTo(xi * this.ss + this.width / 2, yi * this.ss + this.height / 2);
+
+                var u = (this.smo.inputs[i][0] - xs[0]) * (xs[1] - xs[0]) + (this.smo.inputs[i][1] - ys[0]) * (ys[1] - ys[0]) / ((xs[0] - xs[1]) * (xs[0] - xs[1]) + (ys[0] - ys[1]) * (ys[0] - ys[1])),
+                    xi = xs[0] + u * (xs[1] - xs[0]),
+                    yi = ys[0] + u * (ys[1] - ys[0]),
+                    mX = this.smo.inputs[i][0] * this.ss + this.width / 2,
+                    mY = this.smo.inputs[i][1] * this.ss + this.height / 2,
+                    lX = xi * this.ss + this.width / 2,
+                    lY = yi * this.ss + this.height / 2;
+
+                this.ctx.moveTo(mX, mY);
+
+                this.ctx.lineTo(lX, lY);
             }
 
             this.ctx.stroke();
@@ -147,7 +206,10 @@ class CanvasRenderer extends SGE {
 
     }
 
-    public drawStatus():void
+    /**
+     * Draw status text
+     */
+    private drawStatus():void
     {
         var numsupp = 0;
         for (var i = 0; i < this.smo.inputs.length; i++)
@@ -171,6 +233,4 @@ class CanvasRenderer extends SGE {
 
         this.ctx.fillText("C = " + this.smo.getComplexity().toPrecision(2), 10, this.height - 90);
     }
-
-
 }
