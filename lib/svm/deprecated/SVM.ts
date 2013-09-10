@@ -1,7 +1,7 @@
 /**
  * Created by davidatborresen on 8/31/13.
  */
-///<reference path='../../definitions/underscore.d.ts' />
+///<reference path='../../../definitions/underscore.d.ts' />
 
 interface SVMOptions {
     kernel?:Function;

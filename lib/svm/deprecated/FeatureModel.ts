@@ -1,7 +1,7 @@
 /**
  * Created by davidatborresen on 9/2/13.
  */
-///<reference path='../../definitions/underscore.d.ts' />
+///<reference path='../../../definitions/underscore.d.ts' />
 class FeatureModel {
 
     /**

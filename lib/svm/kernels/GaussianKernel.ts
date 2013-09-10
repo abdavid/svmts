@@ -2,14 +2,26 @@
  * Created by davidatborresen on 9/3/13.
  */
 
-///<reference path='./IKernel.ts' />
+///<reference path='../interfaces/IKernel.ts' />
+///<reference path='../interfaces/IDistance.ts' />
 
-
+/**
+ * The Gaussian kernel requires tuning for the proper value of σ. Different approaches
+ * to this problem includes the use of brute force (i.e. using a grid-search algorithm)
+ * or a gradient ascent optimization.
+ *
+ * P. F. Evangelista, M. J. Embrechts, and B. K. Szymanski. Some Properties of the
+ * Gaussian Kernel for One Class Learning.
+ * Available on: http://www.cs.rpi.edu/~szymansk/papers/icann07.pdf
+ */
 class GaussianKernel implements IKernel, IDistance
 {
     private _sigma:number;
     private _gamma:number;
 
+    /**
+     * @param sigma
+     */
     constructor(sigma:number = 1)
     {
         this.sigma(sigma);
@@ -22,7 +34,7 @@ class GaussianKernel implements IKernel, IDistance
      * @param y Vector Y in input space
      * @returns {number} Dot product in feature (kernel) space
      */
-    public kernel(x:number[], y:number[]):number
+    public run(x:number[], y:number[]):number
     {
         // Optimization in case x and y are
         // exactly the same object reference.

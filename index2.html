@@ -1,0 +1,265 @@
+<html>
+<head>
+<title>Support Vector Machine in Javascript</title>
+
+<script src="lib/underscore/underscore.js"></script>
+<script src="lib/sge/sge.js"></script>
+
+<script src="lib/svm/collections/HashSet.js"></script>
+<script src="lib/svm/kernels/LinearKernel.js"></script>
+<script src="lib/svm/kernels/GaussianKernel.js"></script>
+<script src="lib/svm/kernels/SigmoidKernel.js"></script>
+<script src="lib/svm/kernels/PolynominalKernel.js"></script>
+
+<script src="lib/svm/SupportVectorMachine.js"></script>
+<script src="lib/svm/KernelSupportVectorMachine.js"></script>
+<script src="lib/svm/SequentialMinimalOptimization.js"></script>
+
+<script type="text/javascript">
+var dirty;
+function init()
+{
+    console.time('Init');
+    var data = [];
+    var labels = [];
+
+    data[0] = [-0.4326  , 1.1909 ];
+    data[1] = [3.0, 4.0];
+    data[2] = [0.1253 , -0.0376   ];
+    data[3] = [0.2877 , 0.3273  ];
+    data[4] = [-1.1465 , 0.1746 ];
+    data[5] = [1.8133 , 2.1139  ];
+    data[6] = [2.7258 , 3.0668  ];
+    data[7] = [1.4117 , 2.0593  ];
+    data[8] = [4.1832 , 1.9044  ];
+    data[9] = [1.8636 , 1.1677  ];
+
+    labels[0] = 1;
+    labels[1] = 1;
+    labels[2] = 1;
+    labels[3] = 1;
+    labels[4] = 1;
+    labels[5] = -1;
+    labels[6] = -1;
+    labels[7] = -1;
+    labels[8] = -1;
+    labels[9] = -1;
+
+    svm = new KernelSupportVectorMachine(new GaussianKernel(), data[0].length);
+    smo = new SequentialMinimalOptimization(svm, data, labels);
+
+    //console.time('SMO::EstimateComplexity');
+    //var complexity = SequentialMinimalOptimization.EstimateComplexity(svm.getKernel(), data);
+    //smo.setComplexity(complexity);
+    //console.timeEnd('SMO::EstimateComplexity');
+
+    console.time('SMO::RUN');
+    var error = smo.run(true);
+    console.timeEnd('SMO::RUN');
+
+    console.time('SVM::COMPUTE');
+    var decision = svm.compute(data[1]);
+    console.timeEnd('SVM::COMPUTE');
+
+    console.log(error,decision);
+    console.timeEnd('Init');
+
+    SimpleGameEngine = new SGE({
+        draw: draw,
+        update: update,
+       // mouseClick: mouseClick,
+       // keyDown:keyDown,
+       // keyUp:keyUp,
+        canvas: document.getElementById('SGECanvas'),
+        height: 500,
+        width: 500,
+        drawOnce: true
+    });
+
+    dirty = true;
+};
+
+function update()
+{
+    //draw.call(this);
+}
+
+function draw()
+{
+    if(!dirty)
+    {
+        return;
+    }
+
+    this.ctx.clearRect(0, 0, this.width, this.height);
+
+    // draw decisions in the grid
+    var density = 4.0,
+        ss = 50.0;
+
+    /**
+     * Paints the canvas with the desicion background
+     */
+    for (var x = 0.0; x <= this.width; x += density)
+    {
+        for (var y = 0.0; y <= this.height; y += density)
+        {
+            var dec = svm.compute([(x - this.width / 2) / ss, (y - this.height / 2) / ss]);
+            if (dec > 0)
+            {
+                this.ctx.fillStyle = 'rgb(150,250,150)';
+            }
+            else
+            {
+                this.ctx.fillStyle = 'rgb(250,150,150)';
+            }
+            this.ctx.fillRect(x - density / 2 - 1, y - density - 1, density + 2, density + 2);
+        }
+    }
+
+    // draw axes
+    this.ctx.beginPath();
+    this.ctx.strokeStyle = 'rgb(50,50,50)';
+    this.ctx.lineWidth = 1;
+    this.ctx.moveTo(0, this.height / 2);
+    this.ctx.lineTo(this.width, this.height / 2);
+    this.ctx.moveTo(this.width / 2, 0);
+    this.ctx.lineTo(this.width / 2, this.height);
+    this.ctx.stroke();
+
+    // draw datapoints. Draw support vectors larger
+    this.ctx.strokeStyle = 'rgb(0,0,0)';
+
+    for (var i = 0; i < smo.inputs.length; i++)
+    {
+        console.log(smo.outputs);
+
+        if (smo.outputs[i] == 1)
+        {
+            this.ctx.fillStyle = 'rgb(100,200,100)';
+        }
+        else
+        {
+            this.ctx.fillStyle = 'rgb(200,100,100)';
+        }
+
+        // distinguish support vectors
+        if (smo.alphaA[i] > 1e-2 || smo.alphaB[i] > 1e-2)
+        {
+            this.ctx.lineWidth = 3;
+        }
+        else
+        {
+            this.ctx.lineWidth = 1;
+        }
+
+        this.drawCircle(smo.inputs[i][0] * ss + this.width / 2, smo.inputs[i][1] * ss + this.height / 2, Math.floor(3 + smo.alphaA[i] * 5.0 / smo.getComplexity()));
+    }
+
+    // if linear kernel, draw decision boundary and margin lines
+    if (svm.kernel instanceof LinearKernel)
+    {
+        var xs = [-5, 5];
+        var ys = [0, 0];
+        ys[0] = (-smo.biasLower - svm.weights[0] * xs[0]) / svm.weights[1];
+        ys[1] = (-smo.biasLower - svm.weights[0] * xs[1]) / svm.weights[1];
+
+        this.ctx.fillStyle = 'rgb(0,0,0)';
+        this.ctx.lineWidth = 1;
+        this.ctx.beginPath();
+
+        // wx+b=0 line
+        this.ctx.moveTo(xs[0] * ss + this.width / 2, ys[0] * ss + this.height / 2);
+        this.ctx.lineTo(xs[1] * ss + this.width / 2, ys[1] * ss + this.height / 2);
+
+        // wx+b=1 line
+        this.ctx.moveTo(xs[0] * ss + this.width / 2, (ys[0] - 1.0 / svm.weights[1]) * ss + this.height / 2);
+        this.ctx.lineTo(xs[1] * ss + this.width / 2, (ys[1] - 1.0 / svm.weights[1]) * ss + this.height / 2);
+
+        // wx+b=-1 line
+        this.ctx.moveTo(xs[0] * ss + this.width / 2, (ys[0] + 1.0 / svm.weights[1]) * ss + this.height / 2);
+        this.ctx.lineTo(xs[1] * ss + this.width / 2, (ys[1] + 1.0 / svm.weights[1]) * ss + this.height / 2);
+        this.ctx.stroke();
+
+        // draw margin lines for support vectors. The sum of the lengths of these
+        // lines, scaled by C is essentially the total hinge loss.
+        for (var i = 0; i < smo.inputs.length; i++)
+        {
+            if (smo.alphaA[i] < 1e-2 || smo.alphaB[i] < 1e-2)
+            {
+                continue;
+            }
+            if (smo.outputs[i] == 1)
+            {
+                ys[0] = (1 - smo.biasLower - svm.weights[0] * xs[0]) / svm.weights[1];
+                ys[1] = (1 - smo.biasLower - svm.weights[0] * xs[1]) / svm.weights[1];
+            }
+            else
+            {
+                ys[0] = (-1 - smo.biasLower - svm.weights[0] * xs[0]) / svm.weights[1];
+                ys[1] = (-1 - smo.biasLower - svm.weights[0] * xs[1]) / svm.weights[1];
+            }
+            var u = (smo.inputs[i][0] - xs[0]) * (xs[1] - xs[0]) + (smo.inputs[i][1] - ys[0]) * (ys[1] - ys[0]);
+            u = u / ((xs[0] - xs[1]) * (xs[0] - xs[1]) + (ys[0] - ys[1]) * (ys[0] - ys[1]));
+            var xi = xs[0] + u * (xs[1] - xs[0]);
+            var yi = ys[0] + u * (ys[1] - ys[0]);
+            this.ctx.moveTo(smo.inputs[i][0] * ss + this.width / 2, smo.inputs[i][1] * ss + this.height / 2);
+            this.ctx.lineTo(xi * ss + this.width / 2, yi * ss + this.height / 2);
+        }
+        this.ctx.stroke();
+    }
+
+    this.ctx.fillStyle = 'rgb(0,0,0)';
+    this.ctx.fillText("Converged in {num} iterations.", 10, this.height - 30);
+    var numsupp = 0;
+    for (var i = 0; i < smo.inputs.length; i++)
+    {
+        if (smo.alphaA[i] > 1e-5)
+        {
+            numsupp++;
+        }
+    }
+
+    this.ctx.fillText("Number of support vectors: " + numsupp + " / " + smo.inputs.length, 10, this.height - 50);
+
+    if (svm.getKernel() instanceof GaussianKernel)
+    {
+        this.ctx.fillText("Using Rbf kernel with sigma = " + svm.getKernel().sigma().toPrecision(2), 10, this.height - 70);
+    }
+    else if (svm.getKernel() instanceof LinearKernel)
+    {
+        this.ctx.fillText("Using Linear kernel", 10, this.height - 70);
+    }
+    else if (svm.getKernel() instanceof PolynominalKernel)
+    {
+        this.ctx.fillText("Using Poly kernel", 10, this.height - 70);
+    }
+
+    this.ctx.fillText("C = " + smo.getComplexity().toPrecision(2), 10, this.height - 90);
+
+    dirty = false;
+}
+
+</script>
+
+
+</head>
+
+<body onLoad="init();">
+
+<h1>Support Vector Machine in Javascript</h1>
+
+
+<canvas id="SGECanvas" width="500" height="500">Browser not supported for Canvas. Get a real browser.</canvas>
+<div class="optsdiv">
+    <div style="width:230px; float: left; margin-left: 10px;">
+        <div id="slider1"></div>
+        <br/><span id="creport">C = 1.0</span></div>
+    <div style="width:230px; float: right; margin-right: 10px;">
+        <div id="slider2"></div>
+        <br/><span id="sigreport">RBF Kernel sigma = 1.0</span></div>
+</div>
+
+
+</body>
+</html>

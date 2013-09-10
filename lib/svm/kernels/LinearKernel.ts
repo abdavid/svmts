@@ -2,13 +2,17 @@
  * Created by davidatborresen on 9/3/13.
  */
 
-///<reference path='./IKernel.ts' />
+///<reference path='../interfaces/IKernel.ts' />
+///<reference path='../interfaces/IDistance.ts' />
 
 
 class LinearKernel implements IKernel, IDistance
 {
     public constant:number;
 
+    /**
+     * @param constant
+     */
     constructor(constant:number = 1)
     {
         this.constant = constant;
@@ -21,7 +25,7 @@ class LinearKernel implements IKernel, IDistance
      * @param y Vector Y in input space
      * @returns {number} Dot product in feature (kernel) space
      */
-    public kernel(x:number[], y:number[]):number
+    public run(x:number[], y:number[]):number
     {
         var sum = this.constant;
 
@@ -43,6 +47,6 @@ class LinearKernel implements IKernel, IDistance
      */
     public distance(x:number[], y:number[]):number
     {
-        return this.kernel(x, x) + this.kernel(y ,y) - 2.0 * this.kernel(x ,y);
+        return this.run(x, x) + this.run(y ,y) - 2.0 * this.run(x ,y);
     }
 }

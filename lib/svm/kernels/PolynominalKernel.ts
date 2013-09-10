@@ -2,14 +2,18 @@
  * Created by davidatborresen on 9/3/13.
  */
 
-///<reference path='./IKernel.ts' />
-
+///<reference path='../interfaces/IKernel.ts' />
+///<reference path='../interfaces/IDistance.ts' />
 
 class PolynominalKernel implements IKernel, IDistance
 {
     public degree:number;
     public constant:number;
 
+    /**
+     * @param degree
+     * @param constant
+     */
     constructor(degree:number, constant:number = 1.0)
     {
         this.degree = degree;
@@ -23,7 +27,7 @@ class PolynominalKernel implements IKernel, IDistance
      * @param y Vector Y in input space
      * @returns {number} Dot product in feature (kernel) space
      */
-    public kernel(x:number[], y:number[]):number
+    public run(x:number[], y:number[]):number
     {
         var sum = this.constant;
         for (var i = 0; i < x.length; i++)
@@ -45,6 +49,6 @@ class PolynominalKernel implements IKernel, IDistance
     {
         var q = 1.0 / this.degree;
 
-        return Math.pow(this.kernel(x, x), q) + Math.pow(this.kernel(y, y),q) - 2.0 * Math.pow(this.kernel(x, y), q);
+        return Math.pow(this.run(x, x), q) + Math.pow(this.run(y, y),q) - 2.0 * Math.pow(this.run(x, y), q);
     }
 }

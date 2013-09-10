@@ -2,7 +2,8 @@
  * Created by davidatborresen on 9/3/13.
  */
 
-///<reference path='./IKernel.ts' />
+///<reference path='../interfaces/IKernel.ts' />
+///<reference path='../interfaces/IDistance.ts' />
 
 /**
  * @class SigmoidKernel
@@ -18,6 +19,10 @@ class SigmoidKernel implements IKernel
     public alpha:number;
     public constant:number;
 
+    /**
+     * @param alpha
+     * @param constant
+     */
     constructor(alpha:number = 0.01, constant:number = -Math.E)
     {
         this.alpha = alpha;
@@ -31,7 +36,7 @@ class SigmoidKernel implements IKernel
      * @param y Vector Y in input space
      * @returns {number} Dot product in feature (kernel) space
      */
-    public kernel(x:number[], y:number[]):number
+    public run(x:number[], y:number[]):number
     {
         var sum = 0.0;
 
