@@ -360,7 +360,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
         else
         {
             // Value is not cached and should be computed
-            this.errors[i2] = e2 = this.compute(this.inputs[i2]); //this.outputs[i2] =
+            this.errors[i2] = e2 = this.outputs[i2] = this.compute(this.inputs[i2]); //this.outputs[i2] =
 
             // Update thresholds
             if (this.I1.contains(i2))
@@ -516,7 +516,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
      * @param expectedOutputs
      * @returns {number}
      */
-    public computeError(inputs:Array[], expectedOutputs:number[]):number
+    public computeError(inputs:number[][], expectedOutputs:number[]):number
     {
         // Compute errors
         var sum = 0;
@@ -536,6 +536,8 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
      */
     private compute(point:number[]):number
     {
+        console.trace();
+        //console.
         var sum = 0;
         for (var j = 0; j < this.alphaA.length; j++)
         {
@@ -687,8 +689,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                     a1 = alpha1a + (a2 - alpha2b);
 
                     // Update alpha1, alpha2* if change is larger than some epsilon
-                    if (Math.abs(a1 - alpha1a) > this.roundingEpsilon ||
-                        Math.abs(a2 - alpha2b) > this.roundingEpsilon)
+                    if (Math.abs(a1 - alpha1a) > this.roundingEpsilon || Math.abs(a2 - alpha2b) > this.roundingEpsilon)
                     {
                         alpha1a = a1;
                         alpha2b = a2;
@@ -981,22 +982,22 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             if (0 < this.alphaB[i] && this.alphaB[i] < this.cost && this.errors[i] + epsilon > this.biasLower)
             {
                 this.biasLower = this.errors[i] + epsilon;
-                this.biasLowerIndex = i;
+                this.biasLowerIndex = <number>i;
             }
             else if (0 < this.alphaA[i] && this.alphaA[i] < this.cost && this.errors[i] - epsilon > this.biasLower)
             {
                 this.biasLower = this.errors[i] - epsilon;
-                this.biasLowerIndex = i;
+                this.biasLowerIndex = <number>i;
             }
             if (0 < this.alphaA[i] && this.alphaA[i] < this.cost && this.errors[i] - epsilon < this.biasUpper)
             {
                 this.biasUpper = this.errors[i] - epsilon;
-                this.biasUpperIndex = i;
+                this.biasUpperIndex = <number>i;
             }
             else if (0 < this.alphaB[i] && this.alphaB[i] < this.cost && this.errors[i] + epsilon < this.biasUpper)
             {
                 this.biasUpper = this.errors[i] + epsilon;
-                this.biasUpperIndex = i;
+                this.biasUpperIndex = <number>i;
             }
         }
 

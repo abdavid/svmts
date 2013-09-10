@@ -155,7 +155,7 @@ var SequentialMinimalOptimization = (function () {
         if (this.I0.contains(i2)) {
             e2 = this.errors[i2];
         } else {
-            this.errors[i2] = e2 = this.compute(this.inputs[i2]);
+            this.errors[i2] = e2 = this.outputs[i2] = this.compute(this.inputs[i2]);
 
             if (this.I1.contains(i2)) {
                 if (e2 + epsilon < this.biasUpper) {
@@ -260,6 +260,8 @@ var SequentialMinimalOptimization = (function () {
     };
 
     SequentialMinimalOptimization.prototype.compute = function (point) {
+        console.trace();
+
         var sum = 0;
         for (var j = 0; j < this.alphaA.length; j++) {
             sum += (this.alphaA[j] - this.alphaB[j]) * this.kernel.run(point, this.inputs[j]);
