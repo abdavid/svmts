@@ -1,7 +1,3 @@
-/**
- * Created by davidatborresen on 9/3/13.
- */
-
 ///<reference path='./interfaces/ISupportVectorMachineLearning.ts' />
 ///<reference path='./interfaces/IKernel.ts' />
 
@@ -11,77 +7,77 @@
 ///<reference path='./SupportVectorMachine.ts' />
 ///<reference path='./KernelSupportVectorMachine.ts' />
 
-
-/// <summary>
-///   Sequential Minimal Optimization (SMO) Algorithm
-/// </summary>
-///
-/// <remarks>
-/// <para>
-///   The SMO algorithm is an algorithm for solving large quadratic programming (QP)
-///   optimization problems, widely used for the training of support vector machines.
-///   First developed by John C. Platt in 1998, SMO breaks up large QP problems into
-///   a series of smallest possible QP problems, which are then solved analytically.</para>
-/// <para>
-///   This class follows the original algorithm by Platt with additional modifications
-///   by Keerthi et al.</para>
-///
-/// <para>
-///   References:
-///   <list type="bullet">
-///     <item><description>
-///       <a href="http://en.wikipedia.org/wiki/Sequential_Minimal_Optimization">
-///       Wikipedia, The Free Encyclopedia. Sequential Minimal Optimization. Available on:
-///       http://en.wikipedia.org/wiki/Sequential_Minimal_Optimization </a></description></item>
-///     <item><description>
-///       <a href="http://research.microsoft.com/en-us/um/people/jplatt/smoTR.pdf">
-///       John C. Platt, Sequential Minimal Optimization: A Fast Algorithm for Training Support
-///       Vector Machines. 1998. Available on: http://research.microsoft.com/en-us/um/people/jplatt/smoTR.pdf </a></description></item>
-///     <item><description>
-///       <a href="http://www.cs.iastate.edu/~honavar/keerthi-svm.pdf">
-///       S. S. Keerthi et al. Improvements to Platt's SMO Algorithm for SVM Classifier Design.
-///       Technical Report CD-99-14. Available on: http://www.cs.iastate.edu/~honavar/keerthi-svm.pdf </a></description></item>
-///     <item><description>
-///       <a href="http://www.idiom.com/~zilla/Work/Notes/svmtutorial.pdf">
-///       J. P. Lewis. A Short SVM (Support Vector Machine) Tutorial. Available on:
-///       http://www.idiom.com/~zilla/Work/Notes/svmtutorial.pdf </a></description></item>
-///     </list></para>
-/// </remarks>
-///
-/// <example>
-///   <code>
-///   // Example XOR problem
-///   double[][] inputs =
-///   {
-///       new double[] { 0, 0 }, // 0 xor 0: 1 (label +1)
-///       new double[] { 0, 1 }, // 0 xor 1: 0 (label -1)
-///       new double[] { 1, 0 }, // 1 xor 0: 0 (label -1)
-///       new double[] { 1, 1 }  // 1 xor 1: 1 (label +1)
-///   };
-///
-///   // Dichotomy SVM outputs should be given as [-1;+1]
-///   int[] labels =
-///   {
-///          1, -1, -1, 1
-///   };
-///
-///   // Create a Kernel Support Vector Machine for the given inputs
-///   KernelSupportVectorMachine svm = new KernelSupportVectorMachine(new Gaussian(0.1), inputs[0].Length);
-///
-///   // Instantiate a new learning algorithm for SVMs
-///   SequentialMinimalOptimization smo = new SequentialMinimalOptimization(svm, inputs, labels);
-///
-///   // Set up the learning algorithm
-///   smo.Complexity = 1.0;
-///
-///   // Run the learning algorithm
-///   double error = smo.Run();
-///
-///   // Compute the decision output for one of the input vectors
-///   int decision = System.Math.Sign(svm.Compute(inputs[0])); // +1
-///  </code>
-/// </example>
-///
+/**
+ * @summary
+ * Sequential Minimal Optimization (SMO) Algorithm
+ *
+ * @remark
+ * The SMO algorithm is an algorithm for solving large quadratic programming (QP)
+ * optimization problems, widely used for the training of support vector machines.
+ * First developed by John C. Platt in 1998, SMO breaks up large QP problems into
+ * a series of smallest possible QP problems, which are then solved analytically.
+ *
+ * @para
+ * This class incorporates modifications in the original SMO algorithm to solve
+ * regression problems as suggested by Alex J. Smola and Bernhard Scholkopf and
+ * further modifications for better performance by Shevade et al.
+ *
+ * @para
+ * Portions of this implementation has been based on the GPL code by Sylvain Roy in SMOreg.java, a
+ * part of the Weka software package. It is, thus, available under the same GPL license. This file is
+ * not linked against the rest of the Accord.NET Framework and can only be used in GPL aplications.
+ * This class is only available in the special Accord.MachineLearning.GPL assembly, which has to be
+ * explictly selected in the framework installation. Before linking against this assembly, please
+ * read the http://www.gnu.org/copyleft/gpl.html license for more details. This
+ * assembly also should have been distributed with a copy of the GNU GPLv3 alongside with it.
+ *
+ * @references
+ * A. J. Smola and B. Scholkopf. A Tutorial on Support Vector Regression. NeuroCOLT2 Technical Report Series, 1998.
+ * - http://www.kernel-machines.org/publications/SmoSch98c
+ *
+ * S.K. Shevade et al. Improvements to SMO Algorithm for SVM Regression, 1999.
+ * - http://drona.csa.iisc.ernet.in/~chiru/papers/ieee_smo_reg.ps.gz
+ *
+ * S. S. Keerthi et al. Improvements to Platt's SMO Algorithm for SVM Classifier Design.* Technical Report CD-99-14.
+ * - http://www.cs.iastate.edu/~honavar/keerthi-svm.pdf
+ *
+ * G. W. Flake, S. Lawrence. Efficient SVM Regression Training with SMO.
+ * - http://www.keerthis.com/smoreg_ieee_shevade_00.pdf
+ *
+ *
+ * Example regression problem. Suppose we are trying to model the following equation: f(x, y) = 2x + y
+ * @example
+ *
+ *  var inputs = //(x, y)
+ *  [
+ *      [0,1], //2*0+1 = 1
+ *      [4,3], //2*4+3 = 11
+ *      [8,-8], //2*8-8 = 8
+ *      [2,2], //2*2+2 = 6
+ *      [6,1], //2*6+1 = 13
+ *      [5,4], //2*5+4 = 14
+ *      [9,1], //2*9+1 = 19
+ *      [1,6] //2*0+1 = 8
+ *  ]
+ *
+ *  var outputs = //f(x, y)
+ *  [
+ *      1, 11, 8, 6, 13, 14, 19, 8
+ *  ]
+ *
+ *   // Create a Kernel Support Vector Machine for the given inputs
+ *   var machine = new KernelSupportVectorMachine(new PolynominalKernel(2), 2);
+ *
+ *   // Instantiate a new learning algorithm for SVMs
+ *   var learn = new SequentialMinimalOptimization(svm, inputs, outputs);
+ *
+ *   // Run the learning algorithm
+ *   var error = learn.run();
+ *
+ *   // Compute the decision output for one of the input vectors
+ *   var decision = machine.compute(inputs[0]); // 1.0003849827673186
+ *
+ **/
 class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
     // Training data
@@ -115,31 +111,31 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
     constructor(machine:KernelSupportVectorMachine = null, inputs:number[][] = null, outputs:number[] = null)
     {
-        if (machine === null)
+        if(machine === null)
         {
             throw new Error('Machine is null');
         }
 
-        if (inputs === null)
+        if(inputs === null)
         {
             throw new Error('Inputs is null');
         }
 
-        if (outputs === null)
+        if(outputs === null)
         {
             throw new Error('Outputs is null');
         }
 
-        if (inputs.length !== outputs.length)
+        if(inputs.length !== outputs.length)
         {
             throw new Error('The number of inputs and outputs does not match.')
         }
 
-        if (machine.getInputCount() > 0)
+        if(machine.getInputCount() > 0)
         {
-            for (var i = 0; i < inputs.length; i++)
+            for(var i = 0; i < inputs.length; i++)
             {
-                if (inputs[i].length !== machine.getInputCount())
+                if(inputs[i].length !== machine.getInputCount())
                 {
                     throw new Error('The size of the input vectors does not match the expected number of inputs of the machine');
                 }
@@ -178,7 +174,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
      */
     public setComplexity(value:number):void
     {
-        if (value <= 0)
+        if(value <= 0)
         {
             throw new Error('Out of range');
         }
@@ -192,7 +188,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
      */
     public setEpsilon(value:number):void
     {
-        if (value <= 0)
+        if(value <= 0)
         {
             throw new Error('Out of range');
         }
@@ -215,7 +211,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
      */
     public setTolerance(value:number):void
     {
-        if (value <= 0)
+        if(value <= 0)
         {
             throw new Error('Out of range');
         }
@@ -257,7 +253,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
         this.I2 = new HashSet();
         this.I3 = new HashSet();
 
-        for (var i = 0; i < N; i++)
+        for(var i = 0; i < N; i++)
         {
             this.I1.add(i);
         }
@@ -271,12 +267,12 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
         var numChanged = 0,
             examineAll = true;
 
-        while (numChanged > 0 || examineAll)
+        while(numChanged > 0 || examineAll)
         {
             numChanged = 0;
-            if (examineAll)
+            if(examineAll)
             {
-                for (var i = 0; i < N; i++)
+                for(var i = 0; i < N; i++)
                 {
                     numChanged += this.examineExample(i);
                 }
@@ -287,13 +283,13 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                  * Loop over all examples where a and a*
                  * are greater than 0 and less than cost.
                  */
-                for (var i = 0; i < N; i++)
+                for(var i = 0; i < N; i++)
                 {
-                    if ((0 < this.alphaA[i] && this.alphaA[i] < this.cost) || (0 < this.alphaB[i] && this.alphaB[i] < this.cost))
+                    if((0 < this.alphaA[i] && this.alphaA[i] < this.cost) || (0 < this.alphaB[i] && this.alphaB[i] < this.cost))
                     {
                         numChanged += this.examineExample(i);
 
-                        if (this.biasUpper > this.biasLower - 2.0 * this.getTolerance())
+                        if(this.biasUpper > this.biasLower - 2.0 * this.getTolerance())
                         {
                             numChanged = 0;
                             break;
@@ -302,20 +298,20 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                 }
             }
 
-            if (examineAll)
+            if(examineAll)
             {
                 examineAll = false;
             }
-            else if (numChanged === 0)
+            else if(numChanged === 0)
             {
                 examineAll = true;
             }
         }
 
         var list = new HashSet();
-        for (var i = 0; i < N; i++)
+        for(var i = 0; i < N; i++)
         {
-            if (this.alphaA[i] > 0 || this.alphaB[i] > 0)
+            if(this.alphaA[i] > 0 || this.alphaB[i] > 0)
             {
                 list.add(i);
             }
@@ -326,7 +322,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
         this.machine.setSupportVectors(new Array(vectors));
         this.machine.setWeights(new Array(vectors));
 
-        for (var i = 0; i < vectors; i++)
+        for(var i = 0; i < vectors; i++)
         {
             var j = list.at(i);
             this.machine.supportVectors[i] = this.inputs[j];
@@ -352,7 +348,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             tolerance = this.getTolerance();
 
         //region Compute example error
-        if (this.I0.contains(i2))
+        if(this.I0.contains(i2))
         {
             // Value is cached
             e2 = this.errors[i2];
@@ -363,25 +359,25 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             this.errors[i2] = e2 = this.outputs[i2] = this.compute(this.inputs[i2]); //this.outputs[i2] =
 
             // Update thresholds
-            if (this.I1.contains(i2))
+            if(this.I1.contains(i2))
             {
-                if (e2 + epsilon < this.biasUpper)
+                if(e2 + epsilon < this.biasUpper)
                 {
                     this.biasUpper = e2 + epsilon;
                     this.biasUpperIndex = i2;
                 }
-                else if (e2 - epsilon > this.biasLower)
+                else if(e2 - epsilon > this.biasLower)
                 {
                     this.biasLower = e2 - epsilon;
                     this.biasLowerIndex = i2;
                 }
             }
-            else if (this.I2.contains(i2) && (e2 + epsilon > this.biasLower))
+            else if(this.I2.contains(i2) && (e2 + epsilon > this.biasLower))
             {
                 this.biasLower = e2 + epsilon;
                 this.biasLowerIndex = i2;
             }
-            else if (this.I3.contains(i2) && (e2 - epsilon < this.biasUpper))
+            else if(this.I3.contains(i2) && (e2 - epsilon < this.biasUpper))
             {
                 this.biasUpper = e2 - epsilon;
                 this.biasUpperIndex = i2;
@@ -398,47 +394,47 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             optimal = true;
 
         // In case i2 is in the first set of indices:
-        if (this.I0.contains(i2))
+        if(this.I0.contains(i2))
         {
-            if (0 < alpha2A && alpha2A < this.cost)
+            if(0 < alpha2A && alpha2A < this.cost)
             {
-                if (this.biasLower - (e2 - epsilon) > 2.0 * tolerance)
+                if(this.biasLower - (e2 - epsilon) > 2.0 * tolerance)
                 {
                     optimal = false;
                     i1 = this.biasLowerIndex;
 
-                    if ((e2 - epsilon) - this.biasUpper > this.biasLower - (e2 - epsilon))
+                    if((e2 - epsilon) - this.biasUpper > this.biasLower - (e2 - epsilon))
                     {
                         i1 = this.biasUpperIndex;
                     }
                 }
-                else if ((e2 - epsilon) - this.biasUpper > 2.0 * tolerance)
+                else if((e2 - epsilon) - this.biasUpper > 2.0 * tolerance)
                 {
                     optimal = false;
 
                     i1 = this.biasUpperIndex;
-                    if (this.biasLower - (e2 - epsilon) > (e2 - epsilon) - this.biasUpper)
+                    if(this.biasLower - (e2 - epsilon) > (e2 - epsilon) - this.biasUpper)
                     {
                         i1 = this.biasLowerIndex;
                     }
                 }
             }
-            else if (0 < alpha2B && alpha2B < this.cost)
+            else if(0 < alpha2B && alpha2B < this.cost)
             {
-                if (this.biasLower - (e2 - epsilon) > 2.0 * tolerance)
+                if(this.biasLower - (e2 - epsilon) > 2.0 * tolerance)
                 {
                     optimal = false;
                     i1 = this.biasLowerIndex;
-                    if ((e2 + epsilon) - this.biasUpper > this.biasLower - (e2 + epsilon))
+                    if((e2 + epsilon) - this.biasUpper > this.biasLower - (e2 + epsilon))
                     {
                         i1 = this.biasUpperIndex;
                     }
                 }
-                else if ((e2 + epsilon) - this.biasUpper > 2.0 * tolerance)
+                else if((e2 + epsilon) - this.biasUpper > 2.0 * tolerance)
                 {
                     optimal = false;
                     i1 = this.biasUpperIndex;
-                    if (this.biasLower - (e2 + epsilon) > (e2 + epsilon) - this.biasUpper)
+                    if(this.biasLower - (e2 + epsilon) > (e2 + epsilon) - this.biasUpper)
                     {
                         i1 = this.biasLowerIndex;
                     }
@@ -446,42 +442,42 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             }
         }
         // In case i2 is in the second set of indices:
-        else if (this.I1.contains(i2))
+        else if(this.I1.contains(i2))
         {
-            if (this.biasLower - (e2 + epsilon) > 2.0 * tolerance)
+            if(this.biasLower - (e2 + epsilon) > 2.0 * tolerance)
             {
                 optimal = false;
 
                 i1 = this.biasLowerIndex;
-                if ((e2 + epsilon) - this.biasUpper > this.biasLower - (e2 + epsilon))
+                if((e2 + epsilon) - this.biasUpper > this.biasLower - (e2 + epsilon))
                 {
                     i1 = this.biasUpperIndex;
                 }
             }
-            else if ((e2 - epsilon) - this.biasUpper > 2.0 * tolerance)
+            else if((e2 - epsilon) - this.biasUpper > 2.0 * tolerance)
             {
                 optimal = false;
 
                 i1 = this.biasUpperIndex;
-                if (this.biasLower - (e2 - epsilon) > (e2 - epsilon) - this.biasUpper)
+                if(this.biasLower - (e2 - epsilon) > (e2 - epsilon) - this.biasUpper)
                 {
                     i1 = this.biasLowerIndex;
                 }
             }
         }
         // In case i2 is in the third set of indices:
-        else if (this.I2.contains(i2))
+        else if(this.I2.contains(i2))
         {
-            if ((e2 + epsilon) - this.biasUpper > 2.0 * tolerance)
+            if((e2 + epsilon) - this.biasUpper > 2.0 * tolerance)
             {
                 optimal = false;
                 i1 = this.biasUpperIndex;
             }
         }
         // In case i2 is in the fourth set of indices:
-        else if (this.I3.contains(i2))
+        else if(this.I3.contains(i2))
         {
-            if (this.biasLower - (e2 - epsilon) > 2.0 * tolerance)
+            if(this.biasLower - (e2 - epsilon) > 2.0 * tolerance)
             {
                 optimal = false;
                 i1 = this.biasLowerIndex;
@@ -493,7 +489,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
         }
         //end region
 
-        if (optimal)
+        if(optimal)
         {
             // The examples are already optimal.
             return 0;//  No need to optimize.
@@ -501,7 +497,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
         else
         {
             // Optimize i1 and i2
-            if (this.takeStep(i1, i2))
+            if(this.takeStep(i1, i2))
             {
                 return 1;
             }
@@ -520,7 +516,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
     {
         // Compute errors
         var sum = 0;
-        for (var i = 0; i < inputs.length; i++)
+        for(var i = 0; i < inputs.length; i++)
         {
             var s = this.machine.compute(inputs[i]) - expectedOutputs[i];
             sum += s * s;
@@ -539,7 +535,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
         console.trace();
         //console.
         var sum = 0;
-        for (var j = 0; j < this.alphaA.length; j++)
+        for(var j = 0; j < this.alphaA.length; j++)
         {
             sum += (this.alphaA[j] - this.alphaB[j]) * this.kernel.run(point, this.inputs[j]);
         }
@@ -554,7 +550,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
      */
     private takeStep(i1:number, i2:number):boolean
     {
-        if (i1 == i2)
+        if(i1 == i2)
         {
             return false;
         }
@@ -579,7 +575,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             gamma = alpha1a - alpha1b + alpha2a - alpha2b;
 
         // Assume the kernel is positive definite.
-        if (eta < 0)
+        if(eta < 0)
         {
             eta = 0;
         }
@@ -593,26 +589,26 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             finished = false,
             L, H, a1, a2;
 
-        while (!finished)
+        while(!finished)
         {
             //  !case1 && (alpha1a > 0 || (alpha1b == 0 && delta > 0)) && (alpha2a > 0 || (alpha2b == 0 && delta < 0))
-            if (!case1 && (alpha1a > 0 || (alpha1b == 0 && delta > 0)) && (alpha2a > 0 || (alpha2b == 0 && delta < 0)))
+            if(!case1 && (alpha1a > 0 || (alpha1b == 0 && delta > 0)) && (alpha2a > 0 || (alpha2b == 0 && delta < 0)))
             {
                 // Compute L and H (wrt alpha1, alpha2)
                 L = Math.max(0, gamma - this.cost);
                 H = Math.min(this.cost, gamma);
 
-                if (L < H)
+                if(L < H)
                 {
-                    if (eta > 0)
+                    if(eta > 0)
                     {
                         a2 = alpha2a - (delta / eta);
 
-                        if (a2 > H)
+                        if(a2 > H)
                         {
                             a2 = H;
                         }
-                        else if (a2 < L)
+                        else if(a2 < L)
                         {
                             a2 = L;
                         }
@@ -622,7 +618,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                         var Lobj = -L * delta;
                         var Hobj = -H * delta;
 
-                        if (Lobj > Hobj)
+                        if(Lobj > Hobj)
                         {
                             a2 = L;
                         }
@@ -635,7 +631,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                     a1 = alpha1a - (a2 - alpha2a);
 
                     // Update alpha1, alpha2 if change is larger than some epsilon
-                    if (Math.abs(a1 - alpha1a) > this.roundingEpsilon ||
+                    if(Math.abs(a1 - alpha1a) > this.roundingEpsilon ||
                         Math.abs(a2 - alpha2a) > this.roundingEpsilon)
                     {
                         alpha1a = a1;
@@ -651,23 +647,23 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                 case1 = true;
             }
             //       !case2 && (alpha1a > 0 || (alpha1b == 0 && delta > 2 * epsilon)) && (alpha2b > 0 || (alpha2a == 0 && delta > 2 * epsilon))
-            else if (!case2 && (alpha1a > 0 || (alpha1b == 0 && delta > 2 * epsilon)) && (alpha2b > 0 || (alpha2a == 0 && delta > 2 * epsilon)))
+            else if(!case2 && (alpha1a > 0 || (alpha1b == 0 && delta > 2 * epsilon)) && (alpha2b > 0 || (alpha2a == 0 && delta > 2 * epsilon)))
             {
                 // Compute L and H  (wrt alpha1, alpha2*)
                 L = Math.max(0, -gamma);
                 H = Math.min(this.cost, -gamma + this.cost);
 
-                if (L < H)
+                if(L < H)
                 {
-                    if (eta > 0)
+                    if(eta > 0)
                     {
                         a2 = alpha2b + ((delta - 2 * epsilon) / eta);
 
-                        if (a2 > H)
+                        if(a2 > H)
                         {
                             a2 = H;
                         }
-                        else if (a2 < L)
+                        else if(a2 < L)
                         {
                             a2 = L;
                         }
@@ -677,7 +673,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                         var Lobj = L * (-2 * epsilon + delta);
                         var Hobj = H * (-2 * epsilon + delta);
 
-                        if (Lobj > Hobj)
+                        if(Lobj > Hobj)
                         {
                             a2 = L;
                         }
@@ -689,7 +685,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                     a1 = alpha1a + (a2 - alpha2b);
 
                     // Update alpha1, alpha2* if change is larger than some epsilon
-                    if (Math.abs(a1 - alpha1a) > this.roundingEpsilon || Math.abs(a2 - alpha2b) > this.roundingEpsilon)
+                    if(Math.abs(a1 - alpha1a) > this.roundingEpsilon || Math.abs(a2 - alpha2b) > this.roundingEpsilon)
                     {
                         alpha1a = a1;
                         alpha2b = a2;
@@ -704,23 +700,23 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                 case2 = true;
             }
             //       !case3 && (alpha1b > 0 || (alpha1a == 0 && delta < -2 * epsilon)) && (alpha2a > 0 || (alpha2b == 0 && delta < -2 * epsilon))
-            else if (!case3 && (alpha1b > 0 || (alpha1a == 0 && delta < -2 * epsilon)) && (alpha2a > 0 || (alpha2b == 0 && delta < -2 * epsilon)))
+            else if(!case3 && (alpha1b > 0 || (alpha1a == 0 && delta < -2 * epsilon)) && (alpha2a > 0 || (alpha2b == 0 && delta < -2 * epsilon)))
             {
                 // Compute L and H (wrt alpha1*, alpha2)
                 L = Math.max(0, gamma);
                 H = Math.min(this.cost, this.cost + gamma);
 
-                if (L < H)
+                if(L < H)
                 {
-                    if (eta > 0)
+                    if(eta > 0)
                     {
                         a2 = alpha2a - ((delta + 2 * epsilon) / eta);
 
-                        if (a2 > H)
+                        if(a2 > H)
                         {
                             a2 = H;
                         }
-                        else if (a2 < L)
+                        else if(a2 < L)
                         {
                             a2 = L;
                         }
@@ -730,7 +726,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                         var Lobj = -L * (2 * epsilon + delta);
                         var Hobj = -H * (2 * epsilon + delta);
 
-                        if (Lobj > Hobj)
+                        if(Lobj > Hobj)
                         {
                             a2 = L;
                         }
@@ -742,7 +738,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                     a1 = alpha1b + (a2 - alpha2a);
 
                     // Update alpha1*, alpha2 if change is larger than some epsilon
-                    if (Math.abs(a1 - alpha1b) > this.roundingEpsilon ||
+                    if(Math.abs(a1 - alpha1b) > this.roundingEpsilon ||
                         Math.abs(a2 - alpha2a) > this.roundingEpsilon)
                     {
                         alpha1b = a1;
@@ -758,23 +754,23 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                 case3 = true;
             }
             //       !case4 && (alpha1b > 0 || (alpha1a == 0 && delta < 0)) && (alpha2b > 0 || (alpha2a == 0 && delta > 0))
-            else if (!case4 && (alpha1b > 0 || (alpha1a == 0 && delta < 0)) && (alpha2b > 0 || (alpha2a == 0 && delta > 0)))
+            else if(!case4 && (alpha1b > 0 || (alpha1a == 0 && delta < 0)) && (alpha2b > 0 || (alpha2a == 0 && delta > 0)))
             {
                 // Compute L and H (wrt alpha1*, alpha2*)
                 L = Math.max(0, -gamma - this.cost);
                 H = Math.min(this.cost, -gamma);
 
-                if (L < H)
+                if(L < H)
                 {
-                    if (eta > 0)
+                    if(eta > 0)
                     {
                         a2 = alpha2b + delta / eta;
 
-                        if (a2 > H)
+                        if(a2 > H)
                         {
                             a2 = H;
                         }
-                        else if (a2 < L)
+                        else if(a2 < L)
                         {
                             a2 = L;
                         }
@@ -784,7 +780,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                         var Lobj = L * delta;
                         var Hobj = H * delta;
 
-                        if (Lobj > Hobj)
+                        if(Lobj > Hobj)
                         {
                             a2 = L;
                         }
@@ -797,7 +793,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                     a1 = alpha1b - (a2 - alpha2b);
 
                     // Update alpha1*, alpha2* if change is larger than some epsilon
-                    if (Math.abs(a1 - alpha1b) > this.roundingEpsilon ||
+                    if(Math.abs(a1 - alpha1b) > this.roundingEpsilon ||
                         Math.abs(a2 - alpha2b) > this.roundingEpsilon)
                     {
                         alpha1b = a1;
@@ -823,7 +819,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
 
         // If nothing has changed, return false.
-        if (!changed)
+        if(!changed)
         {
             return false;
         }
@@ -832,9 +828,9 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
         //  #region Update error cache
         // Update error cache using new Lagrange multipliers
-        for (var i in this.I0.items)
+        for(var i in this.I0.items)
         {
-            if (<number>i !== i1 && <number>i !== i2)
+            if(<number>i !== i1 && <number>i !== i2)
             {
                 // Update all in set i0 except i1 and i2 (because we have the kernel function cached for them)
                 this.errors[i] += ((this.alphaA[i1] - this.alphaB[i1]) - (alpha1a - alpha1b)) * this.kernel.run(this.inputs[i1], this.inputs[i])
@@ -851,35 +847,35 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
         // to prevent precision problems
         var m_Del = 1e-10;
-        if (alpha1a > this.cost - m_Del * this.cost)
+        if(alpha1a > this.cost - m_Del * this.cost)
         {
             alpha1a = this.cost;
         }
-        else if (alpha1a <= m_Del * this.cost)
+        else if(alpha1a <= m_Del * this.cost)
         {
             alpha1a = 0;
         }
-        if (alpha1b > this.cost - m_Del * this.cost)
+        if(alpha1b > this.cost - m_Del * this.cost)
         {
             alpha1b = this.cost;
         }
-        else if (alpha1b <= m_Del * this.cost)
+        else if(alpha1b <= m_Del * this.cost)
         {
             alpha1b = 0;
         }
-        if (alpha2a > this.cost - m_Del * this.cost)
+        if(alpha2a > this.cost - m_Del * this.cost)
         {
             alpha2a = this.cost;
         }
-        else if (alpha2a <= m_Del * this.cost)
+        else if(alpha2a <= m_Del * this.cost)
         {
             alpha2a = 0;
         }
-        if (alpha2b > this.cost - m_Del * this.cost)
+        if(alpha2b > this.cost - m_Del * this.cost)
         {
             alpha2b = this.cost;
         }
-        else if (alpha2b <= m_Del * this.cost)
+        else if(alpha2b <= m_Del * this.cost)
         {
             alpha2b = 0;
         }
@@ -896,7 +892,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
         // #region Update the sets of indices
         // Update the sets of indices (for i1)
-        if ((0 < alpha1a && alpha1a < this.cost) || (0 < alpha1b && alpha1b < this.cost))
+        if((0 < alpha1a && alpha1a < this.cost) || (0 < alpha1b && alpha1b < this.cost))
         {
             this.I0.add(i1);
         }
@@ -905,7 +901,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             this.I0.remove(i1);
         }
 
-        if (alpha1a == 0 && alpha1b == 0)
+        if(alpha1a == 0 && alpha1b == 0)
         {
             this.I1.add(i1);
         }
@@ -914,7 +910,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             this.I1.remove(i1);
         }
 
-        if (alpha1a == 0 && alpha1b == this.cost)
+        if(alpha1a == 0 && alpha1b == this.cost)
         {
             this.I2.add(i1);
         }
@@ -923,7 +919,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             this.I2.remove(i1);
         }
 
-        if (alpha1a == this.cost && alpha1b == 0)
+        if(alpha1a == this.cost && alpha1b == 0)
         {
             this.I3.add(i1);
         }
@@ -933,7 +929,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
         }
 
         // Update the sets of indices (for i2)
-        if ((0 < alpha2a && alpha2a < this.cost) || (0 < alpha2b && alpha2b < this.cost))
+        if((0 < alpha2a && alpha2a < this.cost) || (0 < alpha2b && alpha2b < this.cost))
         {
             this.I0.add(i2);
         }
@@ -942,7 +938,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             this.I0.remove(i2);
         }
 
-        if (alpha2a == 0 && alpha2b == 0)
+        if(alpha2a == 0 && alpha2b == 0)
         {
             this.I1.add(i2);
         }
@@ -951,7 +947,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             this.I1.remove(i2);
         }
 
-        if (alpha2a == 0 && alpha2b == this.cost)
+        if(alpha2a == 0 && alpha2b == this.cost)
         {
             this.I2.add(i2);
         }
@@ -960,7 +956,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             this.I2.remove(i2);
         }
 
-        if (alpha2a == this.cost && alpha2b == 0)
+        if(alpha2a == this.cost && alpha2b == 0)
         {
             this.I3.add(i2);
         }
@@ -972,86 +968,86 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
 
         // #region Compute the new thresholds
-        this.biasLower = -Math.pow(2,32);
-        this.biasUpper = Math.pow(2,32);
+        this.biasLower = -Math.pow(2, 32);
+        this.biasUpper = Math.pow(2, 32);
         this.biasLowerIndex = -1;
         this.biasUpperIndex = -1;
 
-        for (var i in this.I0.items)
+        for(var i in this.I0.items)
         {
-            if (0 < this.alphaB[i] && this.alphaB[i] < this.cost && this.errors[i] + epsilon > this.biasLower)
+            if(0 < this.alphaB[i] && this.alphaB[i] < this.cost && this.errors[i] + epsilon > this.biasLower)
             {
                 this.biasLower = this.errors[i] + epsilon;
                 this.biasLowerIndex = <number>i;
             }
-            else if (0 < this.alphaA[i] && this.alphaA[i] < this.cost && this.errors[i] - epsilon > this.biasLower)
+            else if(0 < this.alphaA[i] && this.alphaA[i] < this.cost && this.errors[i] - epsilon > this.biasLower)
             {
                 this.biasLower = this.errors[i] - epsilon;
                 this.biasLowerIndex = <number>i;
             }
-            if (0 < this.alphaA[i] && this.alphaA[i] < this.cost && this.errors[i] - epsilon < this.biasUpper)
+            if(0 < this.alphaA[i] && this.alphaA[i] < this.cost && this.errors[i] - epsilon < this.biasUpper)
             {
                 this.biasUpper = this.errors[i] - epsilon;
                 this.biasUpperIndex = <number>i;
             }
-            else if (0 < this.alphaB[i] && this.alphaB[i] < this.cost && this.errors[i] + epsilon < this.biasUpper)
+            else if(0 < this.alphaB[i] && this.alphaB[i] < this.cost && this.errors[i] + epsilon < this.biasUpper)
             {
                 this.biasUpper = this.errors[i] + epsilon;
                 this.biasUpperIndex = <number>i;
             }
         }
 
-        if (!this.I0.contains(i1))
+        if(!this.I0.contains(i1))
         {
-            if (this.I2.contains(i1) && this.errors[i1] + epsilon > this.biasLower)
+            if(this.I2.contains(i1) && this.errors[i1] + epsilon > this.biasLower)
             {
                 this.biasLower = this.errors[i1] + epsilon;
                 this.biasLowerIndex = i1;
             }
-            else if (this.I1.contains(i1) && this.errors[i1] - epsilon > this.biasLower)
+            else if(this.I1.contains(i1) && this.errors[i1] - epsilon > this.biasLower)
             {
                 this.biasLower = this.errors[i1] - epsilon;
                 this.biasLowerIndex = i1;
             }
 
-            if (this.I3.contains(i1) && this.errors[i1] - epsilon < this.biasUpper)
+            if(this.I3.contains(i1) && this.errors[i1] - epsilon < this.biasUpper)
             {
                 this.biasUpper = this.errors[i1] - epsilon;
                 this.biasUpperIndex = i1;
             }
-            else if (this.I1.contains(i1) && this.errors[i1] + epsilon < this.biasUpper)
+            else if(this.I1.contains(i1) && this.errors[i1] + epsilon < this.biasUpper)
             {
                 this.biasUpper = this.errors[i1] + epsilon;
                 this.biasUpperIndex = i1;
             }
         }
 
-        if (!this.I0.contains(i2))
+        if(!this.I0.contains(i2))
         {
-            if (this.I2.contains(i2) && this.errors[i2] + epsilon > this.biasLower)
+            if(this.I2.contains(i2) && this.errors[i2] + epsilon > this.biasLower)
             {
                 this.biasLower = this.errors[i2] + epsilon;
                 this.biasLowerIndex = i2;
             }
-            else if (this.I1.contains(i2) && this.errors[i2] - epsilon > this.biasLower)
+            else if(this.I1.contains(i2) && this.errors[i2] - epsilon > this.biasLower)
             {
                 this.biasLower = this.errors[i2] - epsilon;
                 this.biasLowerIndex = i2;
             }
 
-            if (this.I3.contains(i2) && this.errors[i2] - epsilon < this.biasUpper)
+            if(this.I3.contains(i2) && this.errors[i2] - epsilon < this.biasUpper)
             {
                 this.biasUpper = this.errors[i2] - epsilon;
                 this.biasUpperIndex = i2;
             }
-            else if (this.I1.contains(i2) && this.errors[i2] + epsilon < this.biasUpper)
+            else if(this.I1.contains(i2) && this.errors[i2] + epsilon < this.biasUpper)
             {
                 this.biasUpper = this.errors[i2] + epsilon;
                 this.biasUpperIndex = i2;
             }
         }
 
-        if (this.biasLowerIndex == -1 || this.biasUpperIndex == -1)
+        if(this.biasLowerIndex == -1 || this.biasUpperIndex == -1)
         {
             throw new Error('cry cry');
         }
