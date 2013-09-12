@@ -5,18 +5,63 @@
 ///<reference path='./interfaces/ISupportVectorMachine.ts' />
 interface ILinkFunction{}
 
-
+/**
+ * @summary
+ * Sparse Linear Support Vector Machine (SVM)
+ *
+ * @remark
+ * Support vector machines (SVMs) are a set of related supervised learning methods
+ * used for classification and regression. In simple words, given a set of training
+ * examples, each marked as belonging to one of two categories, a SVM training algorithm
+ * builds a model that predicts whether a new example falls into one category or the other.
+ *
+ * Intuitively, an SVM model is a representation of the examples as points in space,
+ * mapped so that the examples of the separate categories are divided by a clear gap
+ * that is as wide as possible. New examples are then mapped into that same space and
+ * predicted to belong to a category based on which side of the gap they fall on.
+ *
+ * @references:
+ *  - http://en.wikipedia.org/wiki/Support_vector_machine
+ *
+ * @example AND problem
+ *
+ *  var inputs =
+ *  [
+ *      [0,0] //0 and 0: 0 (label -1)
+ *      [0,1] //0 and 1: 0 (label -1)
+ *      [1,0] //1 and 0: 0 (label -1)
+ *      [1,1] //1 and 1: 1 (label 1)
+ *  ];
+ *
+ *  var labels =
+ *  [
+ *      //0, 0, 0, 1
+ *      -1, -1, -1, 1
+ *  ];
+ *
+ *  // Create a Support Vector Machine for the given inputs
+ *  var machine = new SupportVectorMachine(inputs[0].length);
+ *
+ *  // Instantiate a new learning algorithm for SVMs
+ *  var smo = new SequentialMinimalOptimization(machine, inputs, labels);
+ *
+ *  // Set up the learning algorithm
+ *  smo.setComplexity(1.0);
+ *
+ *  // Run the learning algorithm
+ *  var error = smo.run();
+ *
+ *  // Compute the decision output for one of the input vectors
+ *  var decision = svm.compute(inputs[0]);
+ *
+ */
 class SupportVectorMachine implements ISupportVectorMachine
 {
-    public supportVectors:Array[] = null;
+    private inputCount:number;
+    private threshold:number;
 
-    public weights:number[] = null;
-
-    private inputCount:number = null;
-
-    private threshold:number = null;
-
-    private linkFunction:ILinkFunction = null;
+    public supportVectors:number[][];
+    public weights:number[];
 
     /**
      * @param inputs
@@ -26,17 +71,12 @@ class SupportVectorMachine implements ISupportVectorMachine
         this.inputCount = inputs;
     }
 
+    /**
+     * @returns {number}
+     */
     public getInputCount():number
     {
         return this.inputCount;
-    }
-
-    /**
-     * @returns {ILinkFunction}
-     */
-    public link():ILinkFunction
-    {
-        return <ILinkFunction>{};
     }
 
     /**
@@ -44,7 +84,7 @@ class SupportVectorMachine implements ISupportVectorMachine
      */
     public isProbabilistic():boolean
     {
-        return this.linkFunction !== null;
+        return false;
     }
 
     public isCompact():boolean
@@ -53,17 +93,17 @@ class SupportVectorMachine implements ISupportVectorMachine
     }
 
     /**
-     * @returns {Array[]}
+     * @returns {number[][]}
      */
-    public getSupportVectors():Array[]
+    public getSupportVectors():number[][]
     {
         return this.supportVectors;
     }
 
     /**
-     * @param inputs
+     * @param value
      */
-    public setSupportVectors(value:Array[]):void
+    public setSupportVectors(value:number[][]):void
     {
         this.supportVectors = value;
     }
@@ -105,22 +145,24 @@ class SupportVectorMachine implements ISupportVectorMachine
     }
 
     /**
-     * Computes the given input to produce the corresponding output.
+     * @summary Computes the given input to produce the corresponding output.
      *
      * @remark For a binary decision problem, the decision for the negative
      * or positive class is typically computed by taking the sign of
      * the machine's output.
-     * @param inputs An input vector.
-     * @returns {number}
      *
+     * @param inputs An input vector.
+     * @param output The output of the machine.
      * If this is a probabilistic machine, the
-     * return value is the probability of the positive class. If this is
+     * output is the probability of the positive class. If this is
      * a standard machine, the output is the distance to the decision
      * hyperplane in feature space.
+     *
+     * @returns {number}
      */
-    public compute(inputs:number[]):number
+    public compute(inputs:number[], output:number = 0):number
     {
-        var output = this.threshold;
+        output = this.threshold;
 
         if(this.supportVectors === null)
         {
@@ -137,15 +179,17 @@ class SupportVectorMachine implements ISupportVectorMachine
                 for (var j = 0; j < inputs.length; j++)
                 {
                     sum += this.supportVectors[i][j] * inputs[j];
-                    output += this.weights[i] * sum;
                 }
+
+                output += this.weights[i] * sum;
             }
         }
 
         if (this.isProbabilistic())
         {
+            //-- TODO
             //output = this.linkFunction.inverse(output);
-            //return output >= 0.5 ? +1 : -1;
+            return output >= 0.5 ? +1 : -1;
         }
 
         return output >= 0 ? 1 : -1;

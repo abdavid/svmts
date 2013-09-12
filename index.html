@@ -5,86 +5,93 @@
 <script src="lib/underscore/underscore.js"></script>
 <script src="lib/sge/sge.js"></script>
 
+<script src="svm/collections/Bucket.js"></script>
+<script src="svm/collections/HashTable.js"></script>
 <script src="svm/collections/HashSet.js"></script>
+
 <script src="svm/kernels/LinearKernel.js"></script>
 <script src="svm/kernels/GaussianKernel.js"></script>
-<script src="svm/kernels/SigmoidKernel.js"></script>
-<script src="svm/kernels/PolynominalKernel.js"></script>
+<script src="svm/kernels/HistogramIntersectionKernel.js"></script>
+
 
 <script src="svm/SupportVectorMachine.js"></script>
 <script src="svm/KernelSupportVectorMachine.js"></script>
 <script src="svm/SequentialMinimalOptimization.js"></script>
 <script src="svm/renderers/CanvasRenderer.js"></script>
 
-<script type="text/javascript">
-var dirty;
-function init()
-{
-    console.time('Init');
-    var data = [];
-    var labels = [];
 
-    data[0] = [-0.4326  , 1.1909 ];
-    data[1] = [3.0, 4.0];
-    data[2] = [0.1253 , -0.0376];
-    data[3] = [0.2877 , 0.3273  ];
-    data[4] = [-1.1465 , 0.1746 ];
-    data[5] = [1.8133 , 2.1139  ];
-    data[6] = [2.7258 , 3.0668  ];
-    data[7] = [1.4117 , 2.0593  ];
-    data[8] = [4.1832 , 1.9044  ];
-    data[9] = [1.8636 , 1.1677  ];
-
-    labels[0] = 1;
-    labels[1] = 1;
-    labels[2] = 1;
-    labels[3] = 1;
-    labels[4] = 1;
-    labels[5] = -1;
-    labels[6] = -1;
-    labels[7] = -1;
-    labels[8] = -1;
-    labels[9] = -1;
-
-    svm = new KernelSupportVectorMachine(new LinearKernel(), data[0].length);
-    smo = new SequentialMinimalOptimization(svm, data, labels);
-
-    //console.time('SMO::EstimateComplexity');
-    //var complexity = SequentialMinimalOptimization.EstimateComplexity(svm.getKernel(), data);
-    //smo.setComplexity(complexity);
-    //console.timeEnd('SMO::EstimateComplexity');
-
-    console.time('SMO::RUN');
-    var error = smo.run(true);
-    console.timeEnd('SMO::RUN');
-
-    console.time('SVM::COMPUTE');
-    var decision = svm.compute(data[1]);
-    console.timeEnd('SVM::COMPUTE');
-
-    console.log(error, decision);
-    console.timeEnd('Init');
-
-
-    var renderer = new CanvasRenderer({
-        smo:smo,
-        svm:svm,
-        canvas: document.getElementById('SGECanvas'),
-        height: 500,
-        width: 500
-    });
-}
-</script>
 
 
 </head>
 
-<body onLoad="init();">
+<body>
 
 <h1>Support Vector Machine in Javascript</h1>
 
 
 <canvas id="SGECanvas" width="500" height="500">Browser not supported for Canvas. Get a real browser.</canvas>
+<script type="text/javascript">
+    var dirty;
+    function init()
+    {
+        console.time('Init');
+        var labels = [];
+        var inputs = [];
 
+        inputs[0] = [-0.4326  , 1.1909 ];
+        inputs[1] = [3.0, 4.0];
+        inputs[2] = [0.1253 , -0.0376];
+        inputs[3] = [0.2877 , 0.3273  ];
+        inputs[4] = [-1.1465 , 0.1746 ];
+        inputs[5] = [1.8133 , 2.1139  ];
+        inputs[6] = [2.7258 , 3.0668  ];
+        inputs[7] = [1.4117 , 2.0593  ];
+        inputs[8] = [4.1832 , 1.9044  ];
+        inputs[9] = [1.8636 , 1.1677  ];
+
+        labels[0] = 1;
+        labels[1] = 1;
+        labels[2] = 1;
+        labels[3] = 1;
+        labels[4] = 1;
+        labels[5] = -1;
+        labels[6] = -1;
+        labels[7] = -1;
+        labels[8] = -1;
+        labels[9] = -1;
+
+        machine = new KernelSupportVectorMachine(new HistogramIntersectionKernel(2,2), inputs[0].length);
+        smo = new SequentialMinimalOptimization(machine, inputs, labels);
+
+        //smo.setComplexity(1.0);
+
+        console.time('SMO::RUN');
+        var error = smo.run(true);
+        console.timeEnd('SMO::RUN');
+
+        console.time('SVM::COMPUTE');
+        var decision = machine.compute(inputs[3]);
+        console.timeEnd('SVM::COMPUTE');
+
+        console.log(error, decision);
+        console.timeEnd('Init');
+
+
+        var graph = new CanvasRenderer({
+            smo:smo,
+            canvas: document.getElementById('SGECanvas'),
+            height: 500,
+            width: 500,
+            //ss: 30,
+            density:1.5
+        });
+
+        console.time('Graph::Render');
+        graph.render();
+        console.timeEnd('Graph::Render');
+    }
+
+    init();
+</script>
 </body>
 </html>

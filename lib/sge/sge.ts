@@ -45,8 +45,6 @@ class SGE {
     private lastRedraw:number;
     private drawOnce:SGEDraw;
 
-    private noop:Function = function(){};
-
     public height:number;
     public width:number;
     public canvas:HTMLCanvasElement;
@@ -54,14 +52,16 @@ class SGE {
 
     constructor(options:SGEOptions)
     {
+        var noop = ()=> {};
+
         this.canvas = options.canvas;
         this.ctx = options.canvas.getContext('2d');
         this.width = options.width;
         this.height = options.height;
 
-        this.keyUp = options.keyUp || this.noop;
-        this.keyDown = options.keyDown || this.noop;
-        this.mouseClick = options.mouseClick || this.noop;
+        this.keyUp = options.keyUp || noop;
+        this.keyDown = options.keyDown || noop;
+        this.mouseClick = options.mouseClick || noop;
         this.update = options.update || false;
         this.draw = options.draw || false;
         this.drawOnce = options.drawOnce || SGEDraw.redraw;
@@ -69,8 +69,10 @@ class SGE {
         var date = new Date();
         this.lastRedraw = date.getTime();
         this.initEvents();
+    }
 
-
+    public render():void
+    {
         window.requestAnimationFrame(() => this.tick());
     }
 

@@ -19,7 +19,6 @@ interface CanvasRendererOptions extends SGEOptions {
 
 class CanvasRenderer extends SGE {
 
-    private svm:KernelSupportVectorMachine;
     private smo:SequentialMinimalOptimization;
 
     private density:number;
@@ -40,7 +39,6 @@ class CanvasRenderer extends SGE {
 
         this.ss = options.ss || 45;
         this.density = options.density || 4.0;
-        this.svm = options.svm;
         this.smo = options.smo;
         this.hasDrawn = false;
 
@@ -73,11 +71,11 @@ class CanvasRenderer extends SGE {
         {
             for(var y = 0.0; y <= this.height; y += this.density)
             {
-                var vX = (x - this.width / 2) / this.ss,
-                    vY = (y - this.height / 2) / this.ss,
-                    decision = this.svm.compute([vX,vY]);
-
-                console.log('decision %d', decision);
+                var vector = [
+                    (x - this.width / 2) / this.ss,
+                    (y - this.height / 2) / this.ss
+                ],
+                decision = this.smo.machine.compute(vector);
 
                 if(decision > 0)
                 {
@@ -144,12 +142,12 @@ class CanvasRenderer extends SGE {
         }
 
         // if linear kernel, draw decision boundary and margin lines
-        if(this.svm.getKernel() instanceof LinearKernel)
+        if(this.smo.kernel instanceof LinearKernel)
         {
             var xs = [-5, 5];
             var ys = [0, 0];
-            ys[0] = (-this.smo.biasLower - this.svm.weights[0] * xs[0]) / this.svm.weights[1];
-            ys[1] = (-this.smo.biasLower - this.svm.weights[0] * xs[1]) / this.svm.weights[1];
+            ys[0] = (-this.smo.biasLower - this.smo.machine.weights[0] * xs[0]) / this.smo.machine.weights[1];
+            ys[1] = (-this.smo.biasLower - this.smo.machine.weights[0] * xs[1]) / this.smo.machine.weights[1];
 
             this.ctx.fillStyle = 'rgb(0,0,0)';
             this.ctx.lineWidth = 1;
@@ -160,12 +158,12 @@ class CanvasRenderer extends SGE {
             this.ctx.lineTo(xs[1] * this.ss + this.width / 2, ys[1] * this.ss + this.height / 2);
 
             // wx+b=1 line
-            this.ctx.moveTo(xs[0] * this.ss + this.width / 2, (ys[0] - 1.0 / this.svm.weights[1]) * this.ss + this.height / 2);
-            this.ctx.lineTo(xs[1] * this.ss + this.width / 2, (ys[1] - 1.0 / this.svm.weights[1]) * this.ss + this.height / 2);
+            this.ctx.moveTo(xs[0] * this.ss + this.width / 2, (ys[0] - 1.0 / this.smo.machine.weights[1]) * this.ss + this.height / 2);
+            this.ctx.lineTo(xs[1] * this.ss + this.width / 2, (ys[1] - 1.0 / this.smo.machine.weights[1]) * this.ss + this.height / 2);
 
             // wx+b=-1 line
-            this.ctx.moveTo(xs[0] * this.ss + this.width / 2, (ys[0] + 1.0 / this.svm.weights[1]) * this.ss + this.height / 2);
-            this.ctx.lineTo(xs[1] * this.ss + this.width / 2, (ys[1] + 1.0 / this.svm.weights[1]) * this.ss + this.height / 2);
+            this.ctx.moveTo(xs[0] * this.ss + this.width / 2, (ys[0] + 1.0 / this.smo.machine.weights[1]) * this.ss + this.height / 2);
+            this.ctx.lineTo(xs[1] * this.ss + this.width / 2, (ys[1] + 1.0 / this.smo.machine.weights[1]) * this.ss + this.height / 2);
             this.ctx.stroke();
 
             // draw margin lines for support vectors. The sum of the lengths of these
@@ -179,13 +177,13 @@ class CanvasRenderer extends SGE {
 
                 if(this.smo.outputs[i] == 1)
                 {
-                    ys[0] = (1 - this.smo.biasLower - this.svm.weights[0] * xs[0]) / this.svm.weights[1];
-                    ys[1] = (1 - this.smo.biasLower - this.svm.weights[0] * xs[1]) / this.svm.weights[1];
+                    ys[0] = (1 - this.smo.biasLower - this.smo.machine.weights[0] * xs[0]) / this.smo.machine.weights[1];
+                    ys[1] = (1 - this.smo.biasLower - this.smo.machine.weights[0] * xs[1]) / this.smo.machine.weights[1];
                 }
                 else
                 {
-                    ys[0] = (-1 - this.smo.biasLower - this.svm.weights[0] * xs[0]) / this.svm.weights[1];
-                    ys[1] = (-1 - this.smo.biasLower - this.svm.weights[0] * xs[1]) / this.svm.weights[1];
+                    ys[0] = (-1 - this.smo.biasLower - this.smo.machine.weights[0] * xs[0]) / this.smo.machine.weights[1];
+                    ys[1] = (-1 - this.smo.biasLower - this.smo.machine.weights[0] * xs[1]) / this.smo.machine.weights[1];
                 }
 
                 var u = (this.smo.inputs[i][0] - xs[0]) * (xs[1] - xs[0]) + (this.smo.inputs[i][1] - ys[0]) * (ys[1] - ys[0]) / ((xs[0] - xs[1]) * (xs[0] - xs[1]) + (ys[0] - ys[1]) * (ys[0] - ys[1])),
@@ -203,7 +201,6 @@ class CanvasRenderer extends SGE {
 
             this.ctx.stroke();
         }
-
     }
 
     /**
@@ -211,10 +208,12 @@ class CanvasRenderer extends SGE {
      */
     private drawStatus():void
     {
+        this.ctx.fillStyle = 'rgb(0,0,0)';
+
         var numsupp = 0;
         for (var i = 0; i < this.smo.inputs.length; i++)
         {
-            if (this.smo.alphaA[i] > 1e-5)
+            if (this.smo.alphaA[i] > 1e-5 || this.smo.alphaB[i] > 1e-5)
             {
                 numsupp++;
             }
@@ -222,13 +221,13 @@ class CanvasRenderer extends SGE {
 
         this.ctx.fillText("Number of support vectors: " + numsupp + " / " + this.smo.inputs.length, 10, this.height - 50);
 
-        if (this.svm.getKernel() instanceof GaussianKernel)
+        if (this.smo.kernel instanceof GaussianKernel)
         {
-            this.ctx.fillText("Using Rbf kernel with sigma = " + this.svm.getKernel().sigma().toPrecision(2), 10, this.height - 70);
+            this.ctx.fillText("Using Rbf kernel with sigma = " + this.smo.kernel.sigma().toPrecision(2), 10, this.height - 70);
         }
         else
         {
-            this.ctx.fillText("Using " + this.svm.getKernel().constructor.name, 10, this.height - 70);
+            this.ctx.fillText("Using " + this.smo.kernel.constructor.name, 10, this.height - 70);
         }
 
         this.ctx.fillText("C = " + this.smo.getComplexity().toPrecision(2), 10, this.height - 90);

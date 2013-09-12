@@ -15,4 +15,5 @@ interface ISupportVectorMachine {
      * @returns number The decision label for the given input.
      */
     compute(inputs:number[]):number;
+    compute(inputs:number[], output:number):number;
 }

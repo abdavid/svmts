@@ -18,7 +18,7 @@ class KernelSupportVectorMachine extends SupportVectorMachine
      * accepts a indefinite number of inputs. This is often the
      * case for kernel vector machines using a sequence kernel.
      */
-    constructor(kernel:IKernel = null,inputs:number = null)
+    constructor(kernel:IKernel = null,inputs:number = 0)
     {
         super(inputs);
 
@@ -69,7 +69,6 @@ class KernelSupportVectorMachine extends SupportVectorMachine
             var supportVectors = this.getSupportVectors();
             for(var i = 0; i < supportVectors.length; i++)
             {
-                //console.log('Weights %d, and kernel %d',weights[i], this.kernel.run(supportVectors[i], inputs));
                 output += weights[i] * this.kernel.run(supportVectors[i], inputs);
             }
         }
@@ -80,6 +79,6 @@ class KernelSupportVectorMachine extends SupportVectorMachine
             return output >= 0.5 ? 1 : -1;
         }*/
 
-        return output >= 0 ? 1 : -1;
+        return output;// >= 0 ? 1 : -1;
     }
 }

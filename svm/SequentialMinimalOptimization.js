@@ -3,8 +3,8 @@ var SequentialMinimalOptimization = (function () {
         if (typeof machine === "undefined") { machine = null; }
         if (typeof inputs === "undefined") { inputs = null; }
         if (typeof outputs === "undefined") { outputs = null; }
-        this.cost = 0.6;
-        this.tolerance = 1e-2;
+        this.cost = 1.0;
+        this.tolerance = 1e-3;
         this.epsilon = 1e-3;
         this.roundingEpsilon = 1e-12;
         if (machine === null) {
@@ -33,7 +33,11 @@ var SequentialMinimalOptimization = (function () {
 
         this.machine = machine;
 
-        this.kernel = machine.getKernel();
+        if ('getKernel' in machine) {
+            this.kernel = machine.getKernel();
+        } else {
+            this.kernel = new LinearKernel();
+        }
 
         this.inputs = inputs;
 
@@ -77,6 +81,7 @@ var SequentialMinimalOptimization = (function () {
 
     SequentialMinimalOptimization.prototype.run = function (computeError) {
         if (typeof computeError === "undefined") { computeError = false; }
+        var _this = this;
         var N = this.inputs.length;
 
         this.alphaA = Array.apply(null, new Array(N)).map(Number.prototype.valueOf, 0);
@@ -94,7 +99,6 @@ var SequentialMinimalOptimization = (function () {
 
         this.biasUpperIndex = 0;
         this.biasLowerIndex = 0;
-
         this.biasUpper = this.outputs[0] + this.getEpsilon();
         this.biasLower = this.outputs[0] - this.getEpsilon();
 
@@ -133,16 +137,16 @@ var SequentialMinimalOptimization = (function () {
             }
         }
 
-        var vectors = list.count();
+        var vectors = list.keys();
 
-        this.machine.setSupportVectors(new Array(vectors));
-        this.machine.setWeights(new Array(vectors));
+        this.machine.setSupportVectors(new Array(vectors.length));
+        this.machine.setWeights(new Array(vectors.length));
 
-        for (var i = 0; i < vectors; i++) {
-            var j = list.at(i);
-            this.machine.supportVectors[i] = this.inputs[j];
-            this.machine.weights[i] = this.alphaA[j] - this.alphaB[j];
-        }
+        vectors.forEach(function (i) {
+            var j = list.get(i);
+            _this.machine.supportVectors[i] = _this.inputs[j];
+            _this.machine.weights[i] = _this.alphaA[j] - _this.alphaB[j];
+        });
 
         this.machine.setThreshold((this.biasLower + this.biasUpper) / 2.0);
 
@@ -155,7 +159,7 @@ var SequentialMinimalOptimization = (function () {
         if (this.I0.contains(i2)) {
             e2 = this.errors[i2];
         } else {
-            this.errors[i2] = e2 = this.outputs[i2] = this.compute(this.inputs[i2]);
+            this.errors[i2] = e2 = this.outputs[i2] - this.compute(this.inputs[i2]);
 
             if (this.I1.contains(i2)) {
                 if (e2 + epsilon < this.biasUpper) {
@@ -235,7 +239,6 @@ var SequentialMinimalOptimization = (function () {
                 i1 = this.biasLowerIndex;
             }
         } else {
-            throw new Error('BOM! I missed');
         }
 
         if (optimal) {
@@ -270,6 +273,7 @@ var SequentialMinimalOptimization = (function () {
     };
 
     SequentialMinimalOptimization.prototype.takeStep = function (i1, i2) {
+        var _this = this;
         if (i1 == i2) {
             return false;
         }
@@ -440,11 +444,11 @@ var SequentialMinimalOptimization = (function () {
             return false;
         }
 
-        for (var i in this.I0.items) {
-            if (i !== i1 && i !== i2) {
-                this.errors[i] += ((this.alphaA[i1] - this.alphaB[i1]) - (alpha1a - alpha1b)) * this.kernel.run(this.inputs[i1], this.inputs[i]) + ((this.alphaA[i2] - this.alphaB[i2]) - (alpha2a - alpha2b)) * this.kernel.run(this.inputs[i2], this.inputs[i]);
+        this.I0.values().forEach(function (i) {
+            if (Number(i) !== Number(i1) && Number(i) !== Number(i2)) {
+                _this.errors[i] += ((_this.alphaA[i1] - _this.alphaB[i1]) - (alpha1a - alpha1b)) * _this.kernel.run(_this.inputs[i1], _this.inputs[i]) + ((_this.alphaA[i2] - _this.alphaB[i2]) - (alpha2a - alpha2b)) * _this.kernel.run(_this.inputs[i2], _this.inputs[i]);
             }
-        }
+        });
 
         this.errors[i1] += ((this.alphaA[i1] - this.alphaB[i1]) - (alpha1a - alpha1b)) * k11 + ((this.alphaA[i2] - this.alphaB[i2]) - (alpha2a - alpha2b)) * k12;
         this.errors[i2] += ((this.alphaA[i1] - this.alphaB[i1]) - (alpha1a - alpha1b)) * k12 + ((this.alphaA[i2] - this.alphaB[i2]) - (alpha2a - alpha2b)) * k22;
@@ -529,22 +533,22 @@ var SequentialMinimalOptimization = (function () {
         this.biasLowerIndex = -1;
         this.biasUpperIndex = -1;
 
-        for (var i in this.I0.items) {
-            if (0 < this.alphaB[i] && this.alphaB[i] < this.cost && this.errors[i] + epsilon > this.biasLower) {
-                this.biasLower = this.errors[i] + epsilon;
-                this.biasLowerIndex = i;
-            } else if (0 < this.alphaA[i] && this.alphaA[i] < this.cost && this.errors[i] - epsilon > this.biasLower) {
-                this.biasLower = this.errors[i] - epsilon;
-                this.biasLowerIndex = i;
+        this.I0.values().forEach(function (i) {
+            if (0 < _this.alphaB[i] && _this.alphaB[i] < _this.cost && _this.errors[i] + epsilon > _this.biasLower) {
+                _this.biasLower = _this.errors[i] + epsilon;
+                _this.biasLowerIndex = i;
+            } else if (0 < _this.alphaA[i] && _this.alphaA[i] < _this.cost && _this.errors[i] - epsilon > _this.biasLower) {
+                _this.biasLower = _this.errors[i] - epsilon;
+                _this.biasLowerIndex = i;
             }
-            if (0 < this.alphaA[i] && this.alphaA[i] < this.cost && this.errors[i] - epsilon < this.biasUpper) {
-                this.biasUpper = this.errors[i] - epsilon;
-                this.biasUpperIndex = i;
-            } else if (0 < this.alphaB[i] && this.alphaB[i] < this.cost && this.errors[i] + epsilon < this.biasUpper) {
-                this.biasUpper = this.errors[i] + epsilon;
-                this.biasUpperIndex = i;
+            if (0 < _this.alphaA[i] && _this.alphaA[i] < _this.cost && _this.errors[i] - epsilon < _this.biasUpper) {
+                _this.biasUpper = _this.errors[i] - epsilon;
+                _this.biasUpperIndex = i;
+            } else if (0 < _this.alphaB[i] && _this.alphaB[i] < _this.cost && _this.errors[i] + epsilon < _this.biasUpper) {
+                _this.biasUpper = _this.errors[i] + epsilon;
+                _this.biasUpperIndex = i;
             }
-        }
+        });
 
         if (!this.I0.contains(i1)) {
             if (this.I2.contains(i1) && this.errors[i1] + epsilon > this.biasLower) {

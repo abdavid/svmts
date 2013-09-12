@@ -1,22 +1,13 @@
 var SupportVectorMachine = (function () {
     function SupportVectorMachine(inputs) {
-        this.supportVectors = null;
-        this.weights = null;
-        this.inputCount = null;
-        this.threshold = null;
-        this.linkFunction = null;
         this.inputCount = inputs;
     }
     SupportVectorMachine.prototype.getInputCount = function () {
         return this.inputCount;
     };
 
-    SupportVectorMachine.prototype.link = function () {
-        return {};
-    };
-
     SupportVectorMachine.prototype.isProbabilistic = function () {
-        return this.linkFunction !== null;
+        return false;
     };
 
     SupportVectorMachine.prototype.isCompact = function () {
@@ -47,8 +38,9 @@ var SupportVectorMachine = (function () {
         return this.threshold;
     };
 
-    SupportVectorMachine.prototype.compute = function (inputs) {
-        var output = this.threshold;
+    SupportVectorMachine.prototype.compute = function (inputs, output) {
+        if (typeof output === "undefined") { output = 0; }
+        output = this.threshold;
 
         if (this.supportVectors === null) {
             for (var i = 0; i < this.weights.length; i++) {
@@ -59,12 +51,14 @@ var SupportVectorMachine = (function () {
                 var sum = 0;
                 for (var j = 0; j < inputs.length; j++) {
                     sum += this.supportVectors[i][j] * inputs[j];
-                    output += this.weights[i] * sum;
                 }
+
+                output += this.weights[i] * sum;
             }
         }
 
         if (this.isProbabilistic()) {
+            return output >= 0.5 ? +1 : -1;
         }
 
         return output >= 0 ? 1 : -1;

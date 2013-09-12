@@ -92,14 +92,14 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
     public biasUpper:number;
 
     // Learning algorithm parameters
-    private cost:number = 0.6;
-    private tolerance:number = 1e-2;
-    private epsilon = 1e-3;
-    private roundingEpsilon = 1e-12;
+    private cost:number = 1.0;
+    private tolerance:number = 1e-3;
+    private epsilon:number = 1e-3;
+    private roundingEpsilon:number = 1e-12;
 
     // Support Vector Machine parameters
-    private machine:SupportVectorMachine;
-    private kernel:IKernel;
+    public machine:SupportVectorMachine;
+    public kernel:IKernel;
 
     private biasLowerIndex:number;
     private biasUpperIndex:number;
@@ -144,7 +144,14 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
         this.machine = machine;
 
-        this.kernel = machine.getKernel();
+        if('getKernel' in machine)
+        {
+            this.kernel = machine.getKernel();
+        }
+        else
+        {
+            this.kernel = new LinearKernel();
+        }
 
         this.inputs = inputs;
 
@@ -166,8 +173,8 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
     /**
      * The cost parameter controls the trade off between allowing training
      * errors and forcing rigid margins. It creates a soft margin that permits
-     * some misclassifications. Increasing the value of cost increases the cost of
-     * misclassifying points and forces the creation of a more accurate model
+     * some miss-classifications. Increasing the value of cost increases the cost of
+     * miss-classifying points and forces the creation of a more accurate model
      * that may not generalize well.
      *
      * @param value
@@ -260,7 +267,6 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
         this.biasUpperIndex = 0;
         this.biasLowerIndex = 0;
-
         this.biasUpper = this.outputs[0] + this.getEpsilon();
         this.biasLower = this.outputs[0] - this.getEpsilon();
 
@@ -285,7 +291,8 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                  */
                 for(var i = 0; i < N; i++)
                 {
-                    if((0 < this.alphaA[i] && this.alphaA[i] < this.cost) || (0 < this.alphaB[i] && this.alphaB[i] < this.cost))
+                    if((0 < this.alphaA[i] && this.alphaA[i] < this.cost) ||
+                       (0 < this.alphaB[i] && this.alphaB[i] < this.cost))
                     {
                         numChanged += this.examineExample(i);
 
@@ -308,26 +315,29 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
             }
         }
 
+        // Store Support Vectors in the SV Machine. Only vectors which have lagrange multipliers
+        // greater than zero will be stored as only those are actually required during evaluation.
         var list = new HashSet();
         for(var i = 0; i < N; i++)
         {
+            // Only store vectors with multipliers > 0
             if(this.alphaA[i] > 0 || this.alphaB[i] > 0)
             {
                 list.add(i);
             }
         }
 
-        var vectors = list.count();
+        var vectors:number[] = list.keys();
 
-        this.machine.setSupportVectors(new Array(vectors));
-        this.machine.setWeights(new Array(vectors));
+        this.machine.setSupportVectors(new Array(vectors.length));
+        this.machine.setWeights(new Array(vectors.length));
 
-        for(var i = 0; i < vectors; i++)
+        vectors.forEach((i)=>
         {
-            var j = list.at(i);
+            var j = list.get(i);
             this.machine.supportVectors[i] = this.inputs[j];
             this.machine.weights[i] = this.alphaA[j] - this.alphaB[j];
-        }
+        });
 
         this.machine.setThreshold((this.biasLower + this.biasUpper) / 2.0);
 
@@ -341,8 +351,8 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
      */
     public examineExample(i2:number):number
     {
-        var alpha2A = this.alphaA[i2],
-            alpha2B = this.alphaB[i2],
+        var alpha2A = this.alphaA[i2], // Lagrange multiplier a  for i2
+            alpha2B = this.alphaB[i2], // Lagrange multiplier a* for i2
             e2 = 0.0,
             epsilon = this.getEpsilon(),
             tolerance = this.getTolerance();
@@ -356,7 +366,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
         else
         {
             // Value is not cached and should be computed
-            this.errors[i2] = e2 = this.outputs[i2] = this.compute(this.inputs[i2]); //this.outputs[i2] =
+            this.errors[i2] = e2 = this.outputs[i2] - this.compute(this.inputs[i2]);
 
             // Update thresholds
             if(this.I1.contains(i2))
@@ -485,7 +495,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
         }
         else
         {
-            throw new Error('BOM! I missed');
+            //throw new Error('BOM! I missed');
         }
         //end region
 
@@ -828,15 +838,15 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
         //  #region Update error cache
         // Update error cache using new Lagrange multipliers
-        for(var i in this.I0.items)
+        this.I0.values().forEach((i)=>
         {
-            if(<number>i !== i1 && <number>i !== i2)
+            if(Number(i) !== Number(i1) && Number(i) !== Number(i2))
             {
                 // Update all in set i0 except i1 and i2 (because we have the kernel function cached for them)
                 this.errors[i] += ((this.alphaA[i1] - this.alphaB[i1]) - (alpha1a - alpha1b)) * this.kernel.run(this.inputs[i1], this.inputs[i])
                     + ((this.alphaA[i2] - this.alphaB[i2]) - (alpha2a - alpha2b)) * this.kernel.run(this.inputs[i2], this.inputs[i]);
             }
-        }
+        });
 
         // Update error cache using new Lagrange multipliers for i1 and i2
         this.errors[i1] += ((this.alphaA[i1] - this.alphaB[i1]) - (alpha1a - alpha1b)) * k11
@@ -973,7 +983,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
         this.biasLowerIndex = -1;
         this.biasUpperIndex = -1;
 
-        for(var i in this.I0.items)
+        this.I0.values().forEach((i)=>
         {
             if(0 < this.alphaB[i] && this.alphaB[i] < this.cost && this.errors[i] + epsilon > this.biasLower)
             {
@@ -995,7 +1005,7 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
                 this.biasUpper = this.errors[i] + epsilon;
                 this.biasUpperIndex = <number>i;
             }
-        }
+        });
 
         if(!this.I0.contains(i1))
         {

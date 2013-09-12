@@ -8,7 +8,7 @@ var KernelSupportVectorMachine = (function (_super) {
     __extends(KernelSupportVectorMachine, _super);
     function KernelSupportVectorMachine(kernel, inputs) {
         if (typeof kernel === "undefined") { kernel = null; }
-        if (typeof inputs === "undefined") { inputs = null; }
+        if (typeof inputs === "undefined") { inputs = 0; }
         _super.call(this, inputs);
 
         if (kernel === null) {
@@ -40,7 +40,7 @@ var KernelSupportVectorMachine = (function (_super) {
             }
         }
 
-        return output >= 0 ? 1 : -1;
+        return output;
     };
     return KernelSupportVectorMachine;
 })(SupportVectorMachine);
