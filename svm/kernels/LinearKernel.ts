@@ -17,7 +17,7 @@ class LinearKernel implements IKernel, IDistance
     {
         this.constant = constant;
     }
-
+    
     /**
      * Linear kernel function.
      *

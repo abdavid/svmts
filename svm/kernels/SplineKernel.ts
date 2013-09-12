@@ -5,29 +5,21 @@
 ///<reference path='../interfaces/IKernel.ts' />
 
 /**
- * Squared Sinc Kernel.
+ * Infinite Spline Kernel function.
  */
-class SquaredSincKernel implements IKernel {
-
-    public gamma:number;
-
-    constructor(gamma:number)
-    {
-        this.gamma = gamma;
-    }
+class SplineKernel implements IKernel {
 
     public run(x:number[], y:number[]):number
     {
-        var norm = 0.0, d;
+        var k = 1;
         for(var i = 0; i < x.length; i++)
         {
-            d = x[i] - y[i];
-            norm += d * d;
+            var min = Math.min(x[i], y[i]);
+            var xy = x[i] * y[i];
+
+            k *= 1.0 + xy + xy * min - ((x[i] + y[i]) / 2.0) * min * min + (min * min * min) / 3.0;
         }
 
-        var num = this.gamma * Math.sqrt(norm);
-        var den = this.gamma * this.gamma * norm;
-
-        return Math.sin(num) / den;
+       return k;
     }
 }

@@ -5,25 +5,28 @@
 ///<reference path='../interfaces/IKernel.ts' />
 
 /**
- * Tensor Product combination of Kernels.
+ * Symmetric Triangle Kernel.
  */
-class TensorKernel implements IKernel {
+class SymmetricTriangleKernel implements IKernel {
 
-    public kernels:IKernel[];
+    public gamma:number;
 
-    constructor(kernels:IKernel[])
+    constructor(gamma:number)
     {
-        this.kernels = kernels;
+        this.gamma = gamma;
     }
 
     public run(x:number[], y:number[]):number
     {
-        var product = 1.0;
-        for(var i = 0; i < this.kernels.length; i++)
+        var norm = 0.0, d;
+        for(var i = 0; i < x.length; i++)
         {
-            product *= this.kernels[i].run(x, y);
+            d = x[i] - y[i];
+            norm += d * d;
         }
 
-        return product;
+        var z = 1.0 - this.gamma * Math.sqrt(norm);
+
+        return (z > 0) ? z : 0;
     }
 }

@@ -4,51 +4,34 @@
 
 ///<reference path='../interfaces/IKernel.ts' />
 
-class WaveletKernel implements IKernel {
+class WaveKernel implements IKernel {
 
-    public dilation:number = 1.0;
-    public translation:number = 0.0;
-    public invariant:boolean = true;
-
-
-    constructor(invariant:boolean, dilation:number);
-
-    constructor(invariant:boolean, dilation:number, mother:Function);
+    public sigma:number;
 
     /**
      * @param invariant
      */
-    constructor(invariant:boolean = true)
+    constructor(sigma:number)
     {
-        this.invariant = invariant;
+        this.sigma = sigma;
     }
 
     public run(x:number[], y:number[]):number
     {
-        var prod = 1.0;
-
-        if(this.invariant)
+        var norm = 0.0;
+        for(var i = 0; i < x.length; i++)
         {
-            for(var i = 0; i < x.length; i++)
-            {
-                prod *=(this.mother((x[i] - this.translation) / this.dilation)) *
-                       (this.mother((y[i] - this.translation) / this.dilation));
-            }
+            var d = x[i] - y[i];
+            norm += d*d;
+        }
+
+        if(this.sigma == 0 || norm == 0)
+        {
+            return 0;
         }
         else
         {
-            for(var i = 0; i < x.length; i++)
-            {
-                prod *= this.mother((x[i] - y[i] / this.dilation));
-            }
+            return (this.sigma / norm) * Math.sin(norm / this.sigma);
         }
-
-        return prod;
     }
-
-    private mother(x:number):number
-    {
-        return Math.cos(1.75 * x) * Math.exp(-(x * x) / 2.0);
-    }
-
 }

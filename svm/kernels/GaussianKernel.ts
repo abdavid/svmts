@@ -44,6 +44,12 @@ class GaussianKernel implements IKernel, IDistance
         }
 
         var norm = 0.0, d;
+
+        if(typeof x == 'undefined')
+        {
+            var foo = true;
+        }
+
         for (var i = 0; i < x.length; i++)
         {
             d = x[i] - y[i];

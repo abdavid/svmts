@@ -5,10 +5,11 @@
 ///<reference path='../interfaces/IKernel.ts' />
 
 /**
- * The spherical kernel comes from a statistics perspective. It is an example
- * of an isotropic stationary kernel and is positive definite in R^3.
+ * The Cauchy kernel comes from the Cauchy distribution (Basak, 2008). It is a
+ * long-tailed kernel and can be used to give long-range influence and sensitivity
+ * over the high dimension space.
  */
-class SphericalKernel implements IKernel {
+class CauchyKernel implements IKernel {
 
     public sigma:number;
 
@@ -19,24 +20,21 @@ class SphericalKernel implements IKernel {
 
     public run(x:number[], y:number[]):number
     {
+        // Optimization in case x and y are
+        // exactly the same object reference.
+        if(x == y)
+        {
+            return 1.0;
+        }
+
         var norm = 0.0;
         for(var i = 0; i < x.length; i++)
         {
             var d = x[i] - y[i];
-            norm += d*d;
+            norm += d * d;
         }
 
-        norm = Math.sqrt(norm);
-
-        if(norm >= this.sigma)
-        {
-            return 0;
-        }
-        else
-        {
-            norm = norm / this.sigma;
-            return 1.0 - 1.5 * norm + 0.5 * norm * norm * norm;
-        }
+        return (1.0 / (1.0 + norm / this.sigma));
 
     }
 }

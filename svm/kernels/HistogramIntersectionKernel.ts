@@ -5,36 +5,34 @@
 ///<reference path='../interfaces/IKernel.ts' />
 
 /**
- * The Cauchy kernel comes from the Cauchy distribution (Basak, 2008). It is a
- * long-tailed kernel and can be used to give long-range influence and sensitivity
- * over the high dimension space.
+ * Generalized Histogram Intersection Kernel.
+ *
+ * The Generalized Histogram Intersection kernel is built based on the
+ * Histogram Intersection Kernel for image classification but applies
+ * in a much larger variety of contexts (Boughorbel, 2005).
  */
-class CauchyKernel implements IKernel {
+class HistogramIntersectionKernel implements IKernel {
 
-    public sigma:number;
+    public alpha:number;
+    public beta:number;
 
-    constructor(sigma:number)
+    constructor(alpha:number = 1, beta:number = 1)
     {
-        this.sigma = sigma;
+        this.alpha = alpha;
+        this.beta = beta;
     }
 
     public run(x:number[], y:number[]):number
     {
-        // Optimization in case x and y are
-        // exactly the same object reference.
-        if(x == y)
-        {
-            return 1.0;
-        }
-
-        var norm = 0.0;
+        var sum = 0.0;
         for(var i = 0; i < x.length; i++)
         {
-            var d = x[i] - y[i];
-            norm += d * d;
+            sum += Math.min(
+                Math.pow(Math.abs(x[i]), this.alpha),
+                Math.pow(Math.abs(y[i]), this.beta)
+            );
         }
 
-        return (1.0 / (1.0 + norm / this.sigma));
-
+        return sum;
     }
 }

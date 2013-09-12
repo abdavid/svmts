@@ -4,28 +4,26 @@
 
 ///<reference path='../interfaces/IKernel.ts' />
 
-class TStudentKernel implements IKernel {
+/**
+ * Tensor Product combination of Kernels.
+ */
+class TensorKernel implements IKernel {
 
-    public degree:number;
+    public kernels:IKernel[];
 
-    /**
-     * @param invariant
-     */
-    constructor(degree:number)
+    constructor(kernels:IKernel[])
     {
-        this.degree = degree;
+        this.kernels = kernels;
     }
 
     public run(x:number[], y:number[]):number
     {
-        var norm = 0.0;
-        for(var i = 0; i < x.length; i++)
+        var product = 1.0;
+        for(var i = 0; i < this.kernels.length; i++)
         {
-            var d = x[i] - y[i];
-            norm += d*d;
+            product *= this.kernels[i].run(x, y);
         }
-        norm = Math.sqrt(norm);
 
-        return 1.0 / (1.0 + Math.pow(norm, this.degree));
+        return product;
     }
 }

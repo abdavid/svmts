@@ -4,16 +4,16 @@
 
 ///<reference path='../interfaces/IKernel.ts' />
 
-class WaveKernel implements IKernel {
+class TStudentKernel implements IKernel {
 
-    public sigma:number;
+    public degree:number;
 
     /**
      * @param invariant
      */
-    constructor(sigma:number)
+    constructor(degree:number)
     {
-        this.sigma = sigma;
+        this.degree = degree;
     }
 
     public run(x:number[], y:number[]):number
@@ -24,14 +24,8 @@ class WaveKernel implements IKernel {
             var d = x[i] - y[i];
             norm += d*d;
         }
+        norm = Math.sqrt(norm);
 
-        if(this.sigma == 0 || norm == 0)
-        {
-            return 0;
-        }
-        else
-        {
-            return (this.sigma / norm) * Math.sin(norm / this.sigma);
-        }
+        return 1.0 / (1.0 + Math.pow(norm, this.degree));
     }
 }

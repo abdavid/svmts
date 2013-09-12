@@ -3,50 +3,52 @@
  */
 
 ///<reference path='../interfaces/IKernel.ts' />
-///<reference path='../interfaces/IDistance.ts' />
+
+class WaveletKernel implements IKernel {
+
+    public dilation:number = 1.0;
+    public translation:number = 0.0;
+    public invariant:boolean = true;
 
 
-class LinearKernel implements IKernel, IDistance
-{
-    public constant:number;
+    constructor(invariant:boolean, dilation:number);
+
+    constructor(invariant:boolean, dilation:number, mother:Function);
 
     /**
-     * @param constant
+     * @param invariant
      */
-    constructor(constant:number = 1)
+    constructor(invariant:boolean = true)
     {
-        this.constant = constant;
+        this.invariant = invariant;
     }
-    
-    /**
-     * Linear kernel function.
-     *
-     * @param x Vector X in input space
-     * @param y Vector Y in input space
-     * @returns {number} Dot product in feature (kernel) space
-     */
+
     public run(x:number[], y:number[]):number
     {
-        var sum = this.constant;
+        var prod = 1.0;
 
-        for (var i = 0; i < x.length; i++)
+        if(this.invariant)
         {
-            sum += x[i] * y[i];
+            for(var i = 0; i < x.length; i++)
+            {
+                prod *=(this.mother((x[i] - this.translation) / this.dilation)) *
+                       (this.mother((y[i] - this.translation) / this.dilation));
+            }
+        }
+        else
+        {
+            for(var i = 0; i < x.length; i++)
+            {
+                prod *= this.mother((x[i] - y[i] / this.dilation));
+            }
         }
 
-        return sum;
+        return prod;
     }
 
-    /**
-     * Computes the distance in input space
-     * between two points given in feature space.
-     *
-     * @param x Vector X in input space
-     * @param y Vector Y in input space
-     * @returns {number} Distance between x and y in input space.
-     */
-    public distance(x:number[], y:number[]):number
+    private mother(x:number):number
     {
-        return this.run(x, x) + this.run(y ,y) - 2.0 * this.run(x ,y);
+        return Math.cos(1.75 * x) * Math.exp(-(x * x) / 2.0);
     }
+
 }

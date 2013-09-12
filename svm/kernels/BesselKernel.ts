@@ -3,23 +3,28 @@
  */
 
 ///<reference path='../interfaces/IKernel.ts' />
+///<reference path='./BaseBessel.ts' />
 
 /**
- * The spherical kernel comes from a statistics perspective. It is an example
- * of an isotropic stationary kernel and is positive definite in R^3.
+ * The Bessel kernel is well known in the theory of function spaces of fractional smoothness.
  */
-class SphericalKernel implements IKernel {
+class BesselKernel extends BaseBessel implements IKernel {
 
+    public order:number;
     public sigma:number;
 
-    constructor(sigma:number)
+    constructor(order:number,sigma:number)
     {
+        super();
+
+        this.order = order;
         this.sigma = sigma;
     }
 
     public run(x:number[], y:number[]):number
     {
         var norm = 0.0;
+
         for(var i = 0; i < x.length; i++)
         {
             var d = x[i] - y[i];
@@ -28,15 +33,7 @@ class SphericalKernel implements IKernel {
 
         norm = Math.sqrt(norm);
 
-        if(norm >= this.sigma)
-        {
-            return 0;
-        }
-        else
-        {
-            norm = norm / this.sigma;
-            return 1.0 - 1.5 * norm + 0.5 * norm * norm * norm;
-        }
+        return this.J(this.order, this.sigma * norm) / Math.pow(norm, -norm * this.order);
 
     }
 }
