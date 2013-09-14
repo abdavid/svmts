@@ -81,7 +81,6 @@ var SequentialMinimalOptimization = (function () {
 
     SequentialMinimalOptimization.prototype.run = function (computeError) {
         if (typeof computeError === "undefined") { computeError = false; }
-        var _this = this;
         var N = this.inputs.length;
 
         this.alphaA = Array.apply(null, new Array(N)).map(Number.prototype.valueOf, 0);
@@ -130,23 +129,21 @@ var SequentialMinimalOptimization = (function () {
             }
         }
 
-        var list = new HashSet();
+        var list = [];
         for (var i = 0; i < N; i++) {
             if (this.alphaA[i] > 0 || this.alphaB[i] > 0) {
-                list.add(i);
+                list.push(i);
             }
         }
 
-        var vectors = list.keys();
+        this.machine.setSupportVectors(new Array(list.length));
+        this.machine.setWeights(new Array(list.length));
 
-        this.machine.setSupportVectors(new Array(vectors.length));
-        this.machine.setWeights(new Array(vectors.length));
-
-        vectors.forEach(function (i) {
-            var j = list.get(i);
-            _this.machine.supportVectors[i] = _this.inputs[j];
-            _this.machine.weights[i] = _this.alphaA[j] - _this.alphaB[j];
-        });
+        for (var i = 0; i < list.length; i++) {
+            var j = list[i];
+            this.machine.supportVectors[i] = this.inputs[j];
+            this.machine.weights[i] = (this.alphaA[j] - this.alphaB[j]);
+        }
 
         this.machine.setThreshold((this.biasLower + this.biasUpper) / 2.0);
 
@@ -263,8 +260,6 @@ var SequentialMinimalOptimization = (function () {
     };
 
     SequentialMinimalOptimization.prototype.compute = function (point) {
-        console.trace();
-
         var sum = 0;
         for (var j = 0; j < this.alphaA.length; j++) {
             sum += (this.alphaA[j] - this.alphaB[j]) * this.kernel.run(point, this.inputs[j]);

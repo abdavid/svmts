@@ -317,27 +317,25 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
         // Store Support Vectors in the SV Machine. Only vectors which have lagrange multipliers
         // greater than zero will be stored as only those are actually required during evaluation.
-        var list = new HashSet();
+        var list:number[] = [];
         for(var i = 0; i < N; i++)
         {
             // Only store vectors with multipliers > 0
             if(this.alphaA[i] > 0 || this.alphaB[i] > 0)
             {
-                list.add(i);
+                list.push(i);
             }
         }
 
-        var vectors:number[] = list.keys();
+        this.machine.setSupportVectors(new Array(list.length));
+        this.machine.setWeights(new Array(list.length));
 
-        this.machine.setSupportVectors(new Array(vectors.length));
-        this.machine.setWeights(new Array(vectors.length));
-
-        vectors.forEach((i)=>
+        for(var i = 0; i < list.length; i++)
         {
-            var j = list.get(i);
+            var j = list[i];
             this.machine.supportVectors[i] = this.inputs[j];
-            this.machine.weights[i] = this.alphaA[j] - this.alphaB[j];
-        });
+            this.machine.weights[i] = (this.alphaA[j] - this.alphaB[j]);
+        }
 
         this.machine.setThreshold((this.biasLower + this.biasUpper) / 2.0);
 
@@ -542,8 +540,6 @@ class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
      */
     private compute(point:number[]):number
     {
-        console.trace();
-        //console.
         var sum = 0;
         for(var j = 0; j < this.alphaA.length; j++)
         {
