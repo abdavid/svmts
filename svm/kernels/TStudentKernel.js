@@ -1,5 +1,6 @@
 var TStudentKernel = (function () {
     function TStudentKernel(degree) {
+        if (typeof degree === "undefined") { degree = 1; }
         this.degree = degree;
     }
     TStudentKernel.prototype.run = function (x, y) {

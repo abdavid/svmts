@@ -13,7 +13,7 @@ class BesselKernel extends BaseBessel implements IKernel {
     public order:number;
     public sigma:number;
 
-    constructor(order:number,sigma:number)
+    constructor(order:number = 1,sigma:number = 1)
     {
         super();
 

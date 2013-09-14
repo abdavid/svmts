@@ -1,6 +1,3 @@
-/**
- * Created by davidatborresen on 9/3/13.
- */
 
 ///<reference path='../interfaces/IKernel.ts' />
 
@@ -11,7 +8,7 @@ class SquaredSincKernel implements IKernel {
 
     public gamma:number;
 
-    constructor(gamma:number)
+    constructor(gamma:number = 1.0)
     {
         this.gamma = gamma;
     }

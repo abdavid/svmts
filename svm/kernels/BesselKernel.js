@@ -7,6 +7,8 @@ var __extends = this.__extends || function (d, b) {
 var BesselKernel = (function (_super) {
     __extends(BesselKernel, _super);
     function BesselKernel(order, sigma) {
+        if (typeof order === "undefined") { order = 1; }
+        if (typeof sigma === "undefined") { sigma = 1; }
         _super.call(this);
 
         this.order = order;

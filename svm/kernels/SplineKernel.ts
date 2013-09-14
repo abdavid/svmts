@@ -1,13 +1,11 @@
-/**
- * Created by davidatborresen on 9/3/13.
- */
-
 ///<reference path='../interfaces/IKernel.ts' />
 
 /**
  * Infinite Spline Kernel function.
  */
-class SplineKernel implements IKernel {
+class SplineKernel implements IKernel
+{
+
 
     public run(x:number[], y:number[]):number
     {

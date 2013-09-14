@@ -11,7 +11,7 @@ class TStudentKernel implements IKernel {
     /**
      * @param invariant
      */
-    constructor(degree:number)
+    constructor(degree:number = 1)
     {
         this.degree = degree;
     }

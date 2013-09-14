@@ -11,6 +11,7 @@
  * Histogram Intersection Kernel for image classification but applies
  * in a much larger variety of contexts (Boughorbel, 2005).
  */
+
 class HistogramIntersectionKernel implements IKernel {
 
     public alpha:number;

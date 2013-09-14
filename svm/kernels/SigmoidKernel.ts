@@ -14,6 +14,7 @@
  *
  * @TODO add estimation function for initialization of kernel correctly.
  */
+
 class SigmoidKernel implements IKernel
 {
     public alpha:number;

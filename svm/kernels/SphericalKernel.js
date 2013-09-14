@@ -1,5 +1,6 @@
 var SphericalKernel = (function () {
     function SphericalKernel(sigma) {
+        if (typeof sigma === "undefined") { sigma = 1.0; }
         this.sigma = sigma;
     }
     SphericalKernel.prototype.run = function (x, y) {

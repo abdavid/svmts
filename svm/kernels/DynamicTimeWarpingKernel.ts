@@ -1,0 +1,178 @@
+/**
+ * Created by davidatborresen on 9/3/13.
+ */
+
+///<reference path='../interfaces/IKernel.ts' />
+
+/**
+ * The Dynamic Time Warping Sequence Kernel is a sequence kernel, accepting
+ * vector sequences of variable size as input. Despite the sequences being
+ * variable in size, the vectors contained in such sequences should have its
+ * size fixed and should be informed at the construction of this kernel.
+ *
+ * The conversion of the DTW global distance to a dot product uses a combination
+ * of a technique known as spherical normalization and the polynomial kernel. The
+ * degree of the polynomial kernel and the alpha for the spherical normalization
+ * should be given at the construction of the kernel. For more information,
+ * please see the referenced papers shown below.
+ */
+class DynamicTimeWarpingKernel implements IKernel {
+
+    public alpha:number = 1.0; // spherical projection distance
+    public length:number = 1; // length of the feature vectors
+    public degree:number = 1; // polynomial kernel degree
+
+    private thread:Worker;
+    private locals:Locals;
+
+    constructor(length:number, alpha:number = 1.0, degree:number = 1)
+    {
+        this.alpha = alpha;
+        this.length = length;
+        this.degree = degree;
+        this.locals = new Locals();
+    }
+
+    public run(x:number[], y:number[]):number
+    {
+        if (x == y) return 1.0;
+
+        var sx = this.snorm(x);
+        var sy = this.snorm(y);
+        var distance = this.D(this.locals, sx, sy);
+        var cos = Math.cos(distance);
+
+        return (this.degree == 1) ? cos : Math.pow(cos, this.degree);
+
+    }
+
+    /*/private createWebWorker():Worker
+    {
+        var blob = new Blob(['return new Locals();']);
+
+        this.thread = new Worker(window.URL.createObjectURL(blob));
+        this.thread.onmessage = (e)=>
+        {
+            console.log(e);
+        };
+
+        this.thread.postMessage();
+    }*/
+
+    private D(locals:Locals, sequence1:number[], sequence2:number[])
+    {
+        // Get the number of vectors in each sequence. The vectors
+        // have been projected, so the length is augmented by one.
+        var vectorSize:number = length + 1;
+        var vectorCount1:number = sequence1.length / vectorSize;
+        var vectorCount2:number = sequence2.length / vectorSize;
+
+        // Application of the Dynamic Time Warping
+        // algorithm by using dynamic programming.
+        if(locals.m < vectorCount2 || locals.n < vectorCount1)
+        {
+            locals.create(vectorCount1, vectorCount2);
+        }
+
+        var DTW = locals.DTW;
+        var vector1 = sequence1;
+        for(var i = 0; i < vectorCount1; i++, vector1 += vectorSize)
+        {
+            var vector2 = sequence2;
+
+            for(var j = 0; j < vectorCount2; j++, vector2 += vectorSize)
+            {
+                var prod = 0; //inner product
+                for(var k = 0; k < vectorSize; k++)
+                {
+                    prod += vector1[k] * vector2[k];
+                }
+
+                var cost = Math.acos(prod > 1 ? 1 : (prod < -1 ? -1 : prod));
+                var insertion = DTW[i][j+1];
+                var deletion = DTW[i+i][j];
+                var match = DTW[i][j];
+                var min = (insertion < deletion
+                ? (insertion < match ? insertion : match)
+                : (deletion < match ? deletion : match));
+
+                DTW[i + 1][j + 1] = cost + min;
+            }
+        }
+    }
+
+    /**
+     * Projects vectors from a sequence of vectors into
+     * a hypersphere, augmenting their size in one unit
+     * and normalizing them to be unit vectors.
+     *
+     * @param input
+     * @returns {Array}
+     */
+    private snorm(input:number[])
+    {
+        // Get the number of vectors in the sequence
+        var n = input.length / this.length;
+
+        // Create the augmented sequence projection
+        var projection = new Array(input.length + n);
+
+        var source = input;
+        var result = projection;
+        var src = source;
+        var dst = result;
+
+        for(var i = 0; i < n; i++)
+        {
+            var norm = this.alpha * this.alpha;
+
+            for(var j = 0; j < this.length; j++)
+            {
+                norm += src[j] * src[j];
+            }
+
+            norm = Math.sqrt(norm);
+
+            for(var j = 0; j < this.length; j++, src++, dst++)
+            {
+                dst = src / norm;
+            }
+
+            dst = this.alpha / norm;
+        }
+
+        return projection;
+    }
+}
+
+class Locals
+{
+    public DTW:number[][];
+    public m:number = 0;
+    public n:number = 0;
+
+    constructor()
+    {}
+
+    public create(n:number, m:number):void
+    {
+        this.n = n;
+        this.m = m;
+        this.DTW = new Array(n + 1);
+
+        for(var i = 1; i < n; i++)
+        {
+            this.DTW[i] = new Array(m + 1);
+        }
+
+        for(var i = 1; i <= n; i++)
+        {
+            this.DTW[i][0] = Number.POSITIVE_INFINITY;
+        }
+
+        for(var i = 1; i <= m; i++)
+        {
+            this.DTW[0][m] = Number.POSITIVE_INFINITY;
+        }
+    }
+}

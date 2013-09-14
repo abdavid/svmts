@@ -1,5 +1,6 @@
 var SymmetricTriangleKernel = (function () {
     function SymmetricTriangleKernel(gamma) {
+        if (typeof gamma === "undefined") { gamma = 1.0; }
         this.gamma = gamma;
     }
     SymmetricTriangleKernel.prototype.run = function (x, y) {

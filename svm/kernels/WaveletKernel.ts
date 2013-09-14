@@ -1,26 +1,26 @@
-/**
- * Created by davidatborresen on 9/3/13.
- */
+
 
 ///<reference path='../interfaces/IKernel.ts' />
 
 class WaveletKernel implements IKernel {
 
-    public dilation:number = 1.0;
-    public translation:number = 0.0;
+    public dilation:number;
+    public translation:number;
     public invariant:boolean = true;
+    public _mother:Function;
 
-
-    constructor(invariant:boolean, dilation:number);
-
-    constructor(invariant:boolean, dilation:number, mother:Function);
 
     /**
+     * @param dilation
+     * @param mother
      * @param invariant
      */
-    constructor(invariant:boolean = true)
+    constructor(dilation:number = 1.0, translation:number = 1.0, invariant:boolean = true, mother:Function = null)
     {
         this.invariant = invariant;
+        this.dilation = dilation;
+        this.translation = translation
+        this._mother = mother || this.mother;
     }
 
     public run(x:number[], y:number[]):number
@@ -31,15 +31,15 @@ class WaveletKernel implements IKernel {
         {
             for(var i = 0; i < x.length; i++)
             {
-                prod *=(this.mother((x[i] - this.translation) / this.dilation)) *
-                       (this.mother((y[i] - this.translation) / this.dilation));
+                prod *=(this._mother((x[i] - this.translation) / this.dilation)) *
+                       (this._mother((y[i] - this.translation) / this.dilation));
             }
         }
         else
         {
             for(var i = 0; i < x.length; i++)
             {
-                prod *= this.mother((x[i] - y[i] / this.dilation));
+                prod *= this._mother((x[i] - y[i] / this.dilation));
             }
         }
 

@@ -13,7 +13,7 @@ class CauchyKernel implements IKernel {
 
     public sigma:number;
 
-    constructor(sigma:number)
+    constructor(sigma:number = 1)
     {
         this.sigma = sigma;
     }

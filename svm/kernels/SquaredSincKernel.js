@@ -1,5 +1,6 @@
 var SquaredSincKernel = (function () {
     function SquaredSincKernel(gamma) {
+        if (typeof gamma === "undefined") { gamma = 1.0; }
         this.gamma = gamma;
     }
     SquaredSincKernel.prototype.run = function (x, y) {

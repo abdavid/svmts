@@ -1,6 +1,3 @@
-/**
- * Created by davidatborresen on 9/3/13.
- */
 
 ///<reference path='../interfaces/IKernel.ts' />
 

@@ -1,5 +1,6 @@
 var PolynominalKernel = (function () {
     function PolynominalKernel(degree, constant) {
+        if (typeof degree === "undefined") { degree = 1.0; }
         if (typeof constant === "undefined") { constant = 1.0; }
         this.degree = degree;
         this.constant = constant;

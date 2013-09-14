@@ -11,7 +11,7 @@ class WaveKernel implements IKernel {
     /**
      * @param invariant
      */
-    constructor(sigma:number)
+    constructor(sigma:number = 1)
     {
         this.sigma = sigma;
     }

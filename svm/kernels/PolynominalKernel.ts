@@ -1,6 +1,3 @@
-/**
- * Created by davidatborresen on 9/3/13.
- */
 
 ///<reference path='../interfaces/IKernel.ts' />
 ///<reference path='../interfaces/IDistance.ts' />
@@ -14,7 +11,7 @@ class PolynominalKernel implements IKernel, IDistance
      * @param degree
      * @param constant
      */
-    constructor(degree:number, constant:number = 1.0)
+    constructor(degree:number = 1.0, constant:number = 1.0)
     {
         this.degree = degree;
         this.constant = constant;

@@ -1,20 +1,28 @@
+/**
+ * Created by davidatborresen on 9/3/13.
+ */
 
 ///<reference path='../interfaces/IKernel.ts' />
 
 /**
- * Symmetric Triangle Kernel.
+ * Laplacian Kernel.
  */
-class SymmetricTriangleKernel implements IKernel {
+class LaplacianKernel implements IKernel {
 
+    public sigma:number;
     public gamma:number;
 
-    constructor(gamma:number = 1.0)
+    constructor(gamma:number = 1, sigma:number = 1)
     {
+        this.sigma = sigma;
         this.gamma = gamma;
     }
 
+
     public run(x:number[], y:number[]):number
     {
+        if(x == y) return 1.0;
+
         var norm = 0.0, d;
         for(var i = 0; i < x.length; i++)
         {
@@ -22,8 +30,8 @@ class SymmetricTriangleKernel implements IKernel {
             norm += d * d;
         }
 
-        var z = 1.0 - this.gamma * Math.sqrt(norm);
+        norm = Math.sqrt(norm);
 
-        return (z > 0) ? z : 0;
+       return Math.exp(-this.gamma * norm);
     }
 }

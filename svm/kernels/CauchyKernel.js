@@ -1,5 +1,6 @@
 var CauchyKernel = (function () {
     function CauchyKernel(sigma) {
+        if (typeof sigma === "undefined") { sigma = 1; }
         this.sigma = sigma;
     }
     CauchyKernel.prototype.run = function (x, y) {

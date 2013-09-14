@@ -1,6 +1,3 @@
-/**
- * Created by davidatborresen on 9/3/13.
- */
 
 ///<reference path='../interfaces/IKernel.ts' />
 
@@ -12,7 +9,7 @@ class SphericalKernel implements IKernel {
 
     public sigma:number;
 
-    constructor(sigma:number)
+    constructor(sigma:number = 1.0)
     {
         this.sigma = sigma;
     }

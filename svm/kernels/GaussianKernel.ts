@@ -1,7 +1,3 @@
-/**
- * Created by davidatborresen on 9/3/13.
- */
-
 ///<reference path='../interfaces/IKernel.ts' />
 ///<reference path='../interfaces/IDistance.ts' />
 
@@ -14,6 +10,7 @@
  * Gaussian Kernel for One Class Learning.
  * Available on: http://www.cs.rpi.edu/~szymansk/papers/icann07.pdf
  */
+
 class GaussianKernel implements IKernel, IDistance
 {
     private _sigma:number;

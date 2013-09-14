@@ -1,5 +1,6 @@
 var WaveKernel = (function () {
     function WaveKernel(sigma) {
+        if (typeof sigma === "undefined") { sigma = 1; }
         this.sigma = sigma;
     }
     WaveKernel.prototype.run = function (x, y) {
