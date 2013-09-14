@@ -11,8 +11,20 @@
 
 <script src="svm/kernels/LinearKernel.js"></script>
 <script src="svm/kernels/GaussianKernel.js"></script>
+<script src="svm/kernels/LaplacianKernel.js"></script>
+<script src="svm/kernels/TensorKernel.js"></script>
+<script src="svm/kernels/TStudentKernel.js"></script>
+<script src="svm/kernels/SquaredSincKernel.js"></script>
+<script src="svm/kernels/SigmoidKernel.js"></script>
+<script src="svm/kernels/PolynominalKernel.js"></script>
 <script src="svm/kernels/HistogramIntersectionKernel.js"></script>
-
+<script src="svm/kernels/SplineKernel.js"></script>
+<script src="svm/kernels/SphericalKernel.js"></script>
+<script src="svm/kernels/CauchyKernel.js"></script>
+<script src="svm/kernels/BaseBessel.js"></script>
+<script src="svm/kernels/BesselKernel.js"></script>
+<script src="svm/kernels/WaveletKernel.js"></script>
+<script src="svm/kernels/WaveKernel.js"></script>
 
 <script src="svm/SupportVectorMachine.js"></script>
 <script src="svm/KernelSupportVectorMachine.js"></script>
@@ -25,15 +37,14 @@
 </head>
 
 <body>
-
-<h1>Support Vector Machine in Javascript</h1>
-
-
-<canvas id="SGECanvas" width="500" height="500">Browser not supported for Canvas. Get a real browser.</canvas>
+<canvas id="SGECanvas" >Browser not supported for Canvas. Get a real browser.</canvas>
 <script type="text/javascript">
-    var dirty;
     function init()
     {
+        var canvas = document.getElementById('SGECanvas');
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
         console.time('Init');
         var labels = [];
         var inputs = [];
@@ -60,10 +71,25 @@
         labels[8] = -1;
         labels[9] = -1;
 
-        machine = new KernelSupportVectorMachine(new HistogramIntersectionKernel(2,2), inputs[0].length);
+        var kernels = [
+
+            //new HistogramIntersectionKernel(),
+            //new CauchyKernel(),
+            //new LaplacianKernel(),
+            //new SquaredSincKernel(),
+            //new BesselKernel(),
+            //new SplineKernel(),
+            //new GaussianKernel(),
+            //new WaveletKernel(),
+            new LinearKernel(),
+            //new SphericalKernel(),
+            new WaveKernel(),
+
+        ];
+        machine = new KernelSupportVectorMachine(new TensorKernel(kernels), inputs[0].length);
         smo = new SequentialMinimalOptimization(machine, inputs, labels);
 
-        //smo.setComplexity(1.0);
+        smo.setComplexity(1.0);
 
         console.time('SMO::RUN');
         var error = smo.run(true);
@@ -79,11 +105,11 @@
 
         var graph = new CanvasRenderer({
             smo:smo,
-            canvas: document.getElementById('SGECanvas'),
-            height: 500,
-            width: 500,
-            //ss: 30,
-            density:1.5
+            canvas: canvas,
+            height: height,
+            width: width,
+            density:1
+            //ss: 30
         });
 
         console.time('Graph::Render');

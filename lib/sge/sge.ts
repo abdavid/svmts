@@ -59,6 +59,12 @@ class SGE {
         this.width = options.width;
         this.height = options.height;
 
+        if(this.ctx)
+        {
+            this.ctx.canvas.width = this.width;
+            this.ctx.canvas.height = this.height;
+        }
+
         this.keyUp = options.keyUp || noop;
         this.keyDown = options.keyDown || noop;
         this.mouseClick = options.mouseClick || noop;
