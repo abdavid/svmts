@@ -1,72 +1,79 @@
-var GaussianKernel = (function () {
-    function GaussianKernel(sigma) {
-        if (typeof sigma === "undefined") { sigma = 1; }
-        this.sigma(sigma);
-    }
-    GaussianKernel.prototype.run = function (x, y) {
-        if (x === y) {
-            return 1.0;
-        }
+var SVM;
+(function (SVM) {
+    (function (Kernels) {
+        var GaussianKernel = (function () {
+            function GaussianKernel(sigma) {
+                if (typeof sigma === "undefined") { sigma = 1; }
+                this.sigma(sigma);
+            }
+            GaussianKernel.prototype.run = function (x, y) {
+                if (x === y) {
+                    return 1.0;
+                }
 
-        var norm = 0.0, d;
+                var norm = 0.0, d;
 
-        if (typeof x == 'undefined') {
-            var foo = true;
-        }
+                if (typeof x == 'undefined') {
+                    var foo = true;
+                }
 
-        for (var i = 0; i < x.length; i++) {
-            d = x[i] - y[i];
-            norm += d * d;
-        }
+                for (var i = 0; i < x.length; i++) {
+                    d = x[i] - y[i];
+                    norm += d * d;
+                }
 
-        return Math.exp(-this.gamma() * norm);
-    };
+                return Math.exp(-this.gamma() * norm);
+            };
 
-    GaussianKernel.prototype.distance = function (x, y) {
-        if (typeof x === 'number') {
-            return (1.0 / -this.gamma()) * Math.log(1.0 - 0.5 * x);
-        } else if (x === y) {
-            return 0.0;
-        }
+            GaussianKernel.prototype.distance = function (x, y) {
+                if (typeof x === 'number') {
+                    return (1.0 / -this.gamma()) * Math.log(1.0 - 0.5 * x);
+                } else if (x === y) {
+                    return 0.0;
+                }
 
-        var norm = 0.0, d;
-        for (var i = 0; i < x.length; i++) {
-            d = x[i] - y[i];
-            norm += d * d;
-        }
+                var norm = 0.0, d;
+                for (var i = 0; i < x.length; i++) {
+                    d = x[i] - y[i];
+                    norm += d * d;
+                }
 
-        return (1.0 / -this.gamma()) * Math.log(1.0 - 0.5 * norm);
-    };
+                return (1.0 / -this.gamma()) * Math.log(1.0 - 0.5 * norm);
+            };
 
-    GaussianKernel.prototype.sigma = function (sigma) {
-        if (typeof sigma === "undefined") { sigma = null; }
-        if (!sigma) {
-            return this._sigma;
-        }
+            GaussianKernel.prototype.sigma = function (sigma) {
+                if (typeof sigma === "undefined") { sigma = null; }
+                if (!sigma) {
+                    return this._sigma;
+                }
 
-        this._sigma = Math.sqrt(sigma);
-        this._gamma = 1.0 / (2.0 * sigma * sigma);
-    };
+                this._sigma = Math.sqrt(sigma);
+                this._gamma = 1.0 / (2.0 * sigma * sigma);
+            };
 
-    GaussianKernel.prototype.sigmaSquared = function (sigma) {
-        if (typeof sigma === "undefined") { sigma = null; }
-        if (!sigma) {
-            return this._sigma * this._sigma;
-        }
+            GaussianKernel.prototype.sigmaSquared = function (sigma) {
+                if (typeof sigma === "undefined") { sigma = null; }
+                if (!sigma) {
+                    return this._sigma * this._sigma;
+                }
 
-        this._sigma = Math.sqrt(sigma);
-        this._gamma = 1.0 / (2.0 * sigma);
-    };
+                this._sigma = Math.sqrt(sigma);
+                this._gamma = 1.0 / (2.0 * sigma);
+            };
 
-    GaussianKernel.prototype.gamma = function (gamma) {
-        if (typeof gamma === "undefined") { gamma = null; }
-        if (!gamma) {
-            return this._gamma;
-        }
+            GaussianKernel.prototype.gamma = function (gamma) {
+                if (typeof gamma === "undefined") { gamma = null; }
+                if (!gamma) {
+                    return this._gamma;
+                }
 
-        this._gamma = gamma;
-        this._sigma = Math.sqrt(1.0 / (gamma * 2.0));
-    };
-    return GaussianKernel;
-})();
+                this._gamma = gamma;
+                this._sigma = Math.sqrt(1.0 / (gamma * 2.0));
+            };
+            return GaussianKernel;
+        })();
+        Kernels.GaussianKernel = GaussianKernel;
+    })(SVM.Kernels || (SVM.Kernels = {}));
+    var Kernels = SVM.Kernels;
+})(SVM || (SVM = {}));
 //# sourceMappingURL=GaussianKernel.js.map

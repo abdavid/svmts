@@ -1,29 +1,39 @@
+///<reference path='../interfaces/Interfaces.ts' />
 
-///<reference path='../interfaces/IKernel.ts' />
+module SVM.Kernels {
+    /**
+     * Symmetric Triangle Kernel.
+     */
+    export class SymmetricTriangleKernel implements IKernel {
 
-/**
- * Symmetric Triangle Kernel.
- */
-class SymmetricTriangleKernel implements IKernel {
+        public gamma:number;
 
-    public gamma:number;
-
-    constructor(gamma:number = 1.0)
-    {
-        this.gamma = gamma;
-    }
-
-    public run(x:number[], y:number[]):number
-    {
-        var norm = 0.0, d;
-        for(var i = 0; i < x.length; i++)
+        /**
+         * @param gamma
+         */
+        constructor(gamma:number = 1.0)
         {
-            d = x[i] - y[i];
-            norm += d * d;
+            this.gamma = gamma;
         }
 
-        var z = 1.0 - this.gamma * Math.sqrt(norm);
+        /**
+         * @param x
+         * @param y
+         * @returns {number}
+         */
+        public run(x:number[], y:number[]):number
+        {
+            var norm = 0.0, d;
+            for(var i = 0; i < x.length; i++)
+            {
+                d = x[i] - y[i];
+                norm += d * d;
+            }
 
-        return (z > 0) ? z : 0;
+            var z = 1.0 - this.gamma * Math.sqrt(norm);
+
+            return (z > 0) ? z : 0;
+        }
+
     }
 }

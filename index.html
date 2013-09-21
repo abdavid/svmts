@@ -1,43 +1,68 @@
 <html>
 <head>
-<title>Support Vector Machine in Javascript</title>
+    <title>Support Vector Machine in Javascript</title>
 
-<script src="lib/underscore/underscore.js"></script>
-<script src="lib/sge/sge.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="lib/underscore/underscore.js"></script>
+    <script src="lib/d3/d3.min.js"></script>
+    <script src="lib/WorkerConsole/WorkerConsole.js"></script>
+    <script src="lib/parallel/Parallel.js"></script>
+    <script src="lib/shims/requestAniFrame.js"></script>
 
-<script src="svm/collections/Bucket.js"></script>
-<script src="svm/collections/HashTable.js"></script>
-<script src="svm/collections/HashSet.js"></script>
+    <script src="svm/collections/HashSet.js"></script>
 
-<script src="svm/kernels/LinearKernel.js"></script>
-<script src="svm/kernels/GaussianKernel.js"></script>
-<script src="svm/kernels/LaplacianKernel.js"></script>
-<script src="svm/kernels/TensorKernel.js"></script>
-<script src="svm/kernels/TStudentKernel.js"></script>
-<script src="svm/kernels/SquaredSincKernel.js"></script>
-<script src="svm/kernels/SigmoidKernel.js"></script>
-<script src="svm/kernels/PolynominalKernel.js"></script>
-<script src="svm/kernels/HistogramIntersectionKernel.js"></script>
-<script src="svm/kernels/SplineKernel.js"></script>
-<script src="svm/kernels/SphericalKernel.js"></script>
-<script src="svm/kernels/CauchyKernel.js"></script>
-<script src="svm/kernels/BaseBessel.js"></script>
-<script src="svm/kernels/BesselKernel.js"></script>
-<script src="svm/kernels/WaveletKernel.js"></script>
-<script src="svm/kernels/WaveKernel.js"></script>
+    <script src="svm/SupportVectorMachine.js"></script>
+    <script src="svm/kernels/LinearKernel.js"></script>
+    <script src="svm/kernels/GaussianKernel.js"></script>
+    <script src="svm/kernels/LaplacianKernel.js"></script>
+    <script src="svm/kernels/TensorKernel.js"></script>
+    <script src="svm/kernels/TStudentKernel.js"></script>
+    <script src="svm/kernels/SquaredSincKernel.js"></script>
+    <script src="svm/kernels/SigmoidKernel.js"></script>
+    <script src="svm/kernels/PolynominalKernel.js"></script>
+    <script src="svm/kernels/HistogramIntersectionKernel.js"></script>
+    <script src="svm/kernels/SymmetricTriangleKernel.js"></script>
+    <script src="svm/kernels/SplineKernel.js"></script>
+    <script src="svm/kernels/SphericalKernel.js"></script>
+    <script src="svm/kernels/CauchyKernel.js"></script>
+    <script src="svm/kernels/BesselKernel.js"></script>
+    <script src="svm/kernels/WaveletKernel.js"></script>
+    <script src="svm/kernels/WaveKernel.js"></script>
+    <script src="svm/renderers/Renderer.js"></script>
+    <script src="svm/renderers/D3.js"></script>
+    <script src="svm/renderers/Canvas.js"></script>
+    <script src="svm/renderers/WebGL.js"></script>
+    <script src="svm/algorithms/SequentialMinimalOptimization.js"></script>
+    <script src="svm/utils/helpers.js"></script>
 
-<script src="svm/SupportVectorMachine.js"></script>
-<script src="svm/KernelSupportVectorMachine.js"></script>
-<script src="svm/SequentialMinimalOptimization.js"></script>
-<script src="svm/renderers/CanvasRenderer.js"></script>
+    <script src="svm/SupportVectorMachine.js"></script>
 
 
 
+    <style>
 
+
+
+        body {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .dot {
+            stroke: #000;
+        }
+
+
+    </style>
 </head>
 
 <body>
-<canvas id="SGECanvas" >Browser not supported for Canvas. Get a real browser.</canvas>
 <script type="text/javascript">
     function init()
     {
@@ -48,6 +73,34 @@
         console.time('Init');
         var labels = [];
         var inputs = [];
+
+        /*$.ajax({
+            dataType: "json",
+            url: '/svmts/data/1.json',
+            success: function(data)
+            {
+                var newData = data.slice(0,100).concat(data.slice(-100,-1));
+
+                $.each(newData, function(key, val)
+                {
+                    labels.push(val['banned'] == 1 ? -1 : 1);
+                    inputs.push([
+                        //val['partner'].length,
+                        val['descript'].length,
+                        val['complaints'],
+                        val['name'].length
+                    ]);
+                });
+
+                //console.log(inputs,labels);
+
+                run();
+            },
+            error: function()
+            {
+                console.log(arguments);
+            }
+        });*/
 
         inputs[0] = [-0.4326  , 1.1909 ];
         inputs[1] = [3.0, 4.0];
@@ -71,50 +124,66 @@
         labels[8] = -1;
         labels[9] = -1;
 
-        var kernels = [
+        function run()
+        {
+            var kernels = [
+                //new SVM.Kernels.WaveKernel(),
+                new SVM.Kernels.SplineKernel(),
+ //               new SVM.Kernels.WaveletKernel(),
+                new SVM.Kernels.TStudentKernel()
+                //new SVM.Kernels.PolynominalKernel()
+                //new SVM.Kernels.GaussianKernel()
+                //new SVM.Kernels.LaplacianKernel()
+                //new SVM.Kernels.CauchyKernel()
+                //new SVM.Kernels.SigmoidKernel()
+                //new SVM.Kernels.SphericalKernel()
+                //new SVM.Kernels.SquaredSincKernel()
+                //new SVM.Kernels.SymmetricTriangleKernel()
+                //new SVM.Kernels.HistogramIntersectionKernel()
+            ];
 
-            //new HistogramIntersectionKernel(),
-            //new CauchyKernel(),
-            //new LaplacianKernel(),
-            //new SquaredSincKernel(),
-            //new BesselKernel(),
-            //new SplineKernel(),
-            //new GaussianKernel(),
-            //new WaveletKernel(),
-            new LinearKernel(),
-            //new SphericalKernel(),
-            new WaveKernel(),
+            machine = new SVM.Engine.KernelSupportVectorMachine(new SVM.Kernels.TensorKernel(kernels), inputs[0].length),
+            smo = new SVM.Algorithms.SequentialMinimalOptimization(machine, inputs, labels);
 
-        ];
-        machine = new KernelSupportVectorMachine(new TensorKernel(kernels), inputs[0].length);
-        smo = new SequentialMinimalOptimization(machine, inputs, labels);
+            smo.run();
 
-        smo.setComplexity(1.0);
+            var graph = new SVM.Renderer.Canvas({
+                smo: smo,
+                height: height,
+                width: width
+            });
 
-        console.time('SMO::RUN');
-        var error = smo.run(true);
-        console.timeEnd('SMO::RUN');
+            graph.render();
+        }
 
-        console.time('SVM::COMPUTE');
-        var decision = machine.compute(inputs[3]);
-        console.timeEnd('SVM::COMPUTE');
+        run();
 
-        console.log(error, decision);
-        console.timeEnd('Init');
+        /*new P.Thread({
+         inputs: inputs,
+         labels: labels
+         }).require('http://localhost:63342/svmts/svm/collections/Bucket.js')
+         .require('http://localhost:63342/svmts/svm/collections/HashTable.js')
+         .require('http://localhost:63342/svmts/svm/collections/HashSet_old.js')
+         .require('http://localhost:63342/svmts/svm/kernels/LinearKernel.js')
+         .require('http://localhost:63342/svmts/svm/SupportVectorMachine.js')
+         .require('http://localhost:63342/svmts/svm/SupportVectorMachine.js')
+         .require('http://localhost:63342/svmts/svm/algorithms/SequentialMinimalOptimization.js')
+         .spawn(function(data)
+         {
+         var machine = new KernelSupportVectorMachine(new LinearKernel(), data.inputs[0].length),
+         smo = new SequentialMinimalOptimization(machine, data.inputs, data.labels);
+
+         smo.run();
+
+         console.log(machine.toJSON());
+         return machine.toJSON();
+         })
+         .then(function(data)
+         {
+         console.log(data);
+         });*/
 
 
-        var graph = new CanvasRenderer({
-            smo:smo,
-            canvas: canvas,
-            height: height,
-            width: width,
-            density:1
-            //ss: 30
-        });
-
-        console.time('Graph::Render');
-        graph.render();
-        console.timeEnd('Graph::Render');
     }
 
     init();
