@@ -154,7 +154,7 @@ var SVM;
                 this.ctx.fillText("C = " + this.smo.getComplexity().toPrecision(2), 10, this.height - 90);
             };
             return WebGL;
-        })(SVM.Renderer.engine);
+        })(SVM.Renderer.Engine);
         Renderer.WebGL = WebGL;
     })(SVM.Renderer || (SVM.Renderer = {}));
     var Renderer = SVM.Renderer;

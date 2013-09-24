@@ -1,7 +1,7 @@
 ///<reference path='./../interfaces/Interfaces.ts' />
 
 ///<reference path='../../lib/parallel/Parallel.ts' />
-///<reference path='../collections/HashSet.ts' />
+///<reference path='../base/Generic.ts' />
 ///<reference path='../SupportVectorMachine.ts' />
 ///<reference path='../utils/helpers.ts' />
 
@@ -77,7 +77,7 @@
  *
  **/
 
-module SVM.Algorithms {
+module SVM.Learning {
 
     export class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
 
@@ -105,17 +105,17 @@ module SVM.Algorithms {
         private biasLowerIndex:number;
         private biasUpperIndex:number;
 
-        private I0:HashSet;
-        private I1:HashSet;
-        private I2:HashSet;
-        private I3:HashSet;
+        private I0:SVM.Generic.HashSet;
+        private I1:SVM.Generic.HashSet;
+        private I2:SVM.Generic.HashSet;
+        private I3:SVM.Generic.HashSet;
 
         /**
          * @param machine
          * @param inputs
          * @param outputs
          */
-            constructor(machine:ISupportVectorMachine = null, inputs:number[][] = null, outputs:number[] = null)
+        constructor(machine:ISupportVectorMachine = null, inputs:number[][] = null, outputs:number[] = null)
         {
             if(machine === null)
             {
@@ -134,7 +134,7 @@ module SVM.Algorithms {
 
             if(inputs.length !== outputs.length)
             {
-                throw new Error('The number of inputs and outputs does not match.')
+                throw new Error('The number of inputs and outputs does not match. ' + inputs.length + ' != ' + outputs.length);
             }
 
             if(machine.getInputCount() > 0)
@@ -250,14 +250,14 @@ module SVM.Algorithms {
         {
             var N = this.inputs.length;
 
-            this.alphaA = SVM.Util.zeroes(N);
-            this.alphaB = SVM.Util.zeroes(N);
-            this.errors = SVM.Util.zeroes(N);
+            this.alphaA = SVM.Util.arrayPopulate(N, 0);
+            this.alphaB = SVM.Util.arrayPopulate(N, 0);
+            this.errors = SVM.Util.arrayPopulate(N, 0);
 
-            this.I0 = new HashSet();
-            this.I1 = new HashSet();
-            this.I2 = new HashSet();
-            this.I3 = new HashSet();
+            this.I0 = new SVM.Generic.HashSet();
+            this.I1 = new SVM.Generic.HashSet();
+            this.I2 = new SVM.Generic.HashSet();
+            this.I3 = new SVM.Generic.HashSet();
 
             for(var i = 0; i < N; i++)
             {

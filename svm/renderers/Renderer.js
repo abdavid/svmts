@@ -8,8 +8,8 @@ var RendererDraw;
 var SVM;
 (function (SVM) {
     (function (Renderer) {
-        var engine = (function () {
-            function engine(options) {
+        var Engine = (function () {
+            function Engine(options) {
                 var noop = function () {
                 };
 
@@ -39,14 +39,14 @@ var SVM;
 
                 this.initEvents();
             }
-            engine.prototype.render = function () {
+            Engine.prototype.render = function () {
                 var _this = this;
                 window.requestAnimationFrame(function () {
                     return _this.tick();
                 });
             };
 
-            engine.prototype.drawBubble = function (x, y, w, h, radius) {
+            Engine.prototype.drawBubble = function (x, y, w, h, radius) {
                 var r = x + w, b = y + h;
 
                 this.ctx.beginPath();
@@ -66,7 +66,7 @@ var SVM;
                 this.ctx.stroke();
             };
 
-            engine.prototype.drawRect = function (x, y, w, h) {
+            Engine.prototype.drawRect = function (x, y, w, h) {
                 this.ctx.beginPath();
                 this.ctx.rect(x, y, w, h);
                 this.ctx.closePath();
@@ -74,7 +74,7 @@ var SVM;
                 this.ctx.stroke();
             };
 
-            engine.prototype.drawCircle = function (x, y, r) {
+            Engine.prototype.drawCircle = function (x, y, r) {
                 this.ctx.beginPath();
                 this.ctx.arc(x, y, r, 0, Math.PI * 2, true);
                 this.ctx.closePath();
@@ -82,7 +82,7 @@ var SVM;
                 this.ctx.fill();
             };
 
-            engine.prototype.eventClick = function (e) {
+            Engine.prototype.eventClick = function (e) {
                 var x, y;
 
                 if (e.pageX || e.pageY) {
@@ -99,15 +99,15 @@ var SVM;
                 this.mouseClick(x, y, e.shiftKey);
             };
 
-            engine.prototype.randi = function (s, e) {
+            Engine.prototype.randi = function (s, e) {
                 return Math.floor(Math.random() * (e - s) + s);
             };
 
-            engine.prototype.randf = function (s, e) {
+            Engine.prototype.randf = function (s, e) {
                 return Math.random() * (e - s) + s;
             };
 
-            engine.prototype.randn = function (mean, variance) {
+            Engine.prototype.randn = function (mean, variance) {
                 var V1, V2, S, X;
                 do {
                     var U1 = Math.random();
@@ -121,17 +121,17 @@ var SVM;
                 return X;
             };
 
-            engine.prototype.eventKeyUp = function (e) {
+            Engine.prototype.eventKeyUp = function (e) {
                 var keycode = ('which' in e) ? e.which : e.keyCode;
                 this.keyUp(keycode);
             };
 
-            engine.prototype.eventKeyDown = function (e) {
+            Engine.prototype.eventKeyDown = function (e) {
                 var keycode = ('which' in e) ? e.which : e.keyCode;
                 this.keyDown(keycode);
             };
 
-            engine.prototype.initEvents = function () {
+            Engine.prototype.initEvents = function () {
                 var _this = this;
                 this.canvas.addEventListener('click', function (event) {
                     return _this.eventClick;
@@ -144,7 +144,7 @@ var SVM;
                 }, true);
             };
 
-            engine.prototype.tick = function () {
+            Engine.prototype.tick = function () {
                 var _this = this;
                 var delta = (new Date().getTime() - this.lastRedraw) / 1000;
 
@@ -160,8 +160,6 @@ var SVM;
                     }
                 }
 
-                SVM.Renderer.engine.FPS = 1 / delta;
-
                 if (this.update) {
                     this.update.call(this);
                 }
@@ -169,10 +167,12 @@ var SVM;
                 if (this.draw) {
                     this.draw.call(this);
                 }
+
+                SVM.Renderer.Engine.FPS = 1 / delta;
             };
-            return engine;
+            return Engine;
         })();
-        Renderer.engine = engine;
+        Renderer.Engine = Engine;
     })(SVM.Renderer || (SVM.Renderer = {}));
     var Renderer = SVM.Renderer;
 })(SVM || (SVM = {}));

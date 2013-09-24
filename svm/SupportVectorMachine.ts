@@ -2,8 +2,12 @@
  * Created by davidatborresen on 9/3/13.
  */
 
+///<reference path='./base/Generic.ts' />
 ///<reference path='./interfaces/Interfaces.ts' />
 ///<reference path='./kernels/LinearKernel.ts' />
+///<reference path='./utils/helpers.ts' />
+///<reference path='../lib/parallel/Parallel.ts' />
+
 
 module SVM.Engine {
 
@@ -69,7 +73,7 @@ module SVM.Engine {
         /**
          * @param inputs
          */
-            constructor(inputs:number)
+        constructor(inputs:number)
         {
             this.inputCount = inputs;
         }
@@ -264,6 +268,9 @@ module SVM.Engine {
          */
     }
 
+    /**
+     *
+     */
     export class KernelSupportVectorMachine extends SupportVectorMachine
     {
         private kernel:IKernel;
@@ -335,6 +342,4 @@ module SVM.Engine {
             return !isNaN(output) && output >= 0 ? 1 : -1;
         }
     }
-
-
 }

@@ -1,6 +1,6 @@
 var SVM;
 (function (SVM) {
-    (function (Algorithms) {
+    (function (Learning) {
         var SequentialMinimalOptimization = (function () {
             function SequentialMinimalOptimization(machine, inputs, outputs) {
                 if (typeof machine === "undefined") { machine = null; }
@@ -23,7 +23,7 @@ var SVM;
                 }
 
                 if (inputs.length !== outputs.length) {
-                    throw new Error('The number of inputs and outputs does not match.');
+                    throw new Error('The number of inputs and outputs does not match. ' + inputs.length + ' != ' + outputs.length);
                 }
 
                 if (machine.getInputCount() > 0) {
@@ -82,14 +82,14 @@ var SVM;
                 if (typeof computeError === "undefined") { computeError = false; }
                 var N = this.inputs.length;
 
-                this.alphaA = SVM.Util.zeroes(N);
-                this.alphaB = SVM.Util.zeroes(N);
-                this.errors = SVM.Util.zeroes(N);
+                this.alphaA = SVM.Util.arrayPopulate(N, 0);
+                this.alphaB = SVM.Util.arrayPopulate(N, 0);
+                this.errors = SVM.Util.arrayPopulate(N, 0);
 
-                this.I0 = new HashSet();
-                this.I1 = new HashSet();
-                this.I2 = new HashSet();
-                this.I3 = new HashSet();
+                this.I0 = new SVM.Generic.HashSet();
+                this.I1 = new SVM.Generic.HashSet();
+                this.I2 = new SVM.Generic.HashSet();
+                this.I3 = new SVM.Generic.HashSet();
 
                 for (var i = 0; i < N; i++) {
                     this.I1.add(i);
@@ -588,8 +588,8 @@ var SVM;
             };
             return SequentialMinimalOptimization;
         })();
-        Algorithms.SequentialMinimalOptimization = SequentialMinimalOptimization;
-    })(SVM.Algorithms || (SVM.Algorithms = {}));
-    var Algorithms = SVM.Algorithms;
+        Learning.SequentialMinimalOptimization = SequentialMinimalOptimization;
+    })(SVM.Learning || (SVM.Learning = {}));
+    var Learning = SVM.Learning;
 })(SVM || (SVM = {}));
 //# sourceMappingURL=SequentialMinimalOptimization.js.map

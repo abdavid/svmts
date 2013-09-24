@@ -33,7 +33,7 @@ module SVM.Renderer {
      *
      * http://www.aspdotnetfaq.com/Faq/What-is-the-list-of-KeyCodes-for-JavaScript-KeyDown-KeyPress-and-KeyUp-events.aspx
      */
-    export class engine {
+    export class Engine {
 
         public static FPS:number;
 
@@ -82,7 +82,7 @@ module SVM.Renderer {
             this.initEvents();
         }
 
-        public render():void
+        public render():any
         {
             window.requestAnimationFrame(() => this.tick());
         }
@@ -260,8 +260,6 @@ module SVM.Renderer {
                 }
             }
 
-            SVM.Renderer.engine.FPS = 1/delta;
-
             if(this.update)
             {
                 this.update.call(this);
@@ -271,6 +269,8 @@ module SVM.Renderer {
             {
                 this.draw.call(this);
             }
+
+            SVM.Renderer.Engine.FPS = 1/delta;
         }
     }
 

@@ -8,7 +8,7 @@
 
 module SVM.Renderer {
 
-    export class WebGL extends SVM.Renderer.engine {
+    export class WebGL extends SVM.Renderer.Engine {
 
         private density:number;
         private ss:number;

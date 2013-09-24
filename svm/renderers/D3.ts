@@ -77,7 +77,7 @@ module SVM.Renderer {
                 return d[1];
             })).nice();
 
-            this.paintDecisionBackground();
+            //this.paintDecisionBackground();
 
             this.paintDataPoints();
 
@@ -92,7 +92,7 @@ module SVM.Renderer {
                 .attr("class", "dot")
                 .attr("r", (d)=>
                 {
-                    return d[0] / 3.5;
+                    return 3.5;
                 })
                 .attr("cx", (d)=>
                 {

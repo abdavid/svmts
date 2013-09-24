@@ -27,7 +27,7 @@ module P {
 
         public url:string;
 
-        constructor(data, options)
+        constructor(data = {}, options = {})
         {
             this.data = data;
             this.options = _.extend(this._getDefaultOptions(), options);
@@ -246,6 +246,24 @@ module P {
             }
 
             return this;
+        }
+
+        /**
+         * @param fromInclusive
+         * @param toExclusive
+         * @param fn
+         * @returns {P.Thread}
+         */
+        public for(fromInclusive:number, toExclusive:number, fn:Function):P.Thread
+        {
+            return this.spawn(()=>
+            {
+                while (fromInclusive < toExclusive)
+                {
+                    fn.call(this,fromInclusive);
+                    fromInclusive++;
+                }
+            });
         }
 
         /**

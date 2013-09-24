@@ -33,8 +33,6 @@ var SVM;
                     return d[1];
                 })).nice();
 
-                this.paintDecisionBackground();
-
                 this.paintDataPoints();
 
                 return this;
@@ -43,7 +41,7 @@ var SVM;
             D3.prototype.paintDataPoints = function () {
                 var _this = this;
                 this.svg.selectAll(".dot").data(this.smo.inputs).enter().append("circle").attr("class", "dot").attr("r", function (d) {
-                    return d[0] / 3.5;
+                    return 3.5;
                 }).attr("cx", function (d) {
                     return _this.x(d[0]);
                 }).attr("cy", function (d) {

@@ -9,9 +9,9 @@
     <script src="lib/parallel/Parallel.js"></script>
     <script src="lib/shims/requestAniFrame.js"></script>
 
-    <script src="svm/collections/HashSet.js"></script>
+    <script src="svm/base/Generic.js"></script>
 
-    <script src="svm/SupportVectorMachine.js"></script>
+
     <script src="svm/kernels/LinearKernel.js"></script>
     <script src="svm/kernels/GaussianKernel.js"></script>
     <script src="svm/kernels/LaplacianKernel.js"></script>
@@ -32,7 +32,7 @@
     <script src="svm/renderers/D3.js"></script>
     <script src="svm/renderers/Canvas.js"></script>
     <script src="svm/renderers/WebGL.js"></script>
-    <script src="svm/algorithms/SequentialMinimalOptimization.js"></script>
+    <script src="svm/learning/SequentialMinimalOptimization.js"></script>
     <script src="svm/utils/helpers.js"></script>
 
     <script src="svm/SupportVectorMachine.js"></script>
@@ -64,129 +64,85 @@
 
 <body>
 <script type="text/javascript">
-    function init()
+
+    var labels = [];
+    var inputs = [];
+
+    inputs[0] = [-0.4326  , 1.1909 ];
+    inputs[1] = [3.0, 4.0];
+    inputs[2] = [0.1253 , -0.0376];
+    inputs[3] = [0.2877 , 0.3273  ];
+    inputs[4] = [-1.1465 , 0.1746 ];
+    inputs[5] = [1.8133 , 2.1139  ];
+    inputs[6] = [2.7258 , 3.0668  ];
+    inputs[7] = [1.4117 , 2.0593  ];
+    inputs[8] = [4.1832 , 1.9044  ];
+    inputs[9] = [1.8636 , 1.1677  ];
+
+    labels[0] = 1;
+    labels[1] = 1;
+    labels[2] = 1;
+    labels[3] = 1;
+    labels[4] = 1;
+    labels[5] = -1;
+    labels[6] = -1;
+    labels[7] = -1;
+    labels[8] = -1;
+    labels[9] = -1;
+
+    var kernels = [
+        new SVM.Kernels.BesselKernel(),
+        new SVM.Kernels.WaveKernel()
+    ];
+    var machine = new SVM.Engine.KernelSupportVectorMachine(new SVM.Kernels.LinearKernel(), inputs[0].length),
+            smo = new SVM.Learning.SequentialMinimalOptimization(machine, inputs, labels);
+
+    smo.run();
+
+
+
+
+    /**
+     *
+     if(decision > 0)
+     {
+
+         ClassA.push(SVM.Generic.Tuple.create(x, y));
+     }
+     else
+     {
+         ClassB.push(SVM.Generic.Tuple.create(x, y));
+     }
+     * @type {number}
+     */
+
+    var xMax = window.innerWidth,
+        yMax = window.innerWidth,
+        density = 4;
+
+    var a = [], b = [];
+    for(var x = 0.0; x <= xMax; x += density)
     {
-        var canvas = document.getElementById('SGECanvas');
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-
-        console.time('Init');
-        var labels = [];
-        var inputs = [];
-
-        /*$.ajax({
-            dataType: "json",
-            url: '/svmts/data/1.json',
-            success: function(data)
-            {
-                var newData = data.slice(0,100).concat(data.slice(-100,-1));
-
-                $.each(newData, function(key, val)
-                {
-                    labels.push(val['banned'] == 1 ? -1 : 1);
-                    inputs.push([
-                        //val['partner'].length,
-                        val['descript'].length,
-                        val['complaints'],
-                        val['name'].length
-                    ]);
-                });
-
-                //console.log(inputs,labels);
-
-                run();
-            },
-            error: function()
-            {
-                console.log(arguments);
-            }
-        });*/
-
-        inputs[0] = [-0.4326  , 1.1909 ];
-        inputs[1] = [3.0, 4.0];
-        inputs[2] = [0.1253 , -0.0376];
-        inputs[3] = [0.2877 , 0.3273  ];
-        inputs[4] = [-1.1465 , 0.1746 ];
-        inputs[5] = [1.8133 , 2.1139  ];
-        inputs[6] = [2.7258 , 3.0668  ];
-        inputs[7] = [1.4117 , 2.0593  ];
-        inputs[8] = [4.1832 , 1.9044  ];
-        inputs[9] = [1.8636 , 1.1677  ];
-
-        labels[0] = 1;
-        labels[1] = 1;
-        labels[2] = 1;
-        labels[3] = 1;
-        labels[4] = 1;
-        labels[5] = -1;
-        labels[6] = -1;
-        labels[7] = -1;
-        labels[8] = -1;
-        labels[9] = -1;
-
-        function run()
+        for(var y = 0.0; y <= yMax; y += density)
         {
-            var kernels = [
-                //new SVM.Kernels.WaveKernel(),
-                new SVM.Kernels.SplineKernel(),
- //               new SVM.Kernels.WaveletKernel(),
-                new SVM.Kernels.TStudentKernel()
-                //new SVM.Kernels.PolynominalKernel()
-                //new SVM.Kernels.GaussianKernel()
-                //new SVM.Kernels.LaplacianKernel()
-                //new SVM.Kernels.CauchyKernel()
-                //new SVM.Kernels.SigmoidKernel()
-                //new SVM.Kernels.SphericalKernel()
-                //new SVM.Kernels.SquaredSincKernel()
-                //new SVM.Kernels.SymmetricTriangleKernel()
-                //new SVM.Kernels.HistogramIntersectionKernel()
-            ];
-
-            machine = new SVM.Engine.KernelSupportVectorMachine(new SVM.Kernels.TensorKernel(kernels), inputs[0].length),
-            smo = new SVM.Algorithms.SequentialMinimalOptimization(machine, inputs, labels);
-
-            smo.run();
-
-            var graph = new SVM.Renderer.Canvas({
-                smo: smo,
-                height: height,
-                width: width
-            });
-
-            graph.render();
+            var vector = [x, y],
+                decision = smo.machine.compute(vector);
+                decision? a.push(vector) : b.push(vector);
         }
-
-        run();
-
-        /*new P.Thread({
-         inputs: inputs,
-         labels: labels
-         }).require('http://localhost:63342/svmts/svm/collections/Bucket.js')
-         .require('http://localhost:63342/svmts/svm/collections/HashTable.js')
-         .require('http://localhost:63342/svmts/svm/collections/HashSet_old.js')
-         .require('http://localhost:63342/svmts/svm/kernels/LinearKernel.js')
-         .require('http://localhost:63342/svmts/svm/SupportVectorMachine.js')
-         .require('http://localhost:63342/svmts/svm/SupportVectorMachine.js')
-         .require('http://localhost:63342/svmts/svm/algorithms/SequentialMinimalOptimization.js')
-         .spawn(function(data)
-         {
-         var machine = new KernelSupportVectorMachine(new LinearKernel(), data.inputs[0].length),
-         smo = new SequentialMinimalOptimization(machine, data.inputs, data.labels);
-
-         smo.run();
-
-         console.log(machine.toJSON());
-         return machine.toJSON();
-         })
-         .then(function(data)
-         {
-         console.log(data);
-         });*/
-
-
     }
 
-    init();
+    var graph = new SVM.Renderer.Canvas({
+        width: xMax,
+        height: yMax
+    });
+
+    graph
+        .drawBackground(a,'rgb(150,250,150)')
+        .drawBackground(b)
+        .drawDataPoints(smo)
+        .drawAxis()
+        .drawStatus(smo);
+       // .drawDecisionBoundaryAndMarginLines(smo)
 </script>
 </body>
 </html>
