@@ -100,7 +100,9 @@ var SVM;
             };
 
             HashSet.prototype.add = function (value) {
-                this._elements.push(value);
+                if (!this.contains(value)) {
+                    this._elements.push(value);
+                }
             };
 
             HashSet.prototype.get = function (value) {
@@ -157,7 +159,7 @@ var SVM;
                     args[_i] = arguments[_i + 0];
                 }
                 return SVM.Util.arrayPopulate(args.length, function () {
-                    return;
+                    return args.splice(0, 1);
                 });
             };
 

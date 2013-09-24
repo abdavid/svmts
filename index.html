@@ -94,7 +94,7 @@
         new SVM.Kernels.BesselKernel(),
         new SVM.Kernels.WaveKernel()
     ];
-    var machine = new SVM.Engine.KernelSupportVectorMachine(new SVM.Kernels.LinearKernel(), inputs[0].length),
+    var machine = new SVM.Engine.KernelSupportVectorMachine(new SVM.Kernels.BesselKernel(), inputs[0].length),
             smo = new SVM.Learning.SequentialMinimalOptimization(machine, inputs, labels);
 
     smo.run();
