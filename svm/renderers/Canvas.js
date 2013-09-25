@@ -1,81 +1,72 @@
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 var SVM;
 (function (SVM) {
     (function (Renderer) {
-        var Canvas = (function (_super) {
-            __extends(Canvas, _super);
-            function Canvas(options) {
-                var canvas = document.createElement('canvas');
-
-                options = _.extend(options, {
-                    draw: this.onDraw,
-                    canvas: canvas
-                });
-
-                _super.call(this, options);
-
-                $('body').append(canvas);
-
-                this.hasDrawn = false;
-                this.scaleFactor = options.scaleFactor || 50.0;
-                this.density = options.density || 4.0;
-
-                this.ctx.clearRect(0, 0, this.width, this.height);
+        var Canvas = (function () {
+            function Canvas(teacher) {
+                this.teacher = teacher;
             }
-            Canvas.prototype.onDraw = function () {
-                if (this.hasDrawn) {
-                    return;
+            Canvas.prototype.render = function () {
+                var resultsA = [], resultsB = [];
+                for (var x = 0.0; x <= this.width; x += this.density) {
+                    for (var y = 0.0; y <= this.height; y += this.density) {
+                        var vector = [
+                            (x - this.width / 2) * this.scaleFactor,
+                            (y - this.height / 2) * this.scaleFactor
+                        ], decision = this.teacher.machine.compute(vector);
+
+                        if (decision > 0) {
+                            resultsA.push(vector);
+                        } else {
+                            resultsB.push(vector);
+                        }
+                    }
                 }
 
-                this.hasDrawn = true;
+                this.drawBackground(resultsA, 'rgb(150,250,150)').drawBackground(resultsB, 'rgb(250,150,150)');
+
+                return this;
             };
 
-            Canvas.prototype.drawBackground = function (matrix, colour) {
-                if (typeof colour === "undefined") { colour = 'rgb(250,150,150)'; }
+            Canvas.prototype.drawBackground = function (matrix, color) {
                 var _this = this;
-                this.ctx.fillStyle = colour;
-
+                this.context.fillStyle = color;
                 matrix.forEach(function (V) {
-                    _this.ctx.fillRect(V[0], V[1], _this.density + 2, _this.density + 2);
+                    _this.context.fillRect(V[0], V[1], 20, 20);
                 });
 
                 return this;
             };
 
             Canvas.prototype.drawAxis = function () {
-                this.ctx.beginPath();
-                this.ctx.strokeStyle = 'rgb(50,50,50)';
-                this.ctx.lineWidth = 1;
-                this.ctx.moveTo(0, this.height / 2);
-                this.ctx.lineTo(this.width, this.height / 2);
-                this.ctx.moveTo(this.width / 2, 0);
-                this.ctx.lineTo(this.width / 2, this.height);
-                this.ctx.stroke();
+                this.context.beginPath();
+                this.context.strokeStyle = 'rgb(50,50,50)';
+                this.context.lineWidth = 1;
+                this.context.moveTo(0, this.height / 2);
+                this.context.lineTo(this.width, this.height / 2);
+                this.context.moveTo(this.width / 2, 0);
+                this.context.lineTo(this.width / 2, this.height);
+                this.context.stroke();
+
                 return this;
             };
 
-            Canvas.prototype.drawDataPoints = function (smo) {
-                this.ctx.strokeStyle = 'rgb(0,0,0)';
+            Canvas.prototype.drawDataPoints = function (inputs, outputs, alphaA, alphaB, complexity) {
+                this.context.strokeStyle = 'rgb(0,0,0)';
 
-                for (var i = 0; i < smo.inputs.length; i++) {
-                    if (smo.outputs[i] == 1) {
-                        this.ctx.fillStyle = 'rgb(100,200,100)';
+                for (var i = 0; i < inputs.length; i++) {
+                    if (outputs[i] == 1) {
+                        this.context.fillStyle = 'rgb(100,200,100)';
                     } else {
-                        this.ctx.fillStyle = 'rgb(200,100,100)';
+                        this.context.fillStyle = 'rgb(200,100,100)';
                     }
 
-                    if (smo.alphaA[i] > 1e-2 || smo.alphaB[i] > 1e-2) {
-                        this.ctx.lineWidth = 3;
+                    if (this.teacher.alphaA[i] > 1e-2 || this.teacher.alphaB[i] > 1e-2) {
+                        this.context.lineWidth = 3;
                     } else {
-                        this.ctx.lineWidth = 1;
+                        this.context.lineWidth = 1;
                     }
 
-                    var posX = smo.inputs[i][0] * this.scaleFactor + (this.width / 2), posY = smo.inputs[i][1] * this.scaleFactor + (this.height / 2), radius = Math.floor(3 + smo.alphaA[i] * 5.0 / smo.getComplexity());
+                    var posX = this.teacher.inputs[i][0] * this.scaleFactor + (this.width / 2), posY = inputs[i][1] * this.scaleFactor + (this.height / 2), radius = Math.floor(3 + (this.teacher.alphaA[i] - this.teacher.alphaB[i]) * 5.0 / this.teacher.getComplexity());
 
                     this.drawCircle(posX, posY, radius);
                 }
@@ -83,80 +74,116 @@ var SVM;
                 return this;
             };
 
-            Canvas.prototype.drawDecisionBoundaryAndMarginLines = function (smo) {
-                var xs = [-5, 5];
-                var ys = [0, 0];
-                ys[0] = (-smo.biasLower - smo.machine.getWeight(0) * xs[0]) / smo.machine.getWeight(1);
-                ys[1] = (-smo.biasLower - smo.machine.getWeight(0) * xs[1]) / smo.machine.getWeight(1);
+            Canvas.prototype.drawMargin = function (inputs, outputs, weights, biasLower, biasUpper, alphaA, alphaB) {
+                var xs = [-5, 5], ys = [0, 0];
 
-                this.ctx.fillStyle = 'rgb(0,0,0)';
-                this.ctx.lineWidth = 1;
-                this.ctx.beginPath();
+                ys[0] = (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[0]) / this.teacher.machine.getWeight(1);
+                ys[1] = (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[1]) / this.teacher.machine.getWeight(1);
 
-                this.ctx.moveTo(xs[0], ys[0]);
-                this.ctx.lineTo(xs[1], ys[1]);
+                this.context.fillStyle = 'rgb(0,0,0)';
+                this.context.lineWidth = 1;
+                this.context.beginPath();
 
-                this.ctx.moveTo(xs[0], (ys[0] - 1.0 / smo.machine.getWeight(1)));
-                this.ctx.lineTo(xs[1], (ys[1] - 1.0 / smo.machine.getWeight(1)));
+                this.context.moveTo(xs[0], ys[0]);
+                this.context.lineTo(xs[1], ys[1]);
 
-                this.ctx.moveTo(xs[0], (ys[0] + 1.0 / smo.machine.getWeight(1)));
-                this.ctx.lineTo(xs[1], (ys[1] + 1.0 / smo.machine.getWeight(1)));
-                this.ctx.stroke();
+                this.context.moveTo(xs[0], (ys[0] - 1.0 / this.teacher.machine.getWeight(1)));
+                this.context.lineTo(xs[1], (ys[1] - 1.0 / this.teacher.machine.getWeight(1)));
 
-                for (var i = 0; i < smo.inputs.length; i++) {
-                    if (smo.alphaA[i] < 1e-2 || smo.alphaB[i] < 1e-2) {
+                this.context.moveTo(xs[0], (ys[0] + 1.0 / this.teacher.machine.getWeight(1)));
+                this.context.lineTo(xs[1], (ys[1] + 1.0 / this.teacher.machine.getWeight(1)));
+                this.context.stroke();
+
+                for (var i = 0; i < this.teacher.inputs.length; i++) {
+                    if (this.teacher.alphaA[i] < 1e-2 || this.teacher.alphaB[i] < 1e-2) {
                         continue;
                     }
 
-                    if (smo.outputs[i] == 1) {
-                        ys[0] = (1 - smo.biasLower - smo.machine.getWeight(0) * xs[0]) / smo.machine.getWeight(1);
-                        ys[1] = (1 - smo.biasLower - smo.machine.getWeight(0) * xs[1]) / smo.machine.getWeight(1);
+                    if (this.teacher.outputs[i] == 1) {
+                        ys[0] = (1 - this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[0]) / this.teacher.machine.getWeight(1);
+                        ys[1] = (1 - this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[1]) / this.teacher.machine.getWeight(1);
                     } else {
-                        ys[0] = (-1 - smo.biasLower - smo.machine.getWeight(0) * xs[0]) / smo.machine.getWeight(1);
-                        ys[1] = (-1 - smo.biasLower - smo.machine.getWeight(0) * xs[1]) / smo.machine.getWeight(1);
+                        ys[0] = (-1 - this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[0]) / this.teacher.machine.getWeight(1);
+                        ys[1] = (-1 - this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[1]) / this.teacher.machine.getWeight(1);
                     }
 
-                    var u = (smo.inputs[i][0] - xs[0]) * (xs[1] - xs[0]) + (smo.inputs[i][1] - ys[0]) * (ys[1] - ys[0]) / ((xs[0] - xs[1]) * (xs[0] - xs[1]) + (ys[0] - ys[1]) * (ys[0] - ys[1])), xi = xs[0] + u * (xs[1] - xs[0]), yi = ys[0] + u * (ys[1] - ys[0]), mX = smo.inputs[i][0], mY = smo.inputs[i][1], lX = xi, lY = yi;
+                    var u = (this.teacher.inputs[i][0] - xs[0]) * (xs[1] - xs[0]) + (this.teacher.inputs[i][1] - ys[0]) * (ys[1] - ys[0]) / ((xs[0] - xs[1]) * (xs[0] - xs[1]) + (ys[0] - ys[1]) * (ys[0] - ys[1])), xi = xs[0] + u * (xs[1] - xs[0]), yi = ys[0] + u * (ys[1] - ys[0]), mX = this.teacher.inputs[i][0], mY = this.teacher.inputs[i][1];
 
-                    this.ctx.moveTo(mX, mY);
-
-                    this.ctx.lineTo(lX, lY);
+                    this.context.moveTo(mX, mY);
+                    this.context.lineTo(xi, yi);
                 }
 
-                this.ctx.stroke();
+                this.context.stroke();
+
                 return this;
             };
 
-            Canvas.prototype.drawStatus = function (smo) {
-                this.ctx.fillStyle = 'rgb(0,0,0)';
+            Canvas.prototype.drawStatus = function () {
+                this.context.fillStyle = 'rgb(0,0,0)';
 
                 var numsupp = 0;
-                for (var i = 0; i < smo.inputs.length; i++) {
-                    if (smo.alphaA[i] > 1e-5 || smo.alphaB[i] > 1e-5) {
+                for (var i = 0; i < this.teacher.inputs.length; i++) {
+                    if (this.teacher.alphaA[i] > 1e-5 || this.teacher.alphaB[i] > 1e-5) {
                         numsupp++;
                     }
                 }
 
-                this.ctx.fillText("Number of support vectors: " + numsupp + " / " + smo.inputs.length, 10, this.height - 50);
+                this.context.fillText("Number of support vectors: " + numsupp + " / " + this.teacher.inputs.length, 10, this.height - 50);
 
-                if (smo.kernel instanceof SVM.Kernels.GaussianKernel) {
-                    this.ctx.fillText("Using Rbf kernel with sigma = " + smo.kernel.sigma().toPrecision(2), 10, this.height - 70);
+                if (this.teacher.kernel instanceof GaussianKernel) {
+                    this.context.fillText("Using Rbf kernel with sigma = " + this.teacher.kernel.sigma().toPrecision(2), 10, this.height - 70);
                 } else {
-                    this.ctx.fillText("Using " + smo.kernel.constructor.name, 10, this.height - 70);
+                    this.context.fillText("Using " + this.teacher.kernel.constructor.name, 10, this.height - 70);
                 }
 
-                this.ctx.fillText("C = " + smo.getComplexity().toPrecision(2), 10, this.height - 90);
+                this.context.fillText("C = " + this.teacher.getComplexity().toPrecision(2), 10, this.height - 90);
 
                 return this;
             };
 
-            Canvas.prototype.render = function () {
-                _super.prototype.render.call(this);
+            Canvas.prototype.drawBubble = function (x, y, w, h, radius) {
+                var r = x + w, b = y + h;
+
+                this.context.beginPath();
+                this.context.strokeStyle = "black";
+                this.context.lineWidth = 2;
+                this.context.moveTo(x + radius, y);
+                this.context.lineTo(x + radius / 2, y - 10);
+                this.context.lineTo(x + radius * 2, y);
+                this.context.lineTo(r - radius, y);
+                this.context.quadraticCurveTo(r, y, r, y + radius);
+                this.context.lineTo(r, y + h - radius);
+                this.context.quadraticCurveTo(r, b, r - radius, b);
+                this.context.lineTo(x + radius, b);
+                this.context.quadraticCurveTo(x, b, x, b - radius);
+                this.context.lineTo(x, y + radius);
+                this.context.quadraticCurveTo(x, y, x + radius, y);
+                this.context.stroke();
+
+                return this;
+            };
+
+            Canvas.prototype.drawRect = function (x, y, w, h) {
+                this.context.beginPath();
+                this.context.rect(x, y, w, h);
+                this.context.closePath();
+                this.context.fill();
+                this.context.stroke();
+
+                return this;
+            };
+
+            Canvas.prototype.drawCircle = function (x, y, r) {
+                this.context.beginPath();
+                this.context.arc(x, y, r, 0, Math.PI * 2, true);
+                this.context.closePath();
+                this.context.stroke();
+                this.context.fill();
 
                 return this;
             };
             return Canvas;
-        })(SVM.Renderer.Engine);
+        })();
         Renderer.Canvas = Canvas;
     })(SVM.Renderer || (SVM.Renderer = {}));
     var Renderer = SVM.Renderer;

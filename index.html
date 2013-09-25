@@ -28,7 +28,7 @@
     <script src="svm/kernels/BesselKernel.js"></script>
     <script src="svm/kernels/WaveletKernel.js"></script>
     <script src="svm/kernels/WaveKernel.js"></script>
-    <script src="svm/renderers/Renderer.js"></script>
+    <script src="svm/renderers/Engine.js"></script>
     <script src="svm/renderers/D3.js"></script>
     <script src="svm/renderers/Canvas.js"></script>
     <script src="svm/renderers/WebGL.js"></script>
@@ -90,58 +90,53 @@
     labels[8] = -1;
     labels[9] = -1;
 
+    window.numOfRuns = 0;
     var kernels = [
-        new SVM.Kernels.BesselKernel(),
-        new SVM.Kernels.WaveKernel()
+        new SVM.Kernels.WaveKernel(),
+        new SVM.Kernels.BesselKernel()
+        //new SVM.Kernels.HistogramIntersectionKernel()
     ];
-    var machine = new SVM.Engine.KernelSupportVectorMachine(new SVM.Kernels.BesselKernel(), inputs[0].length),
+    var machine = new SVM.Engine.KernelSupportVectorMachine(new SVM.Kernels.LinearKernel(), inputs[0].length),
             smo = new SVM.Learning.SequentialMinimalOptimization(machine, inputs, labels);
 
     smo.run();
 
-
-
-
-    /**
-     *
-     if(decision > 0)
-     {
-
-         ClassA.push(SVM.Generic.Tuple.create(x, y));
-     }
-     else
-     {
-         ClassB.push(SVM.Generic.Tuple.create(x, y));
-     }
-     * @type {number}
-     */
-
     var xMax = window.innerWidth,
-        yMax = window.innerWidth,
-        density = 4;
+        yMax = window.innerHeight,
+        density = 1,
+        scaleFactor = 50.0;
 
-    var a = [], b = [];
+    var resultsA = [], resultsB = [];
     for(var x = 0.0; x <= xMax; x += density)
     {
         for(var y = 0.0; y <= yMax; y += density)
         {
-            var vector = [x, y],
-                decision = smo.machine.compute(vector);
-                decision? a.push(vector) : b.push(vector);
+            var vector = [
+                        (x - xMax/2) * scaleFactor,
+                        (y - yMax/2) * scaleFactor
+                    ],
+                    decision = smo.machine.compute(vector);
+
+            if(decision > 0)
+                resultsA.push(vector);
+            else
+                resultsB.push(vector);
+
         }
     }
 
     var graph = new SVM.Renderer.Canvas({
         width: xMax,
-        height: yMax
+        height: yMax,
+        density: density
     });
 
     graph
-        .drawBackground(a,'rgb(150,250,150)')
-        .drawBackground(b)
-        .drawDataPoints(smo)
-        .drawAxis()
-        .drawStatus(smo);
+        .drawBackground(resultsA,'rgb(150,250,150)')
+        .drawBackground(resultsB,'rgb(250,150,150)')
+    .drawDataPoints(smo)
+    .drawAxis()
+    .drawStatus(smo);
        // .drawDecisionBoundaryAndMarginLines(smo)
 </script>
 </body>
