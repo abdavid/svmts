@@ -45,6 +45,7 @@
 
         body {
             font: 10px sans-serif;
+            margin: 0px;
         }
 
         .axis path,
@@ -90,13 +91,13 @@
     labels[8] = -1;
     labels[9] = -1;
 
-    window.numOfRuns = 0;
+
     var kernels = [
+        new SVM.Kernels.HistogramIntersectionKernel(),
         new SVM.Kernels.WaveKernel(),
-        new SVM.Kernels.BesselKernel()
-        //new SVM.Kernels.HistogramIntersectionKernel()
+        //new SVM.Kernels.BesselKernel(),
     ];
-    var machine = new SVM.Engine.KernelSupportVectorMachine(new SVM.Kernels.LinearKernel(), inputs[0].length),
+    var machine = new SVM.Engine.KernelSupportVectorMachine(new SVM.Kernels.TensorKernel(kernels), inputs[0].length),
             smo = new SVM.Learning.SequentialMinimalOptimization(machine, inputs, labels);
 
     smo.run();
@@ -106,38 +107,7 @@
         density = 1,
         scaleFactor = 50.0;
 
-    var resultsA = [], resultsB = [];
-    for(var x = 0.0; x <= xMax; x += density)
-    {
-        for(var y = 0.0; y <= yMax; y += density)
-        {
-            var vector = [
-                        (x - xMax/2) * scaleFactor,
-                        (y - yMax/2) * scaleFactor
-                    ],
-                    decision = smo.machine.compute(vector);
-
-            if(decision > 0)
-                resultsA.push(vector);
-            else
-                resultsB.push(vector);
-
-        }
-    }
-
-    var graph = new SVM.Renderer.Canvas({
-        width: xMax,
-        height: yMax,
-        density: density
-    });
-
-    graph
-        .drawBackground(resultsA,'rgb(150,250,150)')
-        .drawBackground(resultsB,'rgb(250,150,150)')
-    .drawDataPoints(smo)
-    .drawAxis()
-    .drawStatus(smo);
-       // .drawDecisionBoundaryAndMarginLines(smo)
+    var graph = new SVM.Renderer.Canvas(smo).render();
 </script>
 </body>
 </html>

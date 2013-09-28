@@ -100,10 +100,11 @@ interface IList
 
 interface IRenderer<T>
 {
+    (teacher:ISupportVectorMachineLearning):IRenderer<T>
     render():IRenderer<T>;
     drawBackground(matrix:number[][], color:string):IRenderer<T>;
     drawAxis():IRenderer<T>;
-    drawMargin(inputs:number[], outputs:number[], weights:number[], biasLower:number, biasUpper:number, alphaA:number[], alphaB:number[]):IRenderer<T>;
+    drawMargin():IRenderer<T>;
     drawStatus():IRenderer<T>;
     drawCircle(x:number, y:number, r:number):IRenderer<T>
     drawRect(x:number, y:number, w:number, h:number):IRenderer<T>

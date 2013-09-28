@@ -15,16 +15,21 @@
 module SVM.Renderer {
 
     export class Canvas implements IRenderer<Engine> {
-        height:number;
-        width:number;
-        density:number;
-        scaleFactor:number;
-        teacher:ISupportVectorMachineLearning;
 
+        teacher:ISupportVectorMachineLearning;
+        canvas:HTMLCanvasElement;
         context:CanvasRenderingContext2D;
 
         constructor(teacher:ISupportVectorMachineLearning)
         {
+            this.canvas = document.createElement('canvas');
+            this.canvas.height = SVM.Renderer.getHeight();
+            this.canvas.width = SVM.Renderer.getWidth();
+
+            document.body.appendChild(this.canvas);
+
+            this.context = this.canvas.getContext('2d');
+
             this.teacher = teacher;
         }
 
@@ -33,14 +38,16 @@ module SVM.Renderer {
          */
         public render():Canvas
         {
+            this.clearCanvas();
+
             var resultsA = [], resultsB = [];
-            for(var x = 0.0; x <= this.width; x += this.density)
+            for(var x = 0.0; x <= SVM.Renderer.getWidth(); x += SVM.Renderer.getDensity())
             {
-                for(var y = 0.0; y <= this.height; y += this.density)
+                for(var y = 0.0; y <= SVM.Renderer.getHeight(); y += SVM.Renderer.getDensity())
                 {
                     var vector = [
-                            (x - this.width / 2) * this.scaleFactor,
-                            (y - this.height / 2) * this.scaleFactor
+                            (x - SVM.Renderer.getWidth() / 2)/SVM.Renderer.getScale(),
+                            (y - SVM.Renderer.getHeight() / 2)/SVM.Renderer.getScale()
                         ],
                         decision = this.teacher.machine.compute(vector);
 
@@ -56,8 +63,12 @@ module SVM.Renderer {
                 }
             }
 
-            this.drawBackground(resultsA,'rgb(150,250,150)')
-                .drawBackground(resultsB,'rgb(250,150,150)');
+            this
+                .drawBackground(resultsA,'rgb(150,250,150)')
+                .drawBackground(resultsB,'rgb(250,150,150)')
+                .drawDataPoints()
+                .drawAxis()
+                .drawStatus();
 
             return this;
         }
@@ -70,14 +81,15 @@ module SVM.Renderer {
          */
         public drawBackground(matrix:number[][], color:string):Canvas
         {
-            this.context.fillStyle = color;
-            matrix.forEach((V:number[])=>
+            matrix.forEach((V:number[], i)=>
             {
-                this.context.fillRect(
-                    V[0],
-                    V[1],
-                    20,
-                    20
+                this.context.fillStyle = color;
+
+                this.drawRect(
+                    V[0] * SVM.Renderer.getScale() + (SVM.Renderer.getWidth() / 2),
+                    V[1] * SVM.Renderer.getScale() + (SVM.Renderer.getHeight() / 2),
+                    2 + SVM.Renderer.getDensity(),
+                    2 + SVM.Renderer.getDensity()
                 );
             });
 
@@ -93,10 +105,10 @@ module SVM.Renderer {
             this.context.beginPath();
             this.context.strokeStyle = 'rgb(50,50,50)';
             this.context.lineWidth = 1;
-            this.context.moveTo(0, this.height / 2);
-            this.context.lineTo(this.width, this.height / 2);
-            this.context.moveTo(this.width / 2, 0);
-            this.context.lineTo(this.width / 2, this.height);
+            this.context.moveTo(0, SVM.Renderer.getHeight() / 2);
+            this.context.lineTo(SVM.Renderer.getWidth(), SVM.Renderer.getHeight() / 2);
+            this.context.moveTo(SVM.Renderer.getWidth() / 2, 0);
+            this.context.lineTo(SVM.Renderer.getWidth() / 2, SVM.Renderer.getHeight());
             this.context.stroke();
 
             return this;
@@ -105,13 +117,13 @@ module SVM.Renderer {
         /**
          * @returns {SVM.Renderer.CanvasEngine}
          */
-        public drawDataPoints(inputs:number[], outputs:number[], alphaA:number[], alphaB:number[], complexity:number):Canvas
+        public drawDataPoints():Canvas
         {
             this.context.strokeStyle = 'rgb(0,0,0)';
 
-            for(var i = 0; i < inputs.length; i++)
+            for(var i = 0; i < this.teacher.inputs.length; i++)
             {
-                if(outputs[i] == 1)
+                if(this.teacher.outputs[i] == 1)
                 {
                     this.context.fillStyle = 'rgb(100,200,100)';
                 }
@@ -130,9 +142,10 @@ module SVM.Renderer {
                     this.context.lineWidth = 1;
                 }
 
-                var posX = this.teacher.inputs[i][0] * this.scaleFactor + (this.width / 2),
-                    posY = inputs[i][1] * this.scaleFactor + (this.height / 2) ,
-                    radius = Math.floor(3 + ( this.teacher.alphaA[i] -  this.teacher.alphaB[i]) * 5.0 /  this.teacher.getComplexity());
+                var posX = this.teacher.inputs[i][0] * SVM.Renderer.getScale() + (SVM.Renderer.getWidth() / 2),
+                    posY = this.teacher.inputs[i][1] * SVM.Renderer.getScale() + (SVM.Renderer.getHeight() / 2) ,
+                    //-- todo adjust usage of alpha values here
+                    radius = Math.floor(3 + (this.teacher.alphaA[i] + this.teacher.alphaB[i]) * 5.0 /  this.teacher.getComplexity());
 
                 this.drawCircle(posX, posY, radius);
             }
@@ -143,7 +156,7 @@ module SVM.Renderer {
         /**
          * @returns {SVM.Renderer.CanvasEngine}
          */
-        public drawMargin(inputs:number[], outputs:number[], weights:number[], biasLower:number, biasUpper:number, alphaA:number[], alphaB:number[]):Canvas
+        public drawMargin():Canvas
         {
             var xs = [-5, 5], ys = [0, 0];
 
@@ -218,18 +231,18 @@ module SVM.Renderer {
                 }
             }
 
-            this.context.fillText("Number of support vectors: " + numsupp + " / " + this.teacher.inputs.length, 10, this.height - 50);
+            this.context.fillText("Number of support vectors: " + numsupp + " / " + this.teacher.inputs.length, 10, SVM.Renderer.getHeight() - 50);
 
-            if(this.teacher.kernel instanceof GaussianKernel)
+            if(this.teacher.kernel instanceof SVM.Kernels.GaussianKernel)
             {
-                this.context.fillText("Using Rbf kernel with sigma = " + this.teacher.kernel.sigma().toPrecision(2), 10, this.height - 70);
+                this.context.fillText("Using Rbf kernel with sigma = " + this.teacher.kernel.sigma().toPrecision(2), 10, SVM.Renderer.getHeight() - 70);
             }
             else
             {
-                this.context.fillText("Using " + this.teacher.kernel.constructor.name, 10, this.height - 70);
+                this.context.fillText("Using " + this.teacher.kernel.constructor.name, 10, SVM.Renderer.getHeight() - 70);
             }
 
-            this.context.fillText("C = " + this.teacher.getComplexity().toPrecision(2), 10, this.height - 90);
+            this.context.fillText("C = " + this.teacher.getComplexity().toPrecision(2), 10, SVM.Renderer.getHeight() - 90);
 
             return this;
         }
@@ -273,13 +286,17 @@ module SVM.Renderer {
          * @param h
          * @returns {SVM.Renderer.CanvasEngine}
          */
-        public drawRect(x:number, y:number, w:number, h:number):Canvas
+        public drawRect(x:number, y:number, w:number, h:number, stroke:boolean = false):Canvas
         {
             this.context.beginPath();
             this.context.rect(x, y, w, h);
             this.context.closePath();
             this.context.fill();
-            this.context.stroke();
+
+            if(stroke)
+            {
+                this.context.stroke();
+            }
 
             return this;
         }
@@ -297,6 +314,21 @@ module SVM.Renderer {
             this.context.closePath();
             this.context.stroke();
             this.context.fill();
+
+            return this;
+        }
+
+        /**
+         * @returns {SVM.Renderer.Canvas}
+         */
+        public clearCanvas():Canvas
+        {
+            this.context.clearRect(
+                0,
+                0,
+                SVM.Renderer.getWidth(),
+                SVM.Renderer.getHeight()
+            );
 
             return this;
         }
