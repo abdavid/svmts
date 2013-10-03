@@ -4,7 +4,7 @@ var SVM;
         var SphericalKernel = (function () {
             function SphericalKernel(sigma) {
                 if (typeof sigma === "undefined") { sigma = 1.0; }
-                this.sigma = sigma;
+                this._sigma = sigma;
             }
             SphericalKernel.prototype.run = function (x, y) {
                 var norm = 0.0;
@@ -15,10 +15,10 @@ var SVM;
 
                 norm = Math.sqrt(norm);
 
-                if (norm >= this.sigma) {
+                if (norm >= this._sigma) {
                     return 0;
                 } else {
-                    norm = norm / this.sigma;
+                    norm = norm / this._sigma;
                     return 1.0 - 1.5 * norm + 0.5 * norm * norm * norm;
                 }
             };

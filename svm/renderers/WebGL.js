@@ -146,7 +146,7 @@ var SVM;
                 this.ctx.fillText("Number of support vectors: " + numsupp + " / " + this.smo.inputs.length, 10, this.height - 50);
 
                 if (this.smo.kernel instanceof GaussianKernel) {
-                    this.ctx.fillText("Using Rbf kernel with sigma = " + this.smo.kernel.sigma().toPrecision(2), 10, this.height - 70);
+                    this.ctx.fillText("Using Rbf kernel with _sigma = " + this.smo.kernel.sigma().toPrecision(2), 10, this.height - 70);
                 } else {
                     this.ctx.fillText("Using " + this.smo.kernel.constructor.name, 10, this.height - 70);
                 }

@@ -902,7 +902,7 @@ module SVM.Learning {
 
 
             // #region Store the new Lagrange multipliers
-            // Store the changes in the alpha, alpha* arrays
+            // Store the changes in the _alpha, _alpha* arrays
             this.alphaA[i1] = alpha1a;
             this.alphaB[i1] = alpha1b;
             this.alphaA[i2] = alpha2a;

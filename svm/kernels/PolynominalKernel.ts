@@ -1,10 +1,12 @@
 ///<reference path='../interfaces/Interfaces.ts' />
 
+
 module SVM.Kernels
 {
-    export class PolynominalKernel implements IKernel, IDistance {
-        public degree:number;
-        public constant:number;
+    export class PolynominalKernel implements IKernel, IDistance
+    {
+        private _degree:number;
+        private _constant:number;
 
         /**
          * @param degree
@@ -12,8 +14,8 @@ module SVM.Kernels
          */
         constructor(degree:number = 1.0, constant:number = 1.0)
         {
-            this.degree = degree;
-            this.constant = constant;
+            this._degree = degree;
+            this._constant = constant;
         }
 
         /**
@@ -25,12 +27,12 @@ module SVM.Kernels
          */
         public run(x:number[], y:number[]):number
         {
-            var sum = this.constant;
+            var sum = this._constant;
             for(var i = 0; i < x.length; i++)
             {
                 sum += x[i] * y[i];
             }
-            return Math.pow(sum, this.degree);
+            return Math.pow(sum, this._degree);
         }
 
         /**
@@ -43,7 +45,7 @@ module SVM.Kernels
          */
         public distance(x:number[], y:number[]):number
         {
-            var q = 1.0 / this.degree;
+            var q = 1.0 / this._degree;
 
             return Math.pow(this.run(x, x), q) + Math.pow(this.run(y, y), q) - 2.0 * Math.pow(this.run(x, y), q);
         }

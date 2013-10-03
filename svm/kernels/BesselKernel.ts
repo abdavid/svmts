@@ -4,10 +4,29 @@
 
 ///<reference path='../interfaces/Interfaces.ts' />
 
+
 module SVM.Kernels {
 
     /**
-     * The Bessel kernel is well known in the theory of function spaces of fractional smoothness.
+     * @class BesselKernel
+     * @link http://en.wikipedia.org/wiki/Bessel_function
+     *
+     * @summary
+     * Bessel's equation arises when finding separable solutions to Laplace's equation and the Helmholtz equation in cylindrical or spherical coordinates.
+     * Bessel functions are therefore especially important for many problems of wave propagation and static potentials.
+     * In solving problems in cylindrical coordinate systems, one obtains Bessel functions of integer order (α = n); in spherical problems,
+     * one obtains half-integer orders (α = n+1/2).
+     *
+     * @problems
+     * Electromagnetic waves in a cylindrical waveguide
+     * Pressure amplitudes of inviscid rotational flows
+     * Heat conduction in a cylindrical object
+     * Modes of vibration of a thin circular (or annular) artificial membrane (such as a drum or other membranophone)
+     * Diffusion problems on a lattice
+     * Solutions to the radial Schrödinger equation (in spherical and cylindrical coordinates) for a free particle
+     * Solving for patterns of acoustical radiation
+     * Frequency-dependent friction in circular pipelines
+     * Bessel functions also appear in other problems, such as signal processing (e.g., see FM synthesis, Kaiser window, or Bessel filter).
      */
     export class BesselKernel implements IKernel {
 

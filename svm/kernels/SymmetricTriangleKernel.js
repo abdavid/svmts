@@ -4,7 +4,7 @@ var SVM;
         var SymmetricTriangleKernel = (function () {
             function SymmetricTriangleKernel(gamma) {
                 if (typeof gamma === "undefined") { gamma = 1.0; }
-                this.gamma = gamma;
+                this._gamma = gamma;
             }
             SymmetricTriangleKernel.prototype.run = function (x, y) {
                 var norm = 0.0, d;
@@ -13,7 +13,7 @@ var SVM;
                     norm += d * d;
                 }
 
-                var z = 1.0 - this.gamma * Math.sqrt(norm);
+                var z = 1.0 - this._gamma * Math.sqrt(norm);
 
                 return (z > 0) ? z : 0;
             };

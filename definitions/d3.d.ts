@@ -1378,11 +1378,11 @@ declare module D3 {
     export module Color {
         export interface Color {
             /**
-            * increase lightness by some exponential factor (gamma)
+            * increase lightness by some exponential factor (_gamma)
             */
             brighter(k: number): Color;
             /**
-            * decrease lightness by some exponential factor (gamma)
+            * decrease lightness by some exponential factor (_gamma)
             */
             darker(k: number): Color;
             /**
@@ -1641,9 +1641,9 @@ declare module D3 {
                 (accessor: (data: any) => number): Line;
                 (accessor: (data: any, index: number) => number): Line;
                 /**
-                * Set the  x-coordinate to a constant.
+                * Set the  x-coordinate to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): Line;
             };
@@ -1663,9 +1663,9 @@ declare module D3 {
                 (accessor: (data: any) => number): Line;
                 (accessor: (data: any, index: number) => number): Line;
                 /**
-                * Set the  y-coordinate to a constant.
+                * Set the  y-coordinate to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): Line;
             };
@@ -1741,9 +1741,9 @@ declare module D3 {
                 (accessor: (data: any, index: number) => number): LineRadial;
 
                 /**
-                * Set the  x-coordinate to a constant.
+                * Set the  x-coordinate to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): LineRadial;
             };
@@ -1763,9 +1763,9 @@ declare module D3 {
                 (accessor: (data: any) => number): LineRadial;
                 (accessor: (data: any, index: number) => number): LineRadial;
                 /**
-                * Set the  y-coordinate to a constant.
+                * Set the  y-coordinate to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): LineRadial;
             };
@@ -1849,9 +1849,9 @@ declare module D3 {
                 (accessor: (data: any) => number): Area;
                 (accessor: (data: any, index: number) => number): Area;
                 /**
-                * Set the  x-coordinate to a constant.
+                * Set the  x-coordinate to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): Area;
             };
@@ -1871,9 +1871,9 @@ declare module D3 {
                 (accessor: (data: any) => number): Area;
                 (accessor: (data: any, index: number) => number): Area;
                 /**
-                * Set the  x0-coordinate (baseline) to a constant.
+                * Set the  x0-coordinate (baseline) to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): Area;
             };
@@ -1893,9 +1893,9 @@ declare module D3 {
                 (accessor: (data: any) => number): Area;
                 (accessor: (data: any, index: number) => number): Area;
                 /**
-                * Set the  x1-coordinate (topline) to a constant.
+                * Set the  x1-coordinate (topline) to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): Area;
             };
@@ -1915,9 +1915,9 @@ declare module D3 {
                 (accessor: (data: any) => number): Area;
                 (accessor: (data: any, index: number) => number): Area;
                 /**
-                * Set the y-coordinate to a constant.
+                * Set the y-coordinate to a _constant.
                 *
-                * @param cnst The constant value
+                * @param cnst The _constant value
                 */
                 (cnst: number): Area;
             };
@@ -1937,9 +1937,9 @@ declare module D3 {
                 (accessor: (data: any) => number): Area;
                 (accessor: (data: any, index: number) => number): Area;
                 /**
-                * Set the y0-coordinate (baseline) to a constant.
+                * Set the y0-coordinate (baseline) to a _constant.
                 *
-                * @param cnst The constant value
+                * @param cnst The _constant value
                 */
                 (cnst: number): Area;
             };
@@ -1959,9 +1959,9 @@ declare module D3 {
                 (accessor: (data: any) => number): Area;
                 (accessor: (data: any, index: number) => number): Area;
                 /**
-                * Set the y1-coordinate (baseline) to a constant.
+                * Set the y1-coordinate (baseline) to a _constant.
                 *
-                * @param cnst The constant value
+                * @param cnst The _constant value
                 */
                 (cnst: number): Area;
             };
@@ -2033,9 +2033,9 @@ declare module D3 {
                 (accessor: (data: any) => number): AreaRadial;
                 (accessor: (data: any, index: number) => number): AreaRadial;
                 /**
-                * Set the  x-coordinate to a constant.
+                * Set the  x-coordinate to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): AreaRadial;
             };
@@ -2055,9 +2055,9 @@ declare module D3 {
                 (accessor: (data: any) => number): AreaRadial;
                 (accessor: (data: any, index: number) => number): AreaRadial;
                 /**
-                * Set the  x0-coordinate to a constant.
+                * Set the  x0-coordinate to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): AreaRadial;
             };
@@ -2077,9 +2077,9 @@ declare module D3 {
                 (accessor: (data: any) => number): AreaRadial;
                 (accessor: (data: any, index: number) => number): AreaRadial;
                 /**
-                * Set the  x1-coordinate to a constant.
+                * Set the  x1-coordinate to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): AreaRadial;
             };
@@ -2099,9 +2099,9 @@ declare module D3 {
                 (accessor: (data: any) => number): AreaRadial;
                 (accessor: (data: any, index: number) => number): AreaRadial;
                 /**
-                * Set the y-coordinate to a constant.
+                * Set the y-coordinate to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): AreaRadial;
             };
@@ -2121,9 +2121,9 @@ declare module D3 {
                 (accessor: (data: any) => number): AreaRadial;
                 (accessor: (data: any, index: number) => number): AreaRadial;
                 /**
-                * Set the  y0-coordinate to a constant.
+                * Set the  y0-coordinate to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): AreaRadial;
             };
@@ -2143,9 +2143,9 @@ declare module D3 {
                 (accessor: (data: any) => number): AreaRadial;
                 (accessor: (data: any, index: number) => number): AreaRadial;
                 /**
-                * Set the  y1-coordinate to a constant.
+                * Set the  y1-coordinate to a _constant.
                 *
-                * @param cnst The new constant value.
+                * @param cnst The new _constant value.
                 */
                 (cnst: number): AreaRadial;
             };

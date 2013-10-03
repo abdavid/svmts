@@ -5,8 +5,201 @@
 ///<reference path='./base/Generic.ts' />
 ///<reference path='./interfaces/Interfaces.ts' />
 ///<reference path='./kernels/LinearKernel.ts' />
+///<reference path='./learning/SequentialMinimalOptimization.ts' />
 ///<reference path='./utils/helpers.ts' />
 ///<reference path='../lib/parallel/Parallel.ts' />
+
+module SVM {
+
+    var _kernel:IKernel = null;
+    var _machine:ISupportVectorMachine = null;
+    var _teacher:ISupportVectorMachineLearning = null;
+    var _renderer:IRenderer = null;
+
+    var _width = window.innerWidth;
+    var _height = window.innerHeight;
+    var _scale = 50.0;
+    var _density = 2.5;
+
+    /**
+     * @param width
+     * @returns {SVM}
+     */
+    export function setWidth(width:number):SVM
+    {
+        _width = width;
+        return SVM;
+    }
+
+    /**
+     * @returns {number}
+     */
+    export function getWidth():number
+    {
+        return _width;
+    }
+
+    /**
+     * @param height
+     * @returns {SVM}
+     */
+    export function setHeight(height:number):SVM
+    {
+        _height = height;
+        return SVM;
+    }
+
+    /**
+     * @returns {number}
+     */
+    export function getHeight():number
+    {
+        return _height;
+    }
+
+    /**
+     * @param scale
+     * @returns {SVM}
+     */
+    export function setScale(scale:number):SVM
+    {
+        _scale = scale;
+        return SVM;
+    }
+
+    /**
+     * @returns {number}
+     */
+    export function getScale():number
+    {
+        return _scale;
+    }
+
+    /**
+     * @param delta
+     * @returns {SVM}
+     */
+    export function setDensity(delta:number):SVM
+    {
+        _density = delta;
+        return SVM;
+    }
+
+    /**
+     * @returns {number}
+     */
+    export function getDensity():number
+    {
+        return _density;
+    }
+
+    /**
+     * @param teacher
+     * @returns {SVM}
+     */
+    export function setTeacher(teacher:ISupportVectorMachineLearning):SVM
+    {
+        _teacher = teacher;
+        return SVM;
+    }
+
+    /**
+     * @param kernel
+     * @returns {SVM}
+     */
+    export function setKernel(kernel:IKernel):SVM
+    {
+        if(kernel instanceof SVM.Kernels.BaseKernel)
+        {
+            console.log(kernel.getKernelProperties());
+        }
+
+        _kernel = kernel;
+        return SVM;
+    }
+
+    /**
+     * @returns {IKernel}
+     */
+    export function getKernel():IKernel
+    {
+        return _kernel;
+    }
+
+    /**
+     * @param args
+     * @returns {SVM}
+     */
+    export function setKernelProperties(properties:IKernelProperty[]):SVM
+    {
+        properties.forEach((kernelProperty:IKernelProperty)=>
+        {
+            _kernel.setKernelProperty(kernelProperty.name,kernelProperty.value);
+        });
+
+        return SVM;
+    }
+
+    /**
+     * @param inputs
+     * @param labels
+     * @returns {SVM}
+     */
+    export function train(inputs:number[][], labels:number[]):SVM
+    {
+        if(!_kernel)
+        {
+            _kernel = new SVM.Kernels.LinearKernel();
+        }
+
+        if(!_machine)
+        {
+            _machine = new SVM.Engine.KernelSupportVectorMachine(_kernel, inputs[0].length);
+        }
+
+        if(!_teacher)
+        {
+            _teacher = new SVM.Learning.SequentialMinimalOptimization(_machine, inputs, labels);
+        }
+
+        _teacher.run();
+
+        return SVM;
+    }
+
+    /**
+     * @returns {IRenderer}
+     */
+    export function retrain():IRenderer
+    {
+        _teacher.run();
+
+        return SVM.render();
+    }
+
+    /**
+     * @param renderer
+     * @returns {SVM}
+     */
+    export function setRenderer(renderer:IRenderer):SVM
+    {
+        _renderer = renderer;
+        return SVM;
+    }
+
+    /**
+     * @returns {IRenderer}
+     */
+    export function render():IRenderer
+    {
+        if(!_renderer)
+        {
+            _renderer = new SVM.Renderer.Canvas(_teacher);
+        }
+
+        return _renderer.render();
+    }
+}
 
 
 module SVM.Engine {
@@ -322,20 +515,18 @@ module SVM.Engine {
         {
             var output = this.getThreshold();
 
-            var weights = this.getWeights();
             if(this.isCompact())
             {
-                for(var i = 0; i < weights.length; i++)
+                for(var i = 0; i < this.weights.length; i++)
                 {
-                    output += weights[i] * inputs[i];
+                    output += this.getWeight(i) * inputs[i];
                 }
             }
             else
             {
-                var supportVectors = this.getSupportVectors();
-                for(var i = 0; i < supportVectors.length; i++)
+                for(var i = 0; i < this.supportVectors.length; i++)
                 {
-                    output += weights[i] * this.kernel.run(supportVectors[i], inputs);
+                    output += this.getWeight(i) * this.kernel.run(this.getSupportVector(i), inputs);
                 }
             }
 

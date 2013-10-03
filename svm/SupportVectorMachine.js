@@ -6,6 +6,134 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    var _kernel = null;
+    var _machine = null;
+    var _teacher = null;
+    var _renderer = null;
+
+    var _width = window.innerWidth;
+    var _height = window.innerHeight;
+    var _scale = 50.0;
+    var _density = 2.5;
+
+    function setWidth(width) {
+        _width = width;
+        return SVM;
+    }
+    SVM.setWidth = setWidth;
+
+    function getWidth() {
+        return _width;
+    }
+    SVM.getWidth = getWidth;
+
+    function setHeight(height) {
+        _height = height;
+        return SVM;
+    }
+    SVM.setHeight = setHeight;
+
+    function getHeight() {
+        return _height;
+    }
+    SVM.getHeight = getHeight;
+
+    function setScale(scale) {
+        _scale = scale;
+        return SVM;
+    }
+    SVM.setScale = setScale;
+
+    function getScale() {
+        return _scale;
+    }
+    SVM.getScale = getScale;
+
+    function setDensity(delta) {
+        _density = delta;
+        return SVM;
+    }
+    SVM.setDensity = setDensity;
+
+    function getDensity() {
+        return _density;
+    }
+    SVM.getDensity = getDensity;
+
+    function setTeacher(teacher) {
+        _teacher = teacher;
+        return SVM;
+    }
+    SVM.setTeacher = setTeacher;
+
+    function setKernel(kernel) {
+        if (kernel instanceof SVM.Kernels.BaseKernel) {
+            console.log(kernel.getKernelProperties());
+        }
+
+        _kernel = kernel;
+        return SVM;
+    }
+    SVM.setKernel = setKernel;
+
+    function getKernel() {
+        return _kernel;
+    }
+    SVM.getKernel = getKernel;
+
+    function setKernelProperties(properties) {
+        properties.forEach(function (kernelProperty) {
+            _kernel.setKernelProperty(kernelProperty.name, kernelProperty.value);
+        });
+
+        return SVM;
+    }
+    SVM.setKernelProperties = setKernelProperties;
+
+    function train(inputs, labels) {
+        if (!_kernel) {
+            _kernel = new SVM.Kernels.LinearKernel();
+        }
+
+        if (!_machine) {
+            _machine = new SVM.Engine.KernelSupportVectorMachine(_kernel, inputs[0].length);
+        }
+
+        if (!_teacher) {
+            _teacher = new SVM.Learning.SequentialMinimalOptimization(_machine, inputs, labels);
+        }
+
+        _teacher.run();
+
+        return SVM;
+    }
+    SVM.train = train;
+
+    function retrain() {
+        _teacher.run();
+
+        return SVM.render();
+    }
+    SVM.retrain = retrain;
+
+    function setRenderer(renderer) {
+        _renderer = renderer;
+        return SVM;
+    }
+    SVM.setRenderer = setRenderer;
+
+    function render() {
+        if (!_renderer) {
+            _renderer = new SVM.Renderer.Canvas(_teacher);
+        }
+
+        return _renderer.render();
+    }
+    SVM.render = render;
+})(SVM || (SVM = {}));
+
+var SVM;
+(function (SVM) {
     (function (Engine) {
         var SupportVectorMachine = (function () {
             function SupportVectorMachine(inputs) {
@@ -125,15 +253,13 @@ var SVM;
             KernelSupportVectorMachine.prototype.compute = function (inputs) {
                 var output = this.getThreshold();
 
-                var weights = this.getWeights();
                 if (this.isCompact()) {
-                    for (var i = 0; i < weights.length; i++) {
-                        output += weights[i] * inputs[i];
+                    for (var i = 0; i < this.weights.length; i++) {
+                        output += this.getWeight(i) * inputs[i];
                     }
                 } else {
-                    var supportVectors = this.getSupportVectors();
-                    for (var i = 0; i < supportVectors.length; i++) {
-                        output += weights[i] * this.kernel.run(supportVectors[i], inputs);
+                    for (var i = 0; i < this.supportVectors.length; i++) {
+                        output += this.getWeight(i) * this.kernel.run(this.getSupportVector(i), inputs);
                     }
                 }
 

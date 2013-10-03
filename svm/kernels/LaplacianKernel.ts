@@ -5,21 +5,30 @@
 ///<reference path='../interfaces/Interfaces.ts' />
 
 module SVM.Kernels {
+
     /**
      * Laplacian Kernel.
      */
     export class LaplacianKernel implements IKernel {
 
-        public sigma:number;
-        public gamma:number;
+        public _sigma:number;
+        public _gamma:number;
 
+        /**
+         * @param gamma
+         * @param sigma
+         */
         constructor(gamma:number = 1, sigma:number = 1)
         {
-            this.sigma = sigma;
-            this.gamma = gamma;
+            this._sigma = sigma;
+            this._gamma = gamma;
         }
 
-
+        /**
+         * @param x
+         * @param y
+         * @returns {number}
+         */
         public run(x:number[], y:number[]):number
         {
             if(x == y)
@@ -36,7 +45,7 @@ module SVM.Kernels {
 
             norm = Math.sqrt(norm);
 
-            return Math.exp(-this.gamma * norm);
+            return Math.exp(-this._gamma * norm);
         }
     }
 }

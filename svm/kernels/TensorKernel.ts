@@ -1,19 +1,21 @@
 ///<reference path='../interfaces/Interfaces.ts' />
 
 module SVM.Kernels {
+
     /**
      * Tensor Product combination of Kernels.
      */
-    export class TensorKernel implements IKernel {
+    export class TensorKernel implements IKernel
+    {
 
-        public kernels:IKernel[];
+        private _kernels:IKernel[];
 
         /**
          * @param kernels
          */
         constructor(kernels:IKernel[])
         {
-            this.kernels = kernels;
+            this._kernels = kernels;
         }
 
         /**
@@ -24,9 +26,9 @@ module SVM.Kernels {
         public run(x:number[], y:number[]):number
         {
             var product = 1.0;
-            for(var i = 0; i < this.kernels.length; i++)
+            for(var i = 0; i < this._kernels.length; i++)
             {
-                product *= this.kernels[i].run(x, y);
+                product *= this._kernels[i].run(x, y);
             }
 
             return product;

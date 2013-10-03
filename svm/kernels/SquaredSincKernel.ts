@@ -2,19 +2,21 @@
 ///<reference path='../interfaces/Interfaces.ts' />
 
 module SVM.Kernels {
+
     /**
      * Squared Sinc Kernel.
      */
-    export class SquaredSincKernel implements IKernel {
+    export class SquaredSincKernel implements IKernel
+    {
 
-        public gamma:number;
+        private _gamma:number;
 
         /**
          * @param gamma
          */
         constructor(gamma:number = 1.0)
         {
-            this.gamma = gamma;
+            this._gamma = gamma;
         }
 
         /**
@@ -31,8 +33,8 @@ module SVM.Kernels {
                 norm += d * d;
             }
 
-            var num = this.gamma * Math.sqrt(norm);
-            var den = this.gamma * this.gamma * norm;
+            var num = this._gamma * Math.sqrt(norm);
+            var den = this._gamma * this._gamma * norm;
 
             return Math.sin(num) / den;
         }

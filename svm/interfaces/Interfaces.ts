@@ -13,7 +13,7 @@ interface IKernel {
     run(x:number[], y:number[]):number;
 }
 
-interface ISupportVectorMachineLearning {
+interface ISupportVectorMachineLearning{
 
     machine:ISupportVectorMachine;
     alphaA:number[];
@@ -98,16 +98,30 @@ interface IList
     clear():void;
 }
 
-interface IRenderer<T>
+interface IRenderer
 {
-    (teacher:ISupportVectorMachineLearning):IRenderer<T>
-    render():IRenderer<T>;
-    drawBackground(matrix:number[][], color:string):IRenderer<T>;
-    drawAxis():IRenderer<T>;
-    drawMargin():IRenderer<T>;
-    drawStatus():IRenderer<T>;
-    drawCircle(x:number, y:number, r:number):IRenderer<T>
-    drawRect(x:number, y:number, w:number, h:number):IRenderer<T>
-    drawBubble(x:number, y:number, w:number, h:number, radius:number):IRenderer<T>
-    drawDataPoints(inputs:number[], outputs:number[], alphaA:number[], alphaB:number[], complexity:number):IRenderer<T>;
+    (teacher:ISupportVectorMachineLearning):IRenderer
+    render():IRenderer;
+    drawBackground(matrix:number[][], color:string):IRenderer;
+    drawAxis():IRenderer;
+    drawMargin():IRenderer;
+    drawStatus():IRenderer;
+    drawCircle(x:number, y:number, r:number):IRenderer
+    drawRect(x:number, y:number, w:number, h:number):IRenderer
+    drawBubble(x:number, y:number, w:number, h:number, radius:number):IRenderer
+    drawDataPoints(inputs:number[], outputs:number[], alphaA:number[], alphaB:number[], complexity:number):IRenderer;
+}
+
+interface IInteractableKernel
+{
+    initProperties(properties:IKernelProperty[]):void
+    getKernelProperties():string[];
+    getKernelProperty(name:string):number;
+    setKernelProperty(name:string, value:number):void;
+}
+
+interface IKernelProperty
+{
+    name:string;
+    value:number;
 }

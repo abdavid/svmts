@@ -1,6 +1,7 @@
 ///<reference path='../interfaces/Interfaces.ts' />
 
 module SVM.Kernels {
+
     /**
      * Infinite Spline Kernel function.
      */

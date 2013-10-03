@@ -14,7 +14,13 @@
 
 module SVM.Renderer {
 
-    export class Canvas implements IRenderer<Engine> {
+    export function Canvas(teacher:ISupportVectorMachineLearning)
+    {
+        return new SVM.Renderer.canvas(teacher);
+    }
+
+
+    export class canvas implements IRenderer<Engine> {
 
         teacher:ISupportVectorMachineLearning;
         canvas:HTMLCanvasElement;
@@ -23,31 +29,33 @@ module SVM.Renderer {
         constructor(teacher:ISupportVectorMachineLearning)
         {
             this.canvas = document.createElement('canvas');
-            this.canvas.height = SVM.Renderer.getHeight();
-            this.canvas.width = SVM.Renderer.getWidth();
+            this.canvas.height = SVM.getHeight();
+            this.canvas.width = SVM.getWidth();
 
             document.body.appendChild(this.canvas);
 
             this.context = this.canvas.getContext('2d');
 
             this.teacher = teacher;
+
+            //new CanvasLoader(this.context);
         }
 
         /**
-         * @returns {SVM.Renderer.Canvas}
+         * @returns {SVM.Renderer.canvas}
          */
-        public render():Canvas
+        public render():canvas
         {
             this.clearCanvas();
 
             var resultsA = [], resultsB = [];
-            for(var x = 0.0; x <= SVM.Renderer.getWidth(); x += SVM.Renderer.getDensity())
+            for(var x = 0.0; x <= SVM.getWidth(); x += SVM.getDensity())
             {
-                for(var y = 0.0; y <= SVM.Renderer.getHeight(); y += SVM.Renderer.getDensity())
+                for(var y = 0.0; y <= SVM.getHeight(); y += SVM.getDensity())
                 {
                     var vector = [
-                            (x - SVM.Renderer.getWidth() / 2)/SVM.Renderer.getScale(),
-                            (y - SVM.Renderer.getHeight() / 2)/SVM.Renderer.getScale()
+                            (x - SVM.getWidth() / 2) / SVM.getScale(),
+                            (y - SVM.getHeight() / 2) / SVM.getScale()
                         ],
                         decision = this.teacher.machine.compute(vector);
 
@@ -64,8 +72,8 @@ module SVM.Renderer {
             }
 
             this
-                .drawBackground(resultsA,'rgb(150,250,150)')
-                .drawBackground(resultsB,'rgb(250,150,150)')
+                .drawBackground(resultsA, 'rgb(150,250,150)')
+                .drawBackground(resultsB, 'rgb(250,150,150)')
                 .drawDataPoints()
                 .drawAxis()
                 .drawStatus();
@@ -77,19 +85,19 @@ module SVM.Renderer {
          * Paints the decision background
          * @param matrix
          * @param color
-         * @returns {SVM.Renderer.CanvasEngine}
+         * @returns {SVM.Renderer.canvas}
          */
-        public drawBackground(matrix:number[][], color:string):Canvas
+        public drawBackground(matrix:number[][], color:string):canvas
         {
             matrix.forEach((V:number[], i)=>
             {
                 this.context.fillStyle = color;
 
                 this.drawRect(
-                    V[0] * SVM.Renderer.getScale() + (SVM.Renderer.getWidth() / 2),
-                    V[1] * SVM.Renderer.getScale() + (SVM.Renderer.getHeight() / 2),
-                    2 + SVM.Renderer.getDensity(),
-                    2 + SVM.Renderer.getDensity()
+                    V[0] * SVM.getScale() + (SVM.getWidth() / 2),
+                    V[1] * SVM.getScale() + (SVM.getHeight() / 2),
+                    2 + SVM.getDensity(),
+                    2 + SVM.getDensity()
                 );
             });
 
@@ -98,26 +106,26 @@ module SVM.Renderer {
 
         /**
          * Draw the axis
-         * @returns {SVM.Renderer.CanvasEngine}
+         * @returns {SVM.Renderer.canvas}
          */
-        public drawAxis():Canvas
+        public drawAxis():canvas
         {
             this.context.beginPath();
             this.context.strokeStyle = 'rgb(50,50,50)';
             this.context.lineWidth = 1;
-            this.context.moveTo(0, SVM.Renderer.getHeight() / 2);
-            this.context.lineTo(SVM.Renderer.getWidth(), SVM.Renderer.getHeight() / 2);
-            this.context.moveTo(SVM.Renderer.getWidth() / 2, 0);
-            this.context.lineTo(SVM.Renderer.getWidth() / 2, SVM.Renderer.getHeight());
+            this.context.moveTo(0, SVM.getHeight() / 2);
+            this.context.lineTo(SVM.getWidth(), SVM.getHeight() / 2);
+            this.context.moveTo(SVM.getWidth() / 2, 0);
+            this.context.lineTo(SVM.getWidth() / 2, SVM.getHeight());
             this.context.stroke();
 
             return this;
         }
 
         /**
-         * @returns {SVM.Renderer.CanvasEngine}
+         * @returns {SVM.Renderer.canvas}
          */
-        public drawDataPoints():Canvas
+        public drawDataPoints():canvas
         {
             this.context.strokeStyle = 'rgb(0,0,0)';
 
@@ -142,10 +150,10 @@ module SVM.Renderer {
                     this.context.lineWidth = 1;
                 }
 
-                var posX = this.teacher.inputs[i][0] * SVM.Renderer.getScale() + (SVM.Renderer.getWidth() / 2),
-                    posY = this.teacher.inputs[i][1] * SVM.Renderer.getScale() + (SVM.Renderer.getHeight() / 2) ,
-                    //-- todo adjust usage of alpha values here
-                    radius = Math.floor(3 + (this.teacher.alphaA[i] + this.teacher.alphaB[i]) * 5.0 /  this.teacher.getComplexity());
+                var posX = this.teacher.inputs[i][0] * SVM.getScale() + (SVM.getWidth() / 2),
+                    posY = this.teacher.inputs[i][1] * SVM.getScale() + (SVM.getHeight() / 2) ,
+                //-- todo adjust usage of _alpha values here
+                    radius = Math.floor(3 + (this.teacher.alphaA[i] + this.teacher.alphaB[i]) * 5.0 / this.teacher.getComplexity());
 
                 this.drawCircle(posX, posY, radius);
             }
@@ -154,9 +162,9 @@ module SVM.Renderer {
         }
 
         /**
-         * @returns {SVM.Renderer.CanvasEngine}
+         * @returns {SVM.Renderer.canvas}
          */
-        public drawMargin():Canvas
+        public drawMargin():canvas
         {
             var xs = [-5, 5], ys = [0, 0];
 
@@ -216,9 +224,9 @@ module SVM.Renderer {
         }
 
         /**
-         * @returns {SVM.Renderer.CanvasEngine}
+         * @returns {SVM.Renderer.canvas}
          */
-        public drawStatus():Canvas
+        public drawStatus():canvas
         {
             this.context.fillStyle = 'rgb(0,0,0)';
 
@@ -231,18 +239,18 @@ module SVM.Renderer {
                 }
             }
 
-            this.context.fillText("Number of support vectors: " + numsupp + " / " + this.teacher.inputs.length, 10, SVM.Renderer.getHeight() - 50);
+            this.context.fillText("Number of support vectors: " + numsupp + " / " + this.teacher.inputs.length, 10, SVM.getHeight() - 50);
 
             if(this.teacher.kernel instanceof SVM.Kernels.GaussianKernel)
             {
-                this.context.fillText("Using Rbf kernel with sigma = " + this.teacher.kernel.sigma().toPrecision(2), 10, SVM.Renderer.getHeight() - 70);
+                this.context.fillText("Using Rbf kernel with _sigma = " + this.teacher.kernel.sigma().toPrecision(2), 10, SVM.getHeight() - 70);
             }
             else
             {
-                this.context.fillText("Using " + this.teacher.kernel.constructor.name, 10, SVM.Renderer.getHeight() - 70);
+                this.context.fillText("Using " + this.teacher.kernel.constructor.name, 10, SVM.getHeight() - 70);
             }
 
-            this.context.fillText("C = " + this.teacher.getComplexity().toPrecision(2), 10, SVM.Renderer.getHeight() - 90);
+            this.context.fillText("C = " + this.teacher.getComplexity().toPrecision(2), 10, SVM.getHeight() - 90);
 
             return this;
         }
@@ -253,9 +261,9 @@ module SVM.Renderer {
          * @param w
          * @param h
          * @param radius
-         * @returns {SVM.Renderer.CanvasEngine}
+         * @returns {SVM.Renderer.canvas}
          */
-        public drawBubble(x:number, y:number, w:number, h:number, radius:number):Canvas
+        public drawBubble(x:number, y:number, w:number, h:number, radius:number):canvas
         {
             var r = x + w,
                 b = y + h;
@@ -284,9 +292,9 @@ module SVM.Renderer {
          * @param y
          * @param w
          * @param h
-         * @returns {SVM.Renderer.CanvasEngine}
+         * @returns {SVM.Renderer.canvas}
          */
-        public drawRect(x:number, y:number, w:number, h:number, stroke:boolean = false):Canvas
+        public drawRect(x:number, y:number, w:number, h:number, stroke:boolean = false):canvas
         {
             this.context.beginPath();
             this.context.rect(x, y, w, h);
@@ -305,9 +313,9 @@ module SVM.Renderer {
          * @param x
          * @param y
          * @param r
-         * @returns {SVM.Renderer.CanvasEngine}
+         * @returns {SVM.Renderer.canvas}
          */
-        public drawCircle(x:number, y:number, r:number):Canvas
+        public drawCircle(x:number, y:number, r:number):canvas
         {
             this.context.beginPath();
             this.context.arc(x, y, r, 0, Math.PI * 2, true);
@@ -319,18 +327,223 @@ module SVM.Renderer {
         }
 
         /**
-         * @returns {SVM.Renderer.Canvas}
+         * @returns {SVM.Renderer.canvas}
          */
-        public clearCanvas():Canvas
+        public clearCanvas():canvas
         {
             this.context.clearRect(
                 0,
                 0,
-                SVM.Renderer.getWidth(),
-                SVM.Renderer.getHeight()
+                SVM.getWidth(),
+                SVM.getHeight()
             );
 
             return this;
+        }
+    }
+
+    export class CanvasLoader {
+
+        ctx:CanvasRenderingContext2D;
+        circle:Object;
+        particles:number[];
+        particleMax:number;
+        gradient1:any;
+        gradient2:any;
+        gradient3:any;
+        gradient4:any;
+
+        constructor(ctx:CanvasRenderingContext2D)
+        {
+            this.ctx = ctx;
+
+            this.circle = {
+                x: (ctx.canvas.width / 2) + 5,
+                y: (ctx.canvas.height / 2) + 22,
+                radius: 90,
+                speed: 2,
+                rotation: 0,
+                angleStart: 270,
+                angleEnd: 90,
+                hue: 220,
+                thickness: 18,
+                blur: 25
+            };
+
+            this.particles = [];
+            this.particleMax = 100;
+
+            /* Append Canvas */
+            //document.body.appendChild(c);
+
+            /* Set Constant Properties */
+            this.ctx.shadowBlur = this.circle.blur;
+            this.ctx.shadowColor = 'hsla(' + this.circle.hue + ', 80%, 60%, 1)';
+            this.ctx.lineCap = 'round';
+
+            this.gradient1 = this.ctx.createLinearGradient(0, -this.circle.radius, 0, this.circle.radius);
+            this.gradient1.addColorStop(0, 'hsla(' + this.circle.hue + ', 60%, 50%, .25)');
+            this.gradient1.addColorStop(1, 'hsla(' + this.circle.hue + ', 60%, 50%, 0)');
+
+            this.gradient2 = this.ctx.createLinearGradient(0, -this.circle.radius, 0, this.circle.radius);
+            this.gradient2.addColorStop(0, 'hsla(' + this.circle.hue + ', 100%, 50%, 0)');
+            this.gradient2.addColorStop(.1, 'hsla(' + this.circle.hue + ', 100%, 100%, .7)');
+            this.gradient2.addColorStop(1, 'hsla(' + this.circle.hue + ', 100%, 50%, 0)');
+
+            /* Loop It, Loop It Good */
+            this.loop();
+        }
+
+        private rand(a, b)
+        {
+            return ~~((Math.random() * (b - a + 1)) + a);
+        }
+
+        private dToR(degrees)
+        {
+            return degrees * (Math.PI / 180);
+        }
+
+        public updateCircle()
+        {
+            if(this.circle.rotation < 360)
+            {
+                this.circle.rotation += this.circle.speed;
+            }
+            else
+            {
+                this.circle.rotation = 0;
+            }
+        }
+
+        public renderCircle()
+        {
+            this.ctx.save();
+            this.ctx.translate(this.circle.x, this.circle.y);
+            this.ctx.rotate(this.dToR(this.circle.rotation));
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, this.circle.radius, this.dToR(this.circle.angleStart), this.dToR(this.circle.angleEnd), true);
+            this.ctx.lineWidth = this.circle.thickness;
+            this.ctx.strokeStyle = this.gradient1;
+            this.ctx.stroke();
+            this.ctx.restore();
+        }
+
+        public renderCircleBorder()
+        {
+            this.ctx.save();
+            this.ctx.translate(this.circle.x, this.circle.y);
+            this.ctx.rotate(this.dToR(this.circle.rotation));
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, this.circle.radius + (this.circle.thickness / 2), this.dToR(this.circle.angleStart), this.dToR(this.circle.angleEnd), true);
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeStyle = this.gradient2;
+            this.ctx.stroke();
+            this.ctx.restore();
+        }
+
+        public renderCircleFlare()
+        {
+            this.ctx.save();
+            this.ctx.translate(this.circle.x, this.circle.y);
+            this.ctx.rotate(this.dToR(this.circle.rotation + 185));
+            this.ctx.scale(1, 1);
+            this.ctx.beginPath();
+            this.ctx.arc(0, this.circle.radius, 30, 0, Math.PI * 2, false);
+            this.ctx.closePath();
+            this.gradient3 = this.ctx.createRadialGradient(0, this.circle.radius, 0, 0, this.circle.radius, 30);
+            this.gradient3.addColorStop(0, 'hsla(330, 50%, 50%, .35)');
+            this.gradient3.addColorStop(1, 'hsla(330, 50%, 50%, 0)');
+            this.ctx.fillStyle = this.gradient3;
+            this.ctx.fill();
+            this.ctx.restore();
+        }
+
+        public renderCircleFlare2()
+        {
+            this.ctx.save();
+            this.ctx.translate(this.circle.x, this.circle.y);
+            this.ctx.rotate(this.dToR(this.circle.rotation + 165));
+            this.ctx.scale(1.5, 1);
+            this.ctx.beginPath();
+            this.ctx.arc(0, this.circle.radius, 25, 0, Math.PI * 2, false);
+            this.ctx.closePath();
+            this.gradient4 = this.ctx.createRadialGradient(0, this.circle.radius, 0, 0, this.circle.radius, 25);
+            this.gradient4.addColorStop(0, 'hsla(30, 100%, 50%, .2)');
+            this.gradient4.addColorStop(1, 'hsla(30, 100%, 50%, 0)');
+            this.ctx.fillStyle = this.gradient4;
+            this.ctx.fill();
+            this.ctx.restore();
+        }
+
+        public createParticles()
+        {
+            if(this.particles.length < this.particleMax)
+            {
+                this.particles.push({
+                    x: (this.circle.x + this.circle.radius * Math.cos(this.dToR(this.circle.rotation - 85))) + (this.rand(0, this.circle.thickness * 2) - this.circle.thickness),
+                    y: (this.circle.y + this.circle.radius * Math.sin(this.dToR(this.circle.rotation - 85))) + (this.rand(0, this.circle.thickness * 2) - this.circle.thickness),
+                    vx: (this.rand(0, 100) - 50) / 1000,
+                    vy: (this.rand(0, 100) - 50) / 1000,
+                    radius: this.rand(1, 6) / 2,
+                    alpha: this.rand(10, 20) / 100
+                });
+            }
+        }
+
+        public updateParticles()
+        {
+            var i = this.particles.length;
+            while(i--)
+            {
+                var p = this.particles[i];
+                p.vx += (this.rand(0, 100) - 50) / 750;
+                p.vy += (this.rand(0, 100) - 50) / 750;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= .01;
+
+                if(p.alpha < .02)
+                {
+                    this.particles.splice(i, 1)
+                }
+            }
+        }
+
+        public renderParticles()
+        {
+            var i = this.particles.length;
+            while(i--)
+            {
+                var p = this.particles[i];
+                this.ctx.beginPath();
+                this.ctx.fillRect(p.x, p.y, p.radius, p.radius);
+                this.ctx.closePath();
+                this.ctx.fillStyle = 'hsla(0, 0%, 100%, ' + p.alpha + ')';
+            }
+        }
+
+        public clear()
+        {
+            this.ctx.globalCompositeOperation = 'destination-out';
+            this.ctx.fillStyle = 'rgba(0, 0, 0, .1)';
+            this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+            this.ctx.globalCompositeOperation = 'lighter';
+        }
+
+        public loop()
+        {
+            this.clear();
+            this.updateCircle();
+            this.renderCircle();
+            this.renderCircleBorder();
+            this.renderCircleFlare();
+            this.renderCircleFlare2();
+            this.createParticles();
+            this.updateParticles();
+            this.renderParticles();
+
+            window.requestAnimationFrame(()=>this.loop());
         }
     }
 }

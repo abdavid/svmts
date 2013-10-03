@@ -9,15 +9,16 @@ module SVM.Kernels {
     /**
      * @class SigmoidKernel
      * Sigmoid kernel of the form k(x,z) = tanh(a * x'z + c).
-     * Sigmoid kernels are only conditionally positive definite for some values of a and c,
+     * Sigmoid _kernels are only conditionally positive definite for some values of a and c,
      * and therefore may not induce a reproducing kernel Hilbert space. However, they have been successfully
      * used in practice (Scholkopf and Smola, 2002).
      *
      * @TODO add estimation function for initialization of kernel correctly.
      */
-    export class SigmoidKernel implements IKernel {
-        public alpha:number;
-        public constant:number;
+    export class SigmoidKernel implements IKernel
+    {
+        private _alpha:number;
+        private _constant:number;
 
         /**
          * @param alpha
@@ -25,8 +26,8 @@ module SVM.Kernels {
          */
         constructor(alpha:number = 0.01, constant:number = -Math.E)
         {
-            this.alpha = alpha;
-            this.constant = constant;
+            this._alpha = alpha;
+            this._constant = constant;
         }
 
         /**
@@ -45,7 +46,7 @@ module SVM.Kernels {
                 sum += x[i] * y[i];
             }
 
-            return this.tanh(this.alpha * sum + this.constant);
+            return this.tanh(this._alpha * sum + this._constant);
         }
 
         /**

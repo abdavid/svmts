@@ -7,22 +7,22 @@ var SVM;
                 if (typeof translation === "undefined") { translation = 1.0; }
                 if (typeof invariant === "undefined") { invariant = true; }
                 if (typeof mother === "undefined") { mother = null; }
-                this.invariant = true;
-                this.invariant = invariant;
-                this.dilation = dilation;
-                this.translation = translation;
+                this._invariant = true;
+                this._invariant = invariant;
+                this._dilation = dilation;
+                this._translation = translation;
                 this._mother = mother || this.mother;
             }
             WaveletKernel.prototype.run = function (x, y) {
                 var prod = 1.0;
 
-                if (this.invariant) {
+                if (this._invariant) {
                     for (var i = 0; i < x.length; i++) {
-                        prod *= (this._mother((x[i] - this.translation) / this.dilation)) * (this._mother((y[i] - this.translation) / this.dilation));
+                        prod *= (this._mother((x[i] - this._translation) / this._dilation)) * (this._mother((y[i] - this._translation) / this._dilation));
                     }
                 } else {
                     for (var i = 0; i < x.length; i++) {
-                        prod *= this._mother((x[i] - y[i] / this.dilation));
+                        prod *= this._mother((x[i] - y[i] / this._dilation));
                     }
                 }
 

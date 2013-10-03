@@ -5,8 +5,8 @@ var SVM;
             function LaplacianKernel(gamma, sigma) {
                 if (typeof gamma === "undefined") { gamma = 1; }
                 if (typeof sigma === "undefined") { sigma = 1; }
-                this.sigma = sigma;
-                this.gamma = gamma;
+                this._sigma = sigma;
+                this._gamma = gamma;
             }
             LaplacianKernel.prototype.run = function (x, y) {
                 if (x == y) {
@@ -21,7 +21,7 @@ var SVM;
 
                 norm = Math.sqrt(norm);
 
-                return Math.exp(-this.gamma * norm);
+                return Math.exp(-this._gamma * norm);
             };
             return LaplacianKernel;
         })();

@@ -1,7 +1,11 @@
 ///<reference path='../interfaces/Interfaces.ts' />
 
 module SVM.Kernels {
+
     /**
+     * @class GaussianKernel
+     *
+     * @summary
      * The Gaussian kernel requires tuning for the proper value of σ. Different approaches
      * to this problem includes the use of brute force (i.e. using a grid-search algorithm)
      * or a gradient ascent optimization.
@@ -10,15 +14,15 @@ module SVM.Kernels {
      * Gaussian Kernel for One Class Learning.
      * Available on: http://www.cs.rpi.edu/~szymansk/papers/icann07.pdf
      */
-
-    export class GaussianKernel implements IKernel, IDistance {
+    export class GaussianKernel implements IKernel, IDistance
+    {
         private _sigma:number;
         private _gamma:number;
 
         /**
          * @param sigma
          */
-            constructor(sigma:number = 1)
+        constructor(sigma:number = 1)
         {
             this.sigma(sigma);
         }
@@ -85,8 +89,8 @@ module SVM.Kernels {
         }
 
         /**
-         * Gets or sets the sigma value for the kernel.
-         * When setting sigma, gamma gets updated accordingly (gamma = 0.5/sigma^2).
+         * Gets or sets the _sigma value for the kernel.
+         * When setting _sigma, _gamma gets updated accordingly (_gamma = 0.5/_sigma^2).
          *
          * @param sigma
          */
@@ -102,8 +106,8 @@ module SVM.Kernels {
         }
 
         /**
-         * Gets or sets the sigma² value for the kernel.
-         * When setting sigma², gamma gets updated accordingly (gamma = 0.5/sigma²).
+         * Gets or sets the _sigma² value for the kernel.
+         * When setting _sigma², _gamma gets updated accordingly (_gamma = 0.5/_sigma²).
          *
          * @param sigma
          * @returns {number}
@@ -120,8 +124,8 @@ module SVM.Kernels {
         }
 
         /**
-         * Gets or sets the gamma value for the kernel.
-         * When setting gamma, sigma gets updated accordingly (gamma = 0.5/sigma^2).
+         * Gets or sets the _gamma value for the kernel.
+         * When setting _gamma, _sigma gets updated accordingly (_gamma = 0.5/_sigma^2).
          *
          * @param gamma
          * @returns {number}

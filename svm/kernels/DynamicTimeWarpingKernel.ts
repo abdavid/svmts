@@ -4,7 +4,9 @@
 
 ///<reference path='../interfaces/Interfaces.ts' />
 
+
 module SVM.Kernels {
+
     /**
      * The Dynamic Time Warping Sequence Kernel is a sequence kernel, accepting
      * vector sequences of variable size as input. Despite the sequences being
@@ -13,7 +15,7 @@ module SVM.Kernels {
      *
      * The conversion of the DTW global distance to a dot product uses a combination
      * of a technique known as spherical normalization and the polynomial kernel. The
-     * degree of the polynomial kernel and the alpha for the spherical normalization
+     * _degree of the polynomial kernel and the _alpha for the spherical normalization
      * should be given at the construction of the kernel. For more information,
      * please see the referenced papers shown below.
      */
@@ -21,7 +23,7 @@ module SVM.Kernels {
 
         public alpha:number = 1.0; // spherical projection distance
         public length:number = 1; // length of the feature vectors
-        public degree:number = 1; // polynomial kernel degree
+        public degree:number = 1; // polynomial kernel _degree
 
         private thread:Worker;
         private locals:Locals;

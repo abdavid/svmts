@@ -12,17 +12,27 @@ module SVM.Kernels {
      * Histogram Intersection Kernel for image classification but applies
      * in a much larger variety of contexts (Boughorbel, 2005).
      */
-    export class HistogramIntersectionKernel implements IKernel {
+    export class HistogramIntersectionKernel implements IKernel
+    {
 
         public alpha:number;
         public beta:number;
 
+        /**
+         * @param alpha
+         * @param beta
+         */
         constructor(alpha:number = 1, beta:number = 1)
         {
             this.alpha = alpha;
             this.beta = beta;
         }
 
+        /**
+         * @param x
+         * @param y
+         * @returns {number}
+         */
         public run(x:number[], y:number[]):number
         {
             var sum = 0.0;

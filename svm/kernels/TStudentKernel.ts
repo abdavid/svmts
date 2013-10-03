@@ -3,19 +3,22 @@
  */
 
 ///<reference path='../interfaces/Interfaces.ts' />
+///<reference path='./BaseKernel.ts' />
 
 module SVM.Kernels
 {
-    export class TStudentKernel implements IKernel {
 
-        public degree:number;
-
+    export class TStudentKernel extends BaseKernel implements IKernel
+    {
         /**
          * @param degree
          */
         constructor(degree:number = 1)
         {
-            this.degree = degree;
+            super([{
+                name:'degree',
+                value:degree
+            }]);
         }
 
         /**
@@ -33,7 +36,7 @@ module SVM.Kernels
             }
             norm = Math.sqrt(norm);
 
-            return 1.0 / (1.0 + Math.pow(norm, this.degree));
+            return 1.0 / (1.0 + Math.pow(norm, this.getKernelProperty('degree')));
         }
     }
 }

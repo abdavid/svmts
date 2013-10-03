@@ -212,7 +212,7 @@ module SVM.Renderer {
 
             if (this.smo.kernel instanceof GaussianKernel)
             {
-                this.ctx.fillText("Using Rbf kernel with sigma = " + this.smo.kernel.sigma().toPrecision(2), 10, this.height - 70);
+                this.ctx.fillText("Using Rbf kernel with _sigma = " + this.smo.kernel.sigma().toPrecision(2), 10, this.height - 70);
             }
             else
             {

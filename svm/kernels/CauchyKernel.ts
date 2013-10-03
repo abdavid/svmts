@@ -4,7 +4,11 @@
 ///<reference path='../interfaces/Interfaces.ts' />
 
 module SVM.Kernels {
+
     /**
+     * @class CauchyKernel
+     *
+     * @summary
      * The Cauchy kernel comes from the Cauchy distribution (Basak, 2008). It is a
      * long-tailed kernel and can be used to give long-range influence and sensitivity
      * over the high dimension space.

@@ -5,16 +5,17 @@
 ///<reference path='../interfaces/Interfaces.ts' />
 module SVM.Kernels
 {
-    export class WaveKernel implements IKernel {
+    export class WaveKernel implements IKernel
+    {
 
-        public sigma:number;
+        private _sigma:number;
 
         /**
          * @param sigma
          */
         constructor(sigma:number = 1)
         {
-            this.sigma = sigma;
+            this._sigma = sigma;
         }
 
         /**
@@ -31,13 +32,13 @@ module SVM.Kernels
                 norm += d * d;
             }
 
-            if(this.sigma == 0 || norm == 0)
+            if(this._sigma == 0 || norm == 0)
             {
                 return 0;
             }
             else
             {
-                return (this.sigma / norm) * Math.sin(norm / this.sigma);
+                return (this._sigma / norm) * Math.sin(norm / this._sigma);
             }
         }
     }

@@ -2,7 +2,7 @@
 <head>
     <title>Support Vector Machine in Javascript</title>
 
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="lib/jquery/jquery-1.10.2.js"></script>
     <script src="lib/underscore/underscore.js"></script>
     <script src="lib/d3/d3.min.js"></script>
     <script src="lib/WorkerConsole/WorkerConsole.js"></script>
@@ -12,6 +12,7 @@
     <script src="svm/base/Generic.js"></script>
 
 
+    <script src="svm/kernels/BaseKernel.js"></script>
     <script src="svm/kernels/LinearKernel.js"></script>
     <script src="svm/kernels/GaussianKernel.js"></script>
     <script src="svm/kernels/LaplacianKernel.js"></script>
@@ -66,6 +67,7 @@
 <body>
 <script type="text/javascript">
 
+    console.profile('runtime');
     var labels = [];
     var inputs = [];
 
@@ -91,23 +93,15 @@
     labels[8] = -1;
     labels[9] = -1;
 
+    var graph = SVM
+            .setKernel(new SVM.Kernels.TStudentKernel())
+            .setHeight(400)
+            .setWidth(400)
+            .setScale(40)
+            .train(inputs, labels)
+            .render();
 
-    var kernels = [
-        new SVM.Kernels.HistogramIntersectionKernel(),
-        new SVM.Kernels.WaveKernel(),
-        //new SVM.Kernels.BesselKernel(),
-    ];
-    var machine = new SVM.Engine.KernelSupportVectorMachine(new SVM.Kernels.TensorKernel(kernels), inputs[0].length),
-            smo = new SVM.Learning.SequentialMinimalOptimization(machine, inputs, labels);
-
-    smo.run();
-
-    var xMax = window.innerWidth,
-        yMax = window.innerHeight,
-        density = 1,
-        scaleFactor = 50.0;
-
-    var graph = new SVM.Renderer.Canvas(smo).render();
+    console.profileEnd();
 </script>
 </body>
 </html>

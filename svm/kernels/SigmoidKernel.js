@@ -5,8 +5,8 @@ var SVM;
             function SigmoidKernel(alpha, constant) {
                 if (typeof alpha === "undefined") { alpha = 0.01; }
                 if (typeof constant === "undefined") { constant = -Math.E; }
-                this.alpha = alpha;
-                this.constant = constant;
+                this._alpha = alpha;
+                this._constant = constant;
             }
             SigmoidKernel.prototype.run = function (x, y) {
                 var sum = 0.0;
@@ -15,7 +15,7 @@ var SVM;
                     sum += x[i] * y[i];
                 }
 
-                return this.tanh(this.alpha * sum + this.constant);
+                return this.tanh(this._alpha * sum + this._constant);
             };
 
             SigmoidKernel.prototype.tanh = function (arg) {

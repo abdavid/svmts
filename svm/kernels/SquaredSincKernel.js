@@ -4,7 +4,7 @@ var SVM;
         var SquaredSincKernel = (function () {
             function SquaredSincKernel(gamma) {
                 if (typeof gamma === "undefined") { gamma = 1.0; }
-                this.gamma = gamma;
+                this._gamma = gamma;
             }
             SquaredSincKernel.prototype.run = function (x, y) {
                 var norm = 0.0, d;
@@ -13,8 +13,8 @@ var SVM;
                     norm += d * d;
                 }
 
-                var num = this.gamma * Math.sqrt(norm);
-                var den = this.gamma * this.gamma * norm;
+                var num = this._gamma * Math.sqrt(norm);
+                var den = this._gamma * this._gamma * norm;
 
                 return Math.sin(num) / den;
             };
