@@ -2,39 +2,31 @@
 <head>
     <title>Support Vector Machine in Javascript</title>
 
-    <script src="lib/jquery/jquery-1.10.2.js"></script>
-    <script src="lib/underscore/underscore.js"></script>
-    <script src="lib/d3/d3.min.js"></script>
-    <script src="lib/WorkerConsole/WorkerConsole.js"></script>
-    <script src="lib/parallel/Parallel.js"></script>
-    <script src="lib/shims/requestAniFrame.js"></script>
-
-    <script src="svm/base/Generic.js"></script>
-
-
-    <script src="svm/kernels/BaseKernel.js"></script>
-    <script src="svm/kernels/LinearKernel.js"></script>
-    <script src="svm/kernels/GaussianKernel.js"></script>
-    <script src="svm/kernels/LaplacianKernel.js"></script>
-    <script src="svm/kernels/TensorKernel.js"></script>
-    <script src="svm/kernels/TStudentKernel.js"></script>
-    <script src="svm/kernels/SquaredSincKernel.js"></script>
-    <script src="svm/kernels/SigmoidKernel.js"></script>
-    <script src="svm/kernels/PolynominalKernel.js"></script>
-    <script src="svm/kernels/HistogramIntersectionKernel.js"></script>
-    <script src="svm/kernels/SymmetricTriangleKernel.js"></script>
-    <script src="svm/kernels/SplineKernel.js"></script>
-    <script src="svm/kernels/SphericalKernel.js"></script>
-    <script src="svm/kernels/CauchyKernel.js"></script>
-    <script src="svm/kernels/BesselKernel.js"></script>
-    <script src="svm/kernels/WaveletKernel.js"></script>
-    <script src="svm/kernels/WaveKernel.js"></script>
-    <script src="svm/renderers/D3.js"></script>
-    <script src="svm/renderers/Canvas.js"></script>
-    <script src="svm/renderers/WebGL.js"></script>
-    <script src="svm/learning/SequentialMinimalOptimization.js"></script>
-    <script src="svm/utils/helpers.js"></script>
-    <script src="svm/SupportVectorMachine.js"></script>
+    <script src="src/lib/underscore/underscore.js"></script>
+    <script src="dist/tsvm.js"></script>
+    <!--<script src="src/svm/base/Generic.js"></script>
+    <script src="src/svm/kernels/BaseKernel.js"></script>
+    <script src="src/svm/kernels/LinearKernel.js"></script>
+    <script src="src/svm/kernels/GaussianKernel.js"></script>
+    <script src="src/svm/kernels/LaplacianKernel.js"></script>
+    <script src="src/svm/kernels/TensorKernel.js"></script>
+    <script src="src/svm/kernels/TStudentKernel.js"></script>
+    <script src="src/svm/kernels/SquaredSincKernel.js"></script>
+    <script src="src/svm/kernels/SigmoidKernel.js"></script>
+    <script src="src/svm/kernels/PolynominalKernel.js"></script>
+    <script src="src/svm/kernels/HistogramIntersectionKernel.js"></script>
+    <script src="src/svm/kernels/SymmetricTriangleKernel.js"></script>
+    <script src="src/svm/kernels/SplineKernel.js"></script>
+    <script src="src/svm/kernels/SphericalKernel.js"></script>
+    <script src="src/svm/kernels/CauchyKernel.js"></script>
+    <script src="src/svm/kernels/BesselKernel.js"></script>
+    <script src="src/svm/kernels/WaveletKernel.js"></script>
+    <script src="src/svm/kernels/WaveKernel.js"></script>
+    <script src="src/svm/renderers/D3.js"></script>
+    <script src="src/svm/renderers/Canvas.js"></script>
+    <script src="src/svm/learning/SequentialMinimalOptimization.js"></script>
+    <script src="src/svm/utils/helpers.js"></script>
+    <script src="src/svm/SupportVectorMachine.js"></script>-->
 </head>
 
 <body>
@@ -73,7 +65,7 @@
 
 
     var graph = SVM
-            .setKernel(new SVM.Kernels.BesselKernel())
+            .setKernel(new SVM.Kernels.TStudentKernel())
             .setHeight(550)
             .setWidth(550)
             .setScale(40)
