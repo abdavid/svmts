@@ -2,7 +2,7 @@
  * Created by davidatborresen on 9/3/13.
  */
 
-///<reference path='../interfaces/Interfaces.ts' />
+///<reference path='../interfaces/IKernel.ts' />
 
 
 module SVM.Kernels {

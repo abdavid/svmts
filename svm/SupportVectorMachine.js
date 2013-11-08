@@ -38,6 +38,12 @@ var SVM;
     }
     SVM.getHeight = getHeight;
 
+    function setComplexity(c) {
+        _teacher.setComplexity(c);
+        return SVM;
+    }
+    SVM.setComplexity = setComplexity;
+
     function setScale(scale) {
         _scale = scale;
         return SVM;
@@ -68,7 +74,7 @@ var SVM;
 
     function setKernel(kernel) {
         if (kernel instanceof SVM.Kernels.BaseKernel) {
-            console.log(kernel.getKernelProperties());
+            console.log(kernel.getProperties());
         }
 
         _kernel = kernel;
@@ -83,12 +89,19 @@ var SVM;
 
     function setKernelProperties(properties) {
         properties.forEach(function (kernelProperty) {
-            _kernel.setKernelProperty(kernelProperty.name, kernelProperty.value);
+            _kernel.setProperty(kernelProperty.name, kernelProperty.value);
         });
 
         return SVM;
     }
     SVM.setKernelProperties = setKernelProperties;
+
+    function setKernelProperty(name, value) {
+        _kernel.setProperty(name, value);
+
+        return SVM;
+    }
+    SVM.setKernelProperty = setKernelProperty;
 
     function train(inputs, labels) {
         if (!_kernel) {

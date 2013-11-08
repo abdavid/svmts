@@ -1,7 +1,8 @@
 /**
  * Created by davidatborresen on 9/3/13.
  */
-///<reference path='../interfaces/Interfaces.ts' />
+///<reference path='../interfaces/IKernel.ts' />
+///<reference path='./BaseKernel.ts' />
 
 module SVM.Kernels {
 
@@ -13,13 +14,20 @@ module SVM.Kernels {
      * long-tailed kernel and can be used to give long-range influence and sensitivity
      * over the high dimension space.
      */
-    export class CauchyKernel implements IKernel {
+    export class CauchyKernel extends BaseKernel implements IKernel {
 
-        public sigma:number;
+        public properties = {
+            sigma : {
+                type: 'number',
+                value: 0
+            }
+        }
 
         constructor(sigma:number = 1)
         {
-            this.sigma = sigma;
+            super();
+
+            this.properties.sigma.value = sigma;
         }
 
         public run(x:number[], y:number[]):number
@@ -38,7 +46,7 @@ module SVM.Kernels {
                 norm += d * d;
             }
 
-            return (1.0 / (1.0 + norm / this.sigma));
+            return (1.0 / (1.0 + norm / this.properties.sigma.value));
 
         }
     }

@@ -2,7 +2,7 @@
  * Created by davidatborresen on 23.09.13.
  */
 
-///<reference path='./../interfaces/Interfaces.ts' />
+///<reference path='./../interfaces/ISupportVectorMachineLearning.ts' />
 
 ///<reference path='../../lib/parallel/Parallel.ts' />
 ///<reference path='../base/Generic.ts' />
@@ -22,7 +22,7 @@ module SVM.Learning {
         //private SupportVectorMachineLearningConfigurationFunction configure;
 
         constructor(machine:SVM.Engine.MulticlassSupportVectorMachine, inputs:number[][], outputs:number[])
-        {
+         {
             if(!machine)
             {
                 throw new Error('Missing machine argument');

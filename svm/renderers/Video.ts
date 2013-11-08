@@ -1,9 +1,8 @@
 /**
  * Created by davidatborresen on 09.09.13.
  */
-///<reference path='../interfaces/ICanvasRenderer.ts' />
+///<reference path='../interfaces/IVideoRenderer.ts' />
 ///<reference path='../interfaces/ISupportVectorMachineLearning.ts' />
-
 
 ///<reference path='../base/Generic.ts' />
 ///<reference path='../../definitions/underscore.d.ts' />
@@ -11,13 +10,12 @@
 ///<reference path='../SupportVectorMachine.ts' />
 ///<reference path='../learning/SequentialMinimalOptimization.ts' />
 
-
 module SVM.Renderer {
 
-    export class Canvas implements ICanvasRenderer {
+    export class Video implements IVideoRenderer {
 
         teacher:ISupportVectorMachineLearning;
-        canvas:HTMLCanvasElement;
+        video:HTMLVideoElement;
         context:CanvasRenderingContext2D;
 
         /**
@@ -25,150 +23,25 @@ module SVM.Renderer {
          */
         constructor(teacher:ISupportVectorMachineLearning)
         {
-            this.canvas = document.createElement('canvas');
-            this.canvas.height = SVM.getHeight();
-            this.canvas.width = SVM.getWidth();
+            this.video = document.createElement('video');
+            this.video.height = SVM.getHeight();
+            this.video.width = SVM.getWidth();
 
-            document.body.appendChild(this.canvas);
+            document.body.appendChild(this.video);
 
-            this.context = this.canvas.getContext('2d');
+            this.context = this.video.getContext('2d');
 
             this.teacher = teacher;
-
-            //new CanvasLoader(this.context);
         }
 
         /**
-         * @interface ICanvasRenderer
-         * @param matrix
-         * @param color
-         * @returns {SVM.Renderer.Canvas}
-         *
-         * Paints the decision background
-         */
-        public drawBackground(matrix:number[][], color:string):Canvas
-        {
-            matrix.forEach((V:number[], i)=>
-            {
-                this.context.fillStyle = color;
-
-                this.drawRect(
-                    V[0] * SVM.getScale() + (SVM.getWidth() / 2),
-                    V[1] * SVM.getScale() + (SVM.getHeight() / 2),
-                    2 + SVM.getDensity(),
-                    2 + SVM.getDensity()
-                );
-            });
-
-            return this;
-        }
-
-        /**
-         * @interface ICanvasRenderer
-         * @returns {SVM.Renderer.Canvas}
-         * Draw the axis
-         */
-        public drawAxis():Canvas
-        {
-            this.context.beginPath();
-            this.context.strokeStyle = 'rgb(50,50,50)';
-            this.context.lineWidth = 1;
-            this.context.moveTo(0, SVM.getHeight() / 2);
-            this.context.lineTo(SVM.getWidth(), SVM.getHeight() / 2);
-            this.context.moveTo(SVM.getWidth() / 2, 0);
-            this.context.lineTo(SVM.getWidth() / 2, SVM.getHeight());
-            this.context.stroke();
-
-            return this;
-        }
-
-        /**
-         * @interface ICanvasRenderer
-         * @returns {SVM.Renderer.Canvas}
-         */
-        public drawMargin():Canvas
-        {
-            var xs = [-5, 5], ys = [0, 0];
-
-            ys[0] = (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[0]) / this.teacher.machine.getWeight(1);
-            ys[1] = (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[1]) / this.teacher.machine.getWeight(1);
-
-            this.context.fillStyle = 'rgb(0,0,0)';
-            this.context.lineWidth = 1;
-            this.context.beginPath();
-
-            // wx+b=0 line
-            this.context.moveTo(xs[0], ys[0]);
-            this.context.lineTo(xs[1], ys[1]);
-
-            // wx+b=1 line
-            this.context.moveTo(xs[0], (ys[0] - 1.0 / this.teacher.machine.getWeight(1)));
-            this.context.lineTo(xs[1], (ys[1] - 1.0 / this.teacher.machine.getWeight(1)));
-
-            // wx+b=-1 line
-            this.context.moveTo(xs[0], (ys[0] + 1.0 / this.teacher.machine.getWeight(1)));
-            this.context.lineTo(xs[1], (ys[1] + 1.0 / this.teacher.machine.getWeight(1)));
-            this.context.stroke();
-
-            // draw margin lines for support vectors. The sum of the lengths of these
-            // lines, scaled by C is essentially the total hinge loss.
-            for(var i = 0; i < this.teacher.inputs.length; i++)
-            {
-                if(this.teacher.alphaA[i] < 1e-2 || this.teacher.alphaB[i] < 1e-2)
-                {
-                    continue;
-                }
-
-                if(this.teacher.outputs[i] == 1)
-                {
-                    ys[0] = (1 - this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[0]) / this.teacher.machine.getWeight(1);
-                    ys[1] = (1 - this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[1]) / this.teacher.machine.getWeight(1);
-                }
-                else
-                {
-                    ys[0] = (-1 - this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[0]) / this.teacher.machine.getWeight(1);
-                    ys[1] = (-1 - this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[1]) / this.teacher.machine.getWeight(1);
-                }
-
-                var u = (this.teacher.inputs[i][0] - xs[0]) * (xs[1] - xs[0]) + (this.teacher.inputs[i][1] - ys[0]) * (ys[1] - ys[0]) / ((xs[0] - xs[1]) * (xs[0] - xs[1]) + (ys[0] - ys[1]) * (ys[0] - ys[1])),
-                    xi = xs[0] + u * (xs[1] - xs[0]),
-                    yi = ys[0] + u * (ys[1] - ys[0]),
-                    mX = this.teacher.inputs[i][0],
-                    mY = this.teacher.inputs[i][1];
-
-                this.context.moveTo(mX, mY);
-                this.context.lineTo(xi, yi);
-            }
-
-            this.context.stroke();
-
-            return this;
-        }
-
-        /**
-         * @interface ICanvasRenderer
-         * @returns {SVM.Renderer.Canvas}
-         */
-        public clearCanvas():Canvas
-        {
-            this.context.clearRect(
-                0,
-                0,
-                SVM.getWidth(),
-                SVM.getHeight()
-            );
-
-            return this;
-        }
-
-        /**
-         * Renders the result to a canvas
          * @interface IRenderer
-         * @returns {SVM.Renderer.Canvas}
+         * @returns {SVM.Renderer.Video}
+         * Renders the result to a canvas
          */
-        public render():Canvas
+        public render():Video
         {
-            this.clearCanvas();
+            //this.clearVideo();
 
             var resultsA = [], resultsB = [];
             for(var x = 0.0; x <= SVM.getWidth(); x += SVM.getDensity())
@@ -205,9 +78,9 @@ module SVM.Renderer {
 
         /**
          * @interface IRenderer
-         * @returns {SVM.Renderer.Canvas}
+         * @returns {SVM.Renderer.Video}
          */
-        public drawDataPoints():Canvas
+        public drawDataPoints():Video
         {
             this.context.strokeStyle = 'rgb(0,0,0)';
 
@@ -245,9 +118,9 @@ module SVM.Renderer {
 
         /**
          * @interface IRenderer
-         * @returns {SVM.Renderer.Canvas}
+         * @returns {SVM.Renderer.Video}
          */
-        public drawStatus():Canvas
+        public drawStatus():Video
         {
             this.context.fillStyle = 'rgb(0,0,0)';
             this.context.font = '12pt open sans';
@@ -290,9 +163,9 @@ module SVM.Renderer {
          * @param w
          * @param h
          * @param radius
-         * @returns {SVM.Renderer.Canvas}
+         * @returns {SVM.Renderer.Video}
          */
-        public drawBubble(x:number, y:number, w:number, h:number, radius:number):Canvas
+        public drawBubble(x:number, y:number, w:number, h:number, radius:number):Video
         {
             var r = x + w,
                 b = y + h;
@@ -322,9 +195,9 @@ module SVM.Renderer {
          * @param y
          * @param w
          * @param h
-         * @returns {SVM.Renderer.Canvas}
+         * @returns {SVM.Renderer.Video}
          */
-        public drawRect(x:number, y:number, w:number, h:number, stroke:boolean = false):Canvas
+        public drawRect(x:number, y:number, w:number, h:number, stroke:boolean = false):Video
         {
             this.context.beginPath();
             this.context.rect(x, y, w, h);
@@ -344,9 +217,9 @@ module SVM.Renderer {
          * @param x
          * @param y
          * @param r
-         * @returns {SVM.Renderer.Canvas}
+         * @returns {SVM.Renderer.Video}
          */
-        public drawCircle(x:number, y:number, r:number):Canvas
+        public drawCircle(x:number, y:number, r:number):Video
         {
             this.context.beginPath();
             this.context.arc(x, y, r, 0, Math.PI * 2, true);
@@ -355,6 +228,20 @@ module SVM.Renderer {
             this.context.fill();
 
             return this;
+        }
+
+        /**
+         * @interface IVideoRenderer
+         * @returns {Blob}
+         */
+        public snapShot():Blob
+        {
+            return new Blob();
+        }
+
+        public trace():void
+        {
+
         }
     }
 }

@@ -11,12 +11,15 @@ var SVM;
             __extends(TStudentKernel, _super);
             function TStudentKernel(degree) {
                 if (typeof degree === "undefined") { degree = 1; }
-                _super.call(this, [
-                    {
-                        name: 'degree',
-                        value: degree
+                _super.call(this);
+                this.properties = {
+                    degree: {
+                        type: 'number',
+                        value: 0
                     }
-                ]);
+                };
+
+                this.properties.degree.value = degree;
             }
             TStudentKernel.prototype.run = function (x, y) {
                 var norm = 0.0;
@@ -26,7 +29,7 @@ var SVM;
                 }
                 norm = Math.sqrt(norm);
 
-                return 1.0 / (1.0 + Math.pow(norm, this.getKernelProperty('degree')));
+                return 1.0 / (1.0 + Math.pow(norm, this.properties.degree.value));
             };
             return TStudentKernel;
         })(Kernels.BaseKernel);

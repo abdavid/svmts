@@ -82,9 +82,9 @@ var SVM;
                 if (typeof computeError === "undefined") { computeError = false; }
                 var N = this.inputs.length;
 
-                this.alphaA = SVM.Util.arrayPopulate(N, 0);
-                this.alphaB = SVM.Util.arrayPopulate(N, 0);
-                this.errors = SVM.Util.arrayPopulate(N, 0);
+                this.alphaA = new Float64Array(N);
+                this.alphaB = new Float64Array(N);
+                this.errors = new Float64Array(N);
 
                 this.I0 = new SVM.Generic.HashSet();
                 this.I1 = new SVM.Generic.HashSet();
@@ -235,6 +235,7 @@ var SVM;
                         i1 = this.biasLowerIndex;
                     }
                 } else {
+                    throw new Error('BOM! I missed');
                 }
 
                 if (optimal) {

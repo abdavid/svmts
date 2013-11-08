@@ -1,4 +1,5 @@
-///<reference path='./../interfaces/Interfaces.ts' />
+///<reference path='./../interfaces/ISupportVectorMachineLearning.ts' />
+///<reference path='./../interfaces/IKernel.ts' />
 
 ///<reference path='../../lib/parallel/Parallel.ts' />
 ///<reference path='../base/Generic.ts' />
@@ -85,9 +86,9 @@ module SVM.Learning {
         public inputs:number[][];
         public outputs:number[];
 
-        public alphaA:number[];
-        public alphaB:number[];
-        public errors:number[];
+        public alphaA:Float64Array;//number[];
+        public alphaB:Float64Array;//number[];
+        public errors:Float64Array;//number[];
 
         public biasLower:number;
         public biasUpper:number;
@@ -250,9 +251,9 @@ module SVM.Learning {
         {
             var N = this.inputs.length;
 
-            this.alphaA = SVM.Util.arrayPopulate(N, 0);
-            this.alphaB = SVM.Util.arrayPopulate(N, 0);
-            this.errors = SVM.Util.arrayPopulate(N, 0);
+            this.alphaA = new Float64Array(N);//SVM.Util.arrayPopulate(N, 0);
+            this.alphaB = new Float64Array(N);//SVM.Util.arrayPopulate(N, 0);
+            this.errors = new Float64Array(N);//SVM.Util.arrayPopulate(N, 0);
 
             this.I0 = new SVM.Generic.HashSet();
             this.I1 = new SVM.Generic.HashSet();
@@ -493,7 +494,7 @@ module SVM.Learning {
             }
             else
             {
-                //throw new Error('BOM! I missed');
+                throw new Error('BOM! I missed');
             }
             //end region
 

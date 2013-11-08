@@ -11,15 +11,18 @@ var SVM;
             __extends(LinearKernel, _super);
             function LinearKernel(constant) {
                 if (typeof constant === "undefined") { constant = 1; }
-                _super.call(this, [
-                    {
-                        name: 'constant',
-                        value: constant
+                _super.call(this);
+                this.properties = {
+                    constant: {
+                        type: 'number',
+                        value: 0
                     }
-                ]);
+                };
+
+                this.properties.constant.value = constant;
             }
             LinearKernel.prototype.run = function (x, y) {
-                var sum = this.getKernelProperty('constant');
+                var sum = this.properties.constant.value;
 
                 for (var i = 0; i < x.length; i++) {
                     sum += x[i] * y[i];

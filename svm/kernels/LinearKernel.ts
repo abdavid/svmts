@@ -1,4 +1,4 @@
-///<reference path='../interfaces/Interfaces.ts' />
+///<reference path='../interfaces/IKernel.ts' />
 ///<reference path='./BaseKernel.ts' />
 
 
@@ -6,15 +6,21 @@ module SVM.Kernels {
 
     export class LinearKernel extends BaseKernel implements IKernel, IDistance
     {
+        public properties = {
+            constant : {
+                type: 'number',
+                value: 0
+            }
+        }
+
         /**
          * @param constant
          */
         constructor(constant:number = 1)
         {
-            super([{
-                name:'constant',
-                value:constant
-            }]);
+            super();
+
+            this.properties.constant.value = constant;
         }
 
         /**
@@ -26,7 +32,7 @@ module SVM.Kernels {
          */
         public run(x:number[], y:number[]):number
         {
-            var sum = this.getKernelProperty('constant');
+            var sum = this.properties.constant.value;
 
             for (var i = 0; i < x.length; i++)
             {

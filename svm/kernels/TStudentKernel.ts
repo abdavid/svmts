@@ -2,7 +2,7 @@
  * Created by davidatborresen on 9/3/13.
  */
 
-///<reference path='../interfaces/Interfaces.ts' />
+///<reference path='../interfaces/IKernel.ts' />
 ///<reference path='./BaseKernel.ts' />
 
 module SVM.Kernels
@@ -10,15 +10,21 @@ module SVM.Kernels
 
     export class TStudentKernel extends BaseKernel implements IKernel
     {
+        public properties = {
+            degree : {
+                type: 'number',
+                value: 0
+            }
+        }
+
         /**
          * @param degree
          */
         constructor(degree:number = 1)
         {
-            super([{
-                name:'degree',
-                value:degree
-            }]);
+            super();
+
+            this.properties.degree.value = degree;
         }
 
         /**
@@ -36,7 +42,7 @@ module SVM.Kernels
             }
             norm = Math.sqrt(norm);
 
-            return 1.0 / (1.0 + Math.pow(norm, this.getKernelProperty('degree')));
+            return 1.0 / (1.0 + Math.pow(norm, this.properties.degree.value));
         }
     }
 }

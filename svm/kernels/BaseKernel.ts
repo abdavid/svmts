@@ -3,51 +3,31 @@
  */
 
 ///<reference path='../../definitions/underscore.d.ts' />
-///<reference path='../interfaces/Interfaces.ts' />
+///<reference path='../interfaces/IKernel.ts' />
 
 module SVM.Kernels {
 
     export class BaseKernel implements IInteractableKernel
     {
-        private _properties:Object = {};
-
-        /**
-         * @param properties
-         */
-        constructor(properties:IKernelProperty[])
-        {
-            this.initProperties(properties);
-        }
-
-        /**
-         * @param properties
-         */
-        public initProperties(properties:IKernelProperty[])
-        {
-            for(var i = 0; i < properties.length; i++)
-            {
-                var property = properties[i];
-                this._properties[property.name] = property.value;
-            }
-        }
+        public properties:Object = {};
 
         /**
          * @returns {string[]}
          */
-        public getKernelProperties():string[]
+        public getProperties():string[]
         {
-            return _.keys(this._properties);
+            return _.keys(this.properties);
         }
 
         /**
          * @param name
          * @returns {*}
          */
-        public getKernelProperty(name:string):number
+        public getProperty(name:string):IKernelProperty
         {
-            if(name in this._properties)
+            if(name in this.properties)
             {
-                return this._properties[name];
+                return this.properties[name];
             }
 
             return undefined;
@@ -57,11 +37,15 @@ module SVM.Kernels {
          * @param name
          * @param value
          */
-        public setKernelProperty(name:string, value:number):void
+        public setProperty(name:string, value:number):void
         {
-            if(name in this._properties)
+            if(name in this)
             {
-                this._properties[name] = value;
+                this[name](value);
+            }
+            else if(name in this.properties && 'value' in this.properties[name])
+            {
+                this.properties[name].value = value;
             }
             else
             {

@@ -29,42 +29,20 @@
     <script src="svm/kernels/BesselKernel.js"></script>
     <script src="svm/kernels/WaveletKernel.js"></script>
     <script src="svm/kernels/WaveKernel.js"></script>
-    <script src="svm/renderers/Engine.js"></script>
     <script src="svm/renderers/D3.js"></script>
     <script src="svm/renderers/Canvas.js"></script>
     <script src="svm/renderers/WebGL.js"></script>
     <script src="svm/learning/SequentialMinimalOptimization.js"></script>
     <script src="svm/utils/helpers.js"></script>
-
     <script src="svm/SupportVectorMachine.js"></script>
-
-
-
-    <style>
-
-
-
-        body {
-            font: 10px sans-serif;
-            margin: 0px;
-        }
-
-        .axis path,
-        .axis line {
-            fill: none;
-            stroke: #000;
-            shape-rendering: crispEdges;
-        }
-
-        .dot {
-            stroke: #000;
-        }
-
-
-    </style>
 </head>
 
 <body>
+
+<!--<video id="video-test" autoplay>
+
+</video>-->
+
 <script type="text/javascript">
 
     console.profile('runtime');
@@ -72,7 +50,7 @@
     var inputs = [];
 
     inputs[0] = [-0.4326  , 1.1909 ];
-    inputs[1] = [3.0, 4.0];
+    inputs[1] = [-0.3, 0.3];
     inputs[2] = [0.1253 , -0.0376];
     inputs[3] = [0.2877 , 0.3273  ];
     inputs[4] = [-1.1465 , 0.1746 ];
@@ -93,15 +71,56 @@
     labels[8] = -1;
     labels[9] = -1;
 
+
     var graph = SVM
-            .setKernel(new SVM.Kernels.TStudentKernel())
-            .setHeight(400)
-            .setWidth(400)
+            .setKernel(new SVM.Kernels.BesselKernel())
+            .setHeight(550)
+            .setWidth(550)
             .setScale(40)
             .train(inputs, labels)
             .render();
 
     console.profileEnd();
+
+/*    function hasGetUserMedia() {
+        // Note: Opera is unprefixed.
+        return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
+                navigator.mozGetUserMedia || navigator.msGetUserMedia);
+    }
+
+    if (hasGetUserMedia()) {
+        console.info('getUserMedia() is supported');
+    } else {
+        alert('getUserMedia() is not supported in your browser');
+    }
+
+    window.URL = window.URL || window.webkitURL;
+
+    navigator.getUserMedia  = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+    var video = document.getElementById('video-test');
+
+    function fallback(e)
+    {
+        video.src = 'fallbackvideo.webm';
+    }
+
+    function success(stream)
+    {
+        video.src = window.URL.createObjectURL(stream);
+    }
+
+    if (!navigator.getUserMedia)
+    {
+        fallback();
+    }
+    else
+    {
+        navigator.getUserMedia({video: true}, success, fallback);
+    }
+*/
 </script>
 </body>
+
 </html>

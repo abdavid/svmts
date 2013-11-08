@@ -3,7 +3,7 @@
  */
 
 ///<reference path='../../definitions/d3.d.ts' />
-///<reference path='../interfaces/interfaces.ts' />
+///<reference path='../interfaces/ICollection.ts' />
 ///<reference path='../algorithms/SequentialMinimalOptimization.ts' />
 
 

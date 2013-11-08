@@ -1,4 +1,5 @@
-///<reference path='../interfaces/Interfaces.ts' />
+///<reference path='../interfaces/IKernel.ts' />
+///<reference path='./BaseKernel.ts' />
 
 module SVM.Kernels {
 
@@ -14,16 +15,26 @@ module SVM.Kernels {
      * Gaussian Kernel for One Class Learning.
      * Available on: http://www.cs.rpi.edu/~szymansk/papers/icann07.pdf
      */
-    export class GaussianKernel implements IKernel, IDistance
+    export class GaussianKernel extends BaseKernel implements IKernel, IDistance
     {
-        private _sigma:number;
-        private _gamma:number;
+        public properties = {
+            gamma : {
+                type: 'number',
+                value: 0
+            },
+            sigma : {
+                type: 'number',
+                value: 0
+            }
+        }
 
         /**
          * @param sigma
          */
         constructor(sigma:number = 1)
         {
+            super();
+
             this.sigma(sigma);
         }
 
@@ -98,11 +109,11 @@ module SVM.Kernels {
         {
             if(!sigma)
             {
-                return this._sigma;
+                return this.properties.sigma.value;
             }
 
-            this._sigma = Math.sqrt(sigma);
-            this._gamma = 1.0 / (2.0 * sigma * sigma);
+            this.properties.sigma.value = Math.sqrt(sigma);
+            this.properties.gamma.value = 1.0 / (2.0 * sigma * sigma);
         }
 
         /**
@@ -116,11 +127,11 @@ module SVM.Kernels {
         {
             if(!sigma)
             {
-                return this._sigma * this._sigma;
+                return this.properties.sigma.value * this.properties.sigma.value;
             }
 
-            this._sigma = Math.sqrt(sigma);
-            this._gamma = 1.0 / (2.0 * sigma)
+            this.properties.sigma.value = Math.sqrt(sigma);
+            this.properties.gamma.value = 1.0 / (2.0 * sigma)
         }
 
         /**
@@ -134,11 +145,11 @@ module SVM.Kernels {
         {
             if(!gamma)
             {
-                return this._gamma;
+                return this.properties.gamma.value;
             }
 
-            this._gamma = gamma;
-            this._sigma = Math.sqrt(1.0 / (gamma * 2.0));
+            this.properties.gamma.value = gamma;
+            this.properties.sigma.value = Math.sqrt(1.0 / (gamma * 2.0));
         }
     }
 }

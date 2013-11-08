@@ -3,7 +3,7 @@
 
 ///<reference path='../SupportVectorMachine.ts' />
 ///<reference path='../SupportVectorMachine.ts' />
-///<reference path='../algorithms/SequentialMinimalOptimization.ts' />
+///<reference path='../learning/SequentialMinimalOptimization.ts' />
 
 
 module SVM.Renderer {

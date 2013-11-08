@@ -1,5 +1,4 @@
-
-///<reference path='../interfaces/Interfaces.ts' />
+///<reference path='../interfaces/IKernel.ts' />
 
 module SVM.Kernels {
 

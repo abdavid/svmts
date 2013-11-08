@@ -3,7 +3,7 @@
  */
 
 ///<reference path='./base/Generic.ts' />
-///<reference path='./interfaces/Interfaces.ts' />
+///<reference path='./interfaces/ICollection.ts' />
 ///<reference path='./kernels/LinearKernel.ts' />
 ///<reference path='./learning/SequentialMinimalOptimization.ts' />
 ///<reference path='./utils/helpers.ts' />
@@ -55,6 +55,16 @@ module SVM {
     export function getHeight():number
     {
         return _height;
+    }
+
+    /**
+     * @param c
+     * @returns {SVM}
+     */
+    export function setComplexity(c:number):SVM
+    {
+        _teacher.setComplexity(c);
+        return SVM;
     }
 
     /**
@@ -111,7 +121,7 @@ module SVM {
     {
         if(kernel instanceof SVM.Kernels.BaseKernel)
         {
-            console.log(kernel.getKernelProperties());
+            console.log(kernel.getProperties());
         }
 
         _kernel = kernel;
@@ -134,8 +144,19 @@ module SVM {
     {
         properties.forEach((kernelProperty:IKernelProperty)=>
         {
-            _kernel.setKernelProperty(kernelProperty.name,kernelProperty.value);
+            _kernel.setProperty(kernelProperty.name,kernelProperty.value);
         });
+
+        return SVM;
+    }
+
+    /**
+     * @param args
+     * @returns {SVM}
+     */
+    export function setKernelProperty(name:string, value:any):SVM
+    {
+        _kernel.setProperty(name, value);
 
         return SVM;
     }
