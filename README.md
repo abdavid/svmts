@@ -5,8 +5,8 @@ make the SVM run, as optimal as possible, and there is possibly a lot more that 
 
 # Example
 
-<script type="text/javascript">
-var labels = [];
+    <script type="text/javascript">
+    var labels = [];
     var inputs = [];
 
     inputs[0] = [-0.4326  , 1.1909 ];
@@ -39,4 +39,4 @@ var labels = [];
             .setScale(40)
             .train(inputs, labels)
             .render();
-</script>
+    </script>
