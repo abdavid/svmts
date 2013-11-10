@@ -3,6 +3,7 @@
  */
 
 ///<reference path='../interfaces/IKernel.ts' />
+///<reference path='./BaseKernel.ts' />
 
 module SVM.Kernels {
 
@@ -15,10 +16,18 @@ module SVM.Kernels {
      *
      * @TODO add estimation function for initialization of kernel correctly.
      */
-    export class SigmoidKernel implements IKernel
+    export class SigmoidKernel extends BaseKernel implements IKernel
     {
-        private _alpha:number;
-        private _constant:number;
+        public properties = {
+            alpha:{
+                type:'number',
+                value: 0
+            },
+            constant:{
+                type:'number',
+                value: 0
+            }
+        };
 
         /**
          * @param alpha
@@ -26,8 +35,10 @@ module SVM.Kernels {
          */
         constructor(alpha:number = 0.01, constant:number = -Math.E)
         {
-            this._alpha = alpha;
-            this._constant = constant;
+            super();
+
+            this.properties.alpha.value = alpha;
+            this.properties.constant.value = constant;
         }
 
         /**
@@ -46,7 +57,7 @@ module SVM.Kernels {
                 sum += x[i] * y[i];
             }
 
-            return this.tanh(this._alpha * sum + this._constant);
+            return this.tanh(this.properties.alpha.value * sum + this.properties.constant.value);
         }
 
         /**

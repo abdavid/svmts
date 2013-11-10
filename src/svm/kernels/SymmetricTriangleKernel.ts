@@ -1,21 +1,28 @@
 ///<reference path='../interfaces/IKernel.ts' />
+///<reference path='./BaseKernel.ts' />
 
 module SVM.Kernels {
 
     /**
      * Symmetric Triangle Kernel.
      */
-    export class SymmetricTriangleKernel implements IKernel
+    export class SymmetricTriangleKernel extends BaseKernel implements IKernel
     {
-
-        private _gamma:number;
+        public properties = {
+            gamma : {
+                type:'number',
+                value:0
+            }
+        };
 
         /**
          * @param gamma
          */
         constructor(gamma:number = 1.0)
         {
-            this._gamma = gamma;
+            super();
+
+            this.properties.gamma.value = gamma;
         }
 
         /**
@@ -32,7 +39,7 @@ module SVM.Kernels {
                 norm += d * d;
             }
 
-            var z = 1.0 - this._gamma * Math.sqrt(norm);
+            var z = 1.0 - this.properties.gamma.value * Math.sqrt(norm);
 
             return (z > 0) ? z : 0;
         }

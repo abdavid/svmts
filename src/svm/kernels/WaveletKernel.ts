@@ -1,12 +1,25 @@
 ///<reference path='../interfaces/IKernel.ts' />
+///<reference path='./BaseKernel.ts' />
 
 module SVM.Kernels
 {
-    export class WaveletKernel implements IKernel
+    export class WaveletKernel extends BaseKernel implements IKernel
     {
-        private _dilation:number;
-        private _translation:number;
-        private _invariant:boolean = true;
+        public properties = {
+            dilation: {
+                type:'number',
+                value:0
+            },
+            translation: {
+                type:'number',
+                value:0
+            },
+            invariant:{
+                type:'boolean',
+                value: true
+            }
+        };
+
         private _mother:Function;
 
         /**
@@ -17,9 +30,11 @@ module SVM.Kernels
          */
         constructor(dilation:number = 1.0, translation:number = 1.0, invariant:boolean = true, mother:Function = null)
         {
-            this._invariant = invariant;
-            this._dilation = dilation;
-            this._translation = translation
+            super();
+
+            this.properties.invariant.value = invariant;
+            this.properties.dilation.value = dilation;
+            this.properties.translation.value = translation
             this._mother = mother || this.mother;
         }
 
@@ -32,19 +47,19 @@ module SVM.Kernels
         {
             var prod = 1.0;
 
-            if(this._invariant)
+            if(this.properties.invariant)
             {
                 for(var i = 0; i < x.length; i++)
                 {
-                    prod *= (this._mother((x[i] - this._translation) / this._dilation)) *
-                        (this._mother((y[i] - this._translation) / this._dilation));
+                    prod *= (this._mother((x[i] - this.properties.translation.value) / this.properties.dilation.value)) *
+                        (this._mother((y[i] - this.properties.translation.value) / this.properties.dilation.value));
                 }
             }
             else
             {
                 for(var i = 0; i < x.length; i++)
                 {
-                    prod *= this._mother((x[i] - y[i] / this._dilation));
+                    prod *= this._mother((x[i] - y[i] / this.properties.dilation.value));
                 }
             }
 

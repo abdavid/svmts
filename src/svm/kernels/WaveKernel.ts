@@ -3,19 +3,27 @@
  */
 
 ///<reference path='../interfaces/IKernel.ts' />
+///<reference path='./BaseKernel.ts' />
+
 module SVM.Kernels
 {
-    export class WaveKernel implements IKernel
+    export class WaveKernel extends BaseKernel implements IKernel
     {
-
-        private _sigma:number;
+        public properties = {
+            sigma: {
+                type:'number',
+                value:0
+            }
+        };
 
         /**
          * @param sigma
          */
         constructor(sigma:number = 1)
         {
-            this._sigma = sigma;
+            super();
+
+            this.properties.sigma.value = sigma;
         }
 
         /**
@@ -32,13 +40,13 @@ module SVM.Kernels
                 norm += d * d;
             }
 
-            if(this._sigma == 0 || norm == 0)
+            if(this.properties.sigma.value == 0 || norm == 0)
             {
                 return 0;
             }
             else
             {
-                return (this._sigma / norm) * Math.sin(norm / this._sigma);
+                return (this.properties.sigma.value / norm) * Math.sin(norm / this.properties.sigma.value);
             }
         }
     }
