@@ -1,13 +1,13 @@
 ///<reference path='../interfaces/IKernel.ts' />
+///<reference path='./BaseKernel.ts' />
 
 module SVM.Kernels {
 
     /**
      * Infinite Spline Kernel function.
      */
-    export class SplineKernel implements IKernel
+    export class SplineKernel extends BaseKernel implements IKernel
     {
-
         /**
          * @param x
          * @param y

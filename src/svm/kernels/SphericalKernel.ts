@@ -1,4 +1,6 @@
 ///<reference path='../interfaces/IKernel.ts' />
+///<reference path='./BaseKernel.ts' />
+
 
 module SVM.Kernels {
 
@@ -6,17 +8,23 @@ module SVM.Kernels {
      * The spherical kernel comes from a statistics perspective. It is an example
      * of an isotropic stationary kernel and is positive definite in R^3.
      */
-    export class SphericalKernel implements IKernel
+    export class SphericalKernel extends BaseKernel implements IKernel
     {
-
-        public _sigma:number;
+        public properties = {
+            sigma: {
+                type:'number',
+                value:0
+            }
+        };
 
         /**
          * @param sigma
          */
         constructor(sigma:number = 1.0)
         {
-            this._sigma = sigma;
+            super();
+
+            this.properties.sigma.value = sigma;
         }
 
         /**
@@ -35,13 +43,13 @@ module SVM.Kernels {
 
             norm = Math.sqrt(norm);
 
-            if(norm >= this._sigma)
+            if(norm >= this.properties.sigma.value)
             {
                 return 0;
             }
             else
             {
-                norm = norm / this._sigma;
+                norm = norm / this.properties.sigma.value;
                 return 1.0 - 1.5 * norm + 0.5 * norm * norm * norm;
             }
 

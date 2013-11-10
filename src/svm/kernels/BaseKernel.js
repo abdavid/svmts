@@ -25,6 +25,8 @@ var SVM;
                 } else {
                     throw new Error('Undefined property');
                 }
+
+                return this;
             };
             return BaseKernel;
         })();

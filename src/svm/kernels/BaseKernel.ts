@@ -2,7 +2,7 @@
  * Created by davidatborresen on 29.09.13.
  */
 
-///<reference path='.././underscore.d.ts' />
+///<reference path='../../definitions/underscore.d.ts' />
 ///<reference path='../interfaces/IKernel.ts' />
 
 module SVM.Kernels {
@@ -37,7 +37,7 @@ module SVM.Kernels {
          * @param name
          * @param value
          */
-        public setProperty(name:string, value:number):void
+        public setProperty(name:string, value:number):SVM.Kernels.BaseKernel
         {
             if(name in this)
             {
@@ -51,6 +51,8 @@ module SVM.Kernels {
             {
                 throw new Error('Undefined property')
             }
+
+            return this;
         }
     }
 }
