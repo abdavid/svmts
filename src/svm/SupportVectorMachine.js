@@ -184,7 +184,25 @@ var SVM;
 
         _teacher.run();
 
-        return SVM;
+        var resultsA = [], resultsB = [];
+        for (var x = 0.0; x <= SVM.getWidth(); x += SVM.getDensity()) {
+            for (var y = 0.0; y <= SVM.getHeight(); y += SVM.getDensity()) {
+                var vector = [
+                    (x - SVM.getWidth() / 2) / SVM.getScale(),
+                    (y - SVM.getHeight() / 2) / SVM.getScale()
+                ], decision = this.teacher.machine.compute(vector);
+
+                if (decision > 0) {
+                    resultsA.push(vector);
+                } else {
+                    resultsB.push(vector);
+                }
+            }
+        }
+        return [
+            resultsA,
+            resultsB
+        ];
     }
     SVM.train = train;
 
