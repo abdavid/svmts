@@ -3,8 +3,8 @@
     <title>Support Vector Machine in Javascript</title>
 
     <script src="src/lib/underscore/underscore.js"></script>
-    <script src="dist/tsvm.js"></script>
-    <!--<script src="src/svm/base/Generic.js"></script>
+    <!--<script src="dist/tsvm.js"></script>-->
+    <script src="src/svm/base/Generic.js"></script>
     <script src="src/svm/kernels/BaseKernel.js"></script>
     <script src="src/svm/kernels/LinearKernel.js"></script>
     <script src="src/svm/kernels/GaussianKernel.js"></script>
@@ -26,14 +26,10 @@
     <script src="src/svm/renderers/Canvas.js"></script>
     <script src="src/svm/learning/SequentialMinimalOptimization.js"></script>
     <script src="src/svm/utils/helpers.js"></script>
-    <script src="src/svm/SupportVectorMachine.js"></script>-->
+    <script src="src/svm/SupportVectorMachine.js"></script>
 </head>
 
 <body>
-
-<!--<video id="video-test" autoplay>
-
-</video>-->
 
 <script type="text/javascript">
 
@@ -63,9 +59,8 @@
     labels[8] = -1;
     labels[9] = -1;
 
-
     var graph = SVM
-            .setKernel(new SVM.Kernels.TStudentKernel())
+            .setKernel(new SVM.Kernels.BesselKernel())
             .setHeight(550)
             .setWidth(550)
             .setScale(40)
@@ -74,44 +69,6 @@
 
     console.profileEnd();
 
-/*    function hasGetUserMedia() {
-        // Note: Opera is unprefixed.
-        return !!(navigator.getUserMedia || navigator.webkitGetUserMedia ||
-                navigator.mozGetUserMedia || navigator.msGetUserMedia);
-    }
-
-    if (hasGetUserMedia()) {
-        console.info('getUserMedia() is supported');
-    } else {
-        alert('getUserMedia() is not supported in your browser');
-    }
-
-    window.URL = window.URL || window.webkitURL;
-
-    navigator.getUserMedia  = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-            navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
-    var video = document.getElementById('video-test');
-
-    function fallback(e)
-    {
-        video.src = 'fallbackvideo.webm';
-    }
-
-    function success(stream)
-    {
-        video.src = window.URL.createObjectURL(stream);
-    }
-
-    if (!navigator.getUserMedia)
-    {
-        fallback();
-    }
-    else
-    {
-        navigator.getUserMedia({video: true}, success, fallback);
-    }
-*/
 </script>
 </body>
 

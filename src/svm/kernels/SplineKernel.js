@@ -6,12 +6,22 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='./BaseKernel.ts' />
     (function (Kernels) {
+        /**
+        * Infinite Spline Kernel function.
+        */
         var SplineKernel = (function (_super) {
             __extends(SplineKernel, _super);
             function SplineKernel() {
-                _super.apply(this, arguments);
+                _super.call(this);
             }
+            /**
+            * @param x
+            * @param y
+            * @returns {number}
+            */
             SplineKernel.prototype.run = function (x, y) {
                 var k = 1;
                 for (var i = 0; i < x.length; i++) {

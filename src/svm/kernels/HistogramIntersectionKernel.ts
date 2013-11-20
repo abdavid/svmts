@@ -15,27 +15,21 @@ module SVM.Kernels {
      */
     export class HistogramIntersectionKernel extends BaseKernel implements IKernel
     {
-        public properties = {
-            alpha : {
-                type: 'number',
-                value: 0
-            },
-            beta : {
-                type: 'number',
-                value: 0
-            }
-        }
-
-        /**
-         * @param alpha
-         * @param beta
-         */
-        constructor(alpha:number = 1, beta:number = 1)
+        constructor()
         {
             super();
-
-            this.setProperty('alpha', alpha);
-            this.setProperty('beta', beta);
+            super.initialize({
+                alpha : {
+                    type: PropertyType.NUMBER,
+                    value: 1,
+                    writable: true
+                },
+                beta : {
+                    type: PropertyType.NUMBER,
+                    value: 1,
+                    writable: true
+                }
+            });
         }
 
         /**
@@ -49,8 +43,8 @@ module SVM.Kernels {
             for(var i = 0; i < x.length; i++)
             {
                 sum += Math.min(
-                    Math.pow(Math.abs(x[i]), this.properties.alpha.value),
-                    Math.pow(Math.abs(y[i]), this.properties.beta.value)
+                    Math.pow(Math.abs(x[i]), this.alpha),
+                    Math.pow(Math.abs(y[i]), this.beta)
                 );
             }
 

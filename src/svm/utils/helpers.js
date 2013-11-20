@@ -1,5 +1,9 @@
 var SVM;
 (function (SVM) {
+    /**
+    * Created by davidatborresen on 21.09.13.
+    */
+    ///<reference path='../../definitions/underscore.d.ts' />
     (function (Util) {
         function arrayPopulate(delta, value) {
             var result;

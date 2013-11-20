@@ -7,24 +7,19 @@
 
 module SVM.Kernels
 {
-
     export class TStudentKernel extends BaseKernel implements IKernel
     {
-        public properties = {
-            degree : {
-                type: 'number',
-                value: 0
-            }
-        }
-
-        /**
-         * @param degree
-         */
-        constructor(degree:number = 1)
+        constructor()
         {
             super();
 
-            this.properties.degree.value = degree;
+            super.initialize({
+                degree: {
+                    type: 'number',
+                    value: 1,
+                    writable: true
+                }
+            });
         }
 
         /**
@@ -42,7 +37,7 @@ module SVM.Kernels
             }
             norm = Math.sqrt(norm);
 
-            return 1.0 / (1.0 + Math.pow(norm, this.properties.degree.value));
+            return 1.0 / (1.0 + Math.pow(norm, this.degree));
         }
     }
 }

@@ -1,7 +1,6 @@
 ///<reference path='./../interfaces/ISupportVectorMachineLearning.ts' />
 ///<reference path='./../interfaces/IKernel.ts' />
 
-///<reference path='.././parallel/Parallel.ts' />
 ///<reference path='../base/Generic.ts' />
 ///<reference path='../SupportVectorMachine.ts' />
 ///<reference path='../utils/helpers.ts' />

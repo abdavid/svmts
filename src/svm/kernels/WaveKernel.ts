@@ -9,21 +9,16 @@ module SVM.Kernels
 {
     export class WaveKernel extends BaseKernel implements IKernel
     {
-        public properties = {
-            sigma: {
-                type:'number',
-                value:0
-            }
-        };
-
-        /**
-         * @param sigma
-         */
-        constructor(sigma:number = 1)
+        constructor()
         {
             super();
-
-            this.properties.sigma.value = sigma;
+            super.initialize({
+                sigma: {
+                    type: 'number',
+                    value: 1,
+                    writable: true
+                }
+            });
         }
 
         /**
@@ -40,13 +35,13 @@ module SVM.Kernels
                 norm += d * d;
             }
 
-            if(this.properties.sigma.value == 0 || norm == 0)
+            if(this.sigma == 0 || norm == 0)
             {
                 return 0;
             }
             else
             {
-                return (this.properties.sigma.value / norm) * Math.sin(norm / this.properties.sigma.value);
+                return (this.sigma / norm) * Math.sin(norm / this.sigma);
             }
         }
     }

@@ -6,25 +6,73 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='./BaseKernel.ts' />
     (function (Kernels) {
+        /**
+        * @class GaussianKernel
+        *
+        * @summary
+        * The Gaussian kernel requires tuning for the proper value of σ. Different approaches
+        * to this problem includes the use of brute force (i.e. using a grid-search algorithm)
+        * or a gradient ascent optimization.
+        *
+        * P. F. Evangelista, M. J. Embrechts, and B. K. Szymanski. Some Properties of the
+        * Gaussian Kernel for One Class Learning.
+        * Available on: http://www.cs.rpi.edu/~szymansk/papers/icann07.pdf
+        */
         var GaussianKernel = (function (_super) {
             __extends(GaussianKernel, _super);
-            function GaussianKernel(sigma) {
-                if (typeof sigma === "undefined") { sigma = 1; }
-                _super.call(this);
-                this.properties = {
-                    gamma: {
-                        type: 'number',
-                        value: 0
-                    },
-                    sigma: {
-                        type: 'number',
-                        value: 0
-                    }
-                };
+            function GaussianKernel() {
+                var _sigma;
+                var _gamma;
 
-                this.sigma(sigma);
+                _super.call(this);
+                _super.prototype.initialize.call(this, {
+                    /**
+                    * Gets and sets the _gamma value for the kernel.
+                    * When setting _gamma, _sigma gets updated accordingly (_gamma = 0.5/_sigma^2).
+                    *
+                    * @param gamma
+                    * @returns {number}
+                    */
+                    gamma: {
+                        type: PropertyType.NUMBER,
+                        get: function () {
+                            return _gamma;
+                        },
+                        set: function (value) {
+                            _sigma = Math.sqrt(1.0 / (value * 2.0));
+                            _gamma = value;
+                        }
+                    },
+                    /**
+                    * Gets and sets the _sigma value for the kernel.
+                    * When setting _sigma, _gamma gets updated accordingly (_gamma = 0.5/_sigma^2).
+                    *
+                    * @param sigma
+                    */
+                    sigma: {
+                        type: PropertyType.NUMBER,
+                        set: function (value) {
+                            _sigma = Math.sqrt(value);
+                            _gamma = 1.0 / (2.0 * value * value);
+                        },
+                        get: function () {
+                            return _sigma;
+                        }
+                    }
+                });
+
+                this.sigma = 1;
             }
+            /**
+            * Gaussian Kernel function.
+            *
+            * @param x Vector X in input space
+            * @param y Vector Y in input space
+            * @returns {number} Dot product in feature (kernel) space
+            */
             GaussianKernel.prototype.run = function (x, y) {
                 if (x === y) {
                     return 1.0;
@@ -32,21 +80,25 @@ var SVM;
 
                 var norm = 0.0, d;
 
-                if (typeof x == 'undefined') {
-                    var foo = true;
-                }
-
                 for (var i = 0; i < x.length; i++) {
                     d = x[i] - y[i];
                     norm += d * d;
                 }
 
-                return Math.exp(-this.gamma() * norm);
+                return Math.exp(-this.gamma * norm);
             };
 
+            /**
+            * Computes the distance in input space
+            * between two points given in feature space.
+            *
+            * @param x Vector X in input space
+            * @param y Vector Y in input space
+            * @returns {number} Distance between x and y in input space.
+            */
             GaussianKernel.prototype.distance = function (x, y) {
-                if (typeof x === 'number') {
-                    return (1.0 / -this.gamma()) * Math.log(1.0 - 0.5 * x);
+                if (typeof x === PropertyType.NUMBER) {
+                    return (1.0 / -this.gamma) * Math.log(1.0 - 0.5 * x);
                 } else if (x === y) {
                     return 0.0;
                 }
@@ -57,37 +109,24 @@ var SVM;
                     norm += d * d;
                 }
 
-                return (1.0 / -this.gamma()) * Math.log(1.0 - 0.5 * norm);
+                return (1.0 / -this.gamma) * Math.log(1.0 - 0.5 * norm);
             };
 
-            GaussianKernel.prototype.sigma = function (sigma) {
-                if (typeof sigma === "undefined") { sigma = null; }
-                if (!sigma) {
-                    return this.properties.sigma.value;
+            /**
+            * Gets or sets the _sigma² value for the kernel.
+            * When setting _sigma², _gamma gets updated accordingly (_gamma = 0.5/_sigma²).
+            *
+            * @param value
+            * @returns {number}
+            */
+            GaussianKernel.prototype.sigmaSquared = function (value) {
+                if (typeof value === "undefined") { value = null; }
+                if (!value) {
+                    return this.sigma * this.sigma;
                 }
 
-                this.properties.sigma.value = Math.sqrt(sigma);
-                this.properties.gamma.value = 1.0 / (2.0 * sigma * sigma);
-            };
-
-            GaussianKernel.prototype.sigmaSquared = function (sigma) {
-                if (typeof sigma === "undefined") { sigma = null; }
-                if (!sigma) {
-                    return this.properties.sigma.value * this.properties.sigma.value;
-                }
-
-                this.properties.sigma.value = Math.sqrt(sigma);
-                this.properties.gamma.value = 1.0 / (2.0 * sigma);
-            };
-
-            GaussianKernel.prototype.gamma = function (gamma) {
-                if (typeof gamma === "undefined") { gamma = null; }
-                if (!gamma) {
-                    return this.properties.gamma.value;
-                }
-
-                this.properties.gamma.value = gamma;
-                this.properties.sigma.value = Math.sqrt(1.0 / (gamma * 2.0));
+                this.sigma = Math.sqrt(value);
+                this.gamma = 1.0 / (2.0 * value);
             };
             return GaussianKernel;
         })(Kernels.BaseKernel);

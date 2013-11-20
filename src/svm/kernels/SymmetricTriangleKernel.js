@@ -6,21 +6,29 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='./BaseKernel.ts' />
     (function (Kernels) {
+        /**
+        * Symmetric Triangle Kernel.
+        */
         var SymmetricTriangleKernel = (function (_super) {
             __extends(SymmetricTriangleKernel, _super);
-            function SymmetricTriangleKernel(gamma) {
-                if (typeof gamma === "undefined") { gamma = 1.0; }
+            function SymmetricTriangleKernel() {
                 _super.call(this);
-                this.properties = {
+                _super.prototype.initialize.call(this, {
                     gamma: {
-                        type: 'number',
-                        value: 0
+                        type: PropertyType.NUMBER,
+                        value: 1.0,
+                        writable: true
                     }
-                };
-
-                this.properties.gamma.value = gamma;
+                });
             }
+            /**
+            * @param x
+            * @param y
+            * @returns {number}
+            */
             SymmetricTriangleKernel.prototype.run = function (x, y) {
                 var norm = 0.0, d;
                 for (var i = 0; i < x.length; i++) {
@@ -28,7 +36,7 @@ var SVM;
                     norm += d * d;
                 }
 
-                var z = 1.0 - this.properties.gamma.value * Math.sqrt(norm);
+                var z = 1.0 - this.gamma * Math.sqrt(norm);
 
                 return (z > 0) ? z : 0;
             };

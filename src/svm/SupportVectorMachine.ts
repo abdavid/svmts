@@ -4,10 +4,10 @@
 
 ///<reference path='./base/Generic.ts' />
 ///<reference path='./interfaces/ICollection.ts' />
+///<reference path='./interfaces/IRenderer.ts' />
 ///<reference path='./kernels/LinearKernel.ts' />
 ///<reference path='./learning/SequentialMinimalOptimization.ts' />
 ///<reference path='./utils/helpers.ts' />
-///<reference path='./parallel/Parallel.ts' />
 
 module SVM {
 
@@ -25,7 +25,7 @@ module SVM {
      * @param width
      * @returns {SVM}
      */
-    export function setWidth(width:number):SVM
+    export function setWidth(width:number):Object
     {
         _width = width;
         return SVM;
@@ -43,7 +43,7 @@ module SVM {
      * @param height
      * @returns {SVM}
      */
-    export function setHeight(height:number):SVM
+    export function setHeight(height:number):Object
     {
         _height = height;
         return SVM;
@@ -61,7 +61,7 @@ module SVM {
      * @param c
      * @returns {SVM}
      */
-    export function setComplexity(c:number):SVM
+    export function setComplexity(c:number):Object
     {
         _teacher.setComplexity(c);
         return SVM;
@@ -71,7 +71,7 @@ module SVM {
      * @param scale
      * @returns {SVM}
      */
-    export function setScale(scale:number):SVM
+    export function setScale(scale:number):Object
     {
         _scale = scale;
         return SVM;
@@ -89,7 +89,7 @@ module SVM {
      * @param delta
      * @returns {SVM}
      */
-    export function setDensity(delta:number):SVM
+    export function setDensity(delta:number):Object
     {
         _density = delta;
         return SVM;
@@ -107,7 +107,7 @@ module SVM {
      * @param teacher
      * @returns {SVM}
      */
-    export function setTeacher(teacher:ISupportVectorMachineLearning):SVM
+    export function setTeacher(teacher:ISupportVectorMachineLearning):Object
     {
         _teacher = teacher;
         return SVM;
@@ -117,7 +117,7 @@ module SVM {
      * @param kernel
      * @returns {SVM}
      */
-    export function setKernel(kernel:IKernel):SVM
+    export function setKernel(kernel:IKernel):Object
     {
         if(kernel instanceof SVM.Kernels.BaseKernel)
         {
@@ -137,26 +137,27 @@ module SVM {
     }
 
     /**
-     * @param args
+     * @param properties
      * @returns {SVM}
      */
-    export function setKernelProperties(properties:IKernelProperty[]):SVM
+    export function setKernelProperties(properties:IKernelProperty[]):Object
     {
         properties.forEach((kernelProperty:IKernelProperty)=>
         {
-            _kernel.setProperty(kernelProperty.name,kernelProperty.value);
+            _kernel[kernelProperty.name] = kernelProperty.value;
         });
 
         return SVM;
     }
 
     /**
-     * @param args
+     * @param name
+     * @param value
      * @returns {SVM}
      */
-    export function setKernelProperty(name:string, value:any):SVM
+    export function setKernelProperty(name:string, value:any):Object
     {
-        _kernel.setProperty(name, value);
+        _kernel[name] = value;
 
         return SVM;
     }
@@ -166,7 +167,7 @@ module SVM {
      * @param labels
      * @returns {SVM}
      */
-    export function train(inputs:number[][], labels:number[]):SVM
+    export function train(inputs:number[][], labels:number[]):Object
     {
         if(!_kernel)
         {
@@ -202,7 +203,7 @@ module SVM {
      * @param renderer
      * @returns {SVM}
      */
-    export function setRenderer(renderer:IRenderer):SVM
+    export function setRenderer(renderer:IRenderer):Object
     {
         _renderer = renderer;
         return SVM;

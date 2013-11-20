@@ -17,25 +17,55 @@ module SVM.Kernels {
      */
     export class GaussianKernel extends BaseKernel implements IKernel, IDistance
     {
-        public properties = {
-            gamma : {
-                type: 'number',
-                value: 0
-            },
-            sigma : {
-                type: 'number',
-                value: 0
-            }
-        }
-
-        /**
-         * @param sigma
-         */
-        constructor(sigma:number = 1)
+        constructor()
         {
-            super();
+            var _sigma:number;
+            var _gamma:number;
 
-            this.sigma(sigma);
+            super();
+            super.initialize({
+
+                /**
+                 * Gets and sets the _gamma value for the kernel.
+                 * When setting _gamma, _sigma gets updated accordingly (_gamma = 0.5/_sigma^2).
+                 *
+                 * @param gamma
+                 * @returns {number}
+                 */
+                gamma : {
+                    type: PropertyType.NUMBER,
+                    get: ():number=>
+                    {
+                        return _gamma;
+                    },
+                    set: (value:number):void=>
+                    {
+                        _sigma = Math.sqrt(1.0 / (value * 2.0));
+                        _gamma = value;
+                    }
+                },
+
+                /**
+                 * Gets and sets the _sigma value for the kernel.
+                 * When setting _sigma, _gamma gets updated accordingly (_gamma = 0.5/_sigma^2).
+                 *
+                 * @param sigma
+                 */
+                sigma : {
+                    type: PropertyType.NUMBER,
+                    set: (value:any):void=>
+                    {
+                        _sigma = Math.sqrt(value);
+                        _gamma = 1.0 / (2.0 * value * value);
+                    },
+                    get: ():number=>
+                    {
+                        return _sigma;
+                    }
+                }
+            });
+
+            this.sigma = 1;
         }
 
         /**
@@ -56,18 +86,13 @@ module SVM.Kernels {
 
             var norm = 0.0, d;
 
-            if(typeof x == 'undefined')
-            {
-                var foo = true;
-            }
-
             for(var i = 0; i < x.length; i++)
             {
                 d = x[i] - y[i];
                 norm += d * d;
             }
 
-            return Math.exp(-this.gamma() * norm);
+            return Math.exp(-this.gamma * norm);
         }
 
         /**
@@ -80,9 +105,9 @@ module SVM.Kernels {
          */
         public distance(x:any, y:number[]):number
         {
-            if(typeof x === 'number')
+            if(typeof x === PropertyType.NUMBER)
             {
-                return (1.0 / -this.gamma()) * Math.log(1.0 - 0.5 * x);
+                return (1.0 / -this.gamma) * Math.log(1.0 - 0.5 * x);
             }
             else if(x === y)
             {
@@ -96,60 +121,31 @@ module SVM.Kernels {
                 norm += d * d;
             }
 
-            return (1.0 / -this.gamma()) * Math.log(1.0 - 0.5 * norm);
+            return (1.0 / -this.gamma) * Math.log(1.0 - 0.5 * norm);
         }
 
-        /**
-         * Gets or sets the _sigma value for the kernel.
-         * When setting _sigma, _gamma gets updated accordingly (_gamma = 0.5/_sigma^2).
-         *
-         * @param sigma
-         */
-        public sigma(sigma:any = null):any
-        {
-            if(!sigma)
-            {
-                return this.properties.sigma.value;
-            }
 
-            this.properties.sigma.value = Math.sqrt(sigma);
-            this.properties.gamma.value = 1.0 / (2.0 * sigma * sigma);
-        }
+
 
         /**
          * Gets or sets the _sigma² value for the kernel.
          * When setting _sigma², _gamma gets updated accordingly (_gamma = 0.5/_sigma²).
          *
-         * @param sigma
+         * @param value
          * @returns {number}
          */
-        public sigmaSquared(sigma:any = null):any
+        public sigmaSquared(value:any = null):any
         {
-            if(!sigma)
+            if(!value)
             {
-                return this.properties.sigma.value * this.properties.sigma.value;
+                return this.sigma * this.sigma;
             }
 
-            this.properties.sigma.value = Math.sqrt(sigma);
-            this.properties.gamma.value = 1.0 / (2.0 * sigma)
+            this.sigma = Math.sqrt(value);
+            this.gamma = 1.0 / (2.0 * value);
         }
 
-        /**
-         * Gets or sets the _gamma value for the kernel.
-         * When setting _gamma, _sigma gets updated accordingly (_gamma = 0.5/_sigma^2).
-         *
-         * @param gamma
-         * @returns {number}
-         */
-        public gamma(gamma:number = null):any
-        {
-            if(!gamma)
-            {
-                return this.properties.gamma.value;
-            }
 
-            this.properties.gamma.value = gamma;
-            this.properties.sigma.value = Math.sqrt(1.0 / (gamma * 2.0));
-        }
+
     }
 }

@@ -6,27 +6,37 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    /**
+    * Created by davidatborresen on 9/3/13.
+    */
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='./BaseKernel.ts' />
     (function (Kernels) {
+        /**
+        * Laplacian Kernel.
+        */
         var LaplacianKernel = (function (_super) {
             __extends(LaplacianKernel, _super);
-            function LaplacianKernel(gamma, sigma) {
-                if (typeof gamma === "undefined") { gamma = 1; }
-                if (typeof sigma === "undefined") { sigma = 1; }
+            function LaplacianKernel() {
                 _super.call(this);
-                this.properties = {
+                _super.prototype.initialize.call(this, {
                     gamma: {
-                        type: 'number',
-                        value: 0
+                        type: PropertyType.NUMBER,
+                        value: 1,
+                        writable: true
                     },
                     sigma: {
-                        type: 'number',
-                        value: 0
+                        type: PropertyType.NUMBER,
+                        value: 1,
+                        writable: true
                     }
-                };
-
-                this.setProperty('sigma', sigma);
-                this.setProperty('gamma', gamma);
+                });
             }
+            /**
+            * @param x
+            * @param y
+            * @returns {number}
+            */
             LaplacianKernel.prototype.run = function (x, y) {
                 if (x == y) {
                     return 1.0;
@@ -40,9 +50,17 @@ var SVM;
 
                 norm = Math.sqrt(norm);
 
-                return Math.exp(-this.properties.gamma.value * norm);
+                return Math.exp(-this.gamma * norm);
             };
 
+            /**
+            * Computes the distance in input space
+            * between two points given in feature space.
+            *
+            * @param x Vector X in input space
+            * @param y Vector Y in input space
+            * @returns {number} Distance between x and y in input space.
+            */
             LaplacianKernel.prototype.distance = function (x, y) {
                 if (x == y) {
                     return 0.0;
@@ -56,7 +74,7 @@ var SVM;
 
                 norm = Math.sqrt(norm);
 
-                return (1.0 / -this.properties.gamma.value) * Math.log(1.0 - 0.5 * norm);
+                return (1.0 / -this.gamma) * Math.log(1.0 - 0.5 * norm);
             };
             return LaplacianKernel;
         })(Kernels.BaseKernel);

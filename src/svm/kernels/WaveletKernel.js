@@ -6,51 +6,57 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='./BaseKernel.ts' />
     (function (Kernels) {
         var WaveletKernel = (function (_super) {
             __extends(WaveletKernel, _super);
-            function WaveletKernel(dilation, translation, invariant, mother) {
-                if (typeof dilation === "undefined") { dilation = 1.0; }
-                if (typeof translation === "undefined") { translation = 1.0; }
-                if (typeof invariant === "undefined") { invariant = true; }
-                if (typeof mother === "undefined") { mother = null; }
+            function WaveletKernel() {
                 _super.call(this);
-                this.properties = {
+
+                _super.prototype.initialize.call(this, {
                     dilation: {
                         type: 'number',
-                        value: 0
+                        value: 1.0,
+                        writable: true
                     },
                     translation: {
                         type: 'number',
-                        value: 0
+                        value: 1.0,
+                        writable: true
                     },
                     invariant: {
                         type: 'boolean',
-                        value: true
+                        value: false,
+                        writable: false
                     }
-                };
-
-                this.properties.invariant.value = invariant;
-                this.properties.dilation.value = dilation;
-                this.properties.translation.value = translation;
-                this._mother = mother || this.mother;
+                });
             }
+            /**
+            * @param x
+            * @param y
+            * @returns {number}
+            */
             WaveletKernel.prototype.run = function (x, y) {
                 var prod = 1.0;
 
-                if (this.properties.invariant) {
+                if (this.invariant) {
                     for (var i = 0; i < x.length; i++) {
-                        prod *= (this._mother((x[i] - this.properties.translation.value) / this.properties.dilation.value)) * (this._mother((y[i] - this.properties.translation.value) / this.properties.dilation.value));
+                        prod *= (this.mother((x[i] - this.translation) / this.dilation)) * (this.mother((y[i] - this.translation) / this.dilation));
                     }
                 } else {
                     for (var i = 0; i < x.length; i++) {
-                        prod *= this._mother((x[i] - y[i] / this.properties.dilation.value));
+                        prod *= this.mother((x[i] - y[i] / this.dilation));
                     }
                 }
 
                 return prod;
             };
 
+            /**
+            * @param x
+            * @returns {number}
+            */
             WaveletKernel.prototype.mother = function (x) {
                 return Math.cos(1.75 * x) * Math.exp(-(x * x) / 2.0);
             };

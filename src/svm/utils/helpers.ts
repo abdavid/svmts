@@ -1,7 +1,8 @@
 /**
  * Created by davidatborresen on 21.09.13.
  */
-///<reference path='.././underscore.d.ts' />
+
+///<reference path='../../definitions/underscore.d.ts' />
 
 
 module SVM.Util {

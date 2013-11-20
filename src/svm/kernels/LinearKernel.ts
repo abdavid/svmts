@@ -6,21 +6,19 @@ module SVM.Kernels {
 
     export class LinearKernel extends BaseKernel implements IKernel, IDistance
     {
-        public properties = {
-            constant : {
-                type: 'number',
-                value: 0
-            }
-        }
-
         /**
          * @param constant
          */
-        constructor(constant:number = 1)
+        constructor()
         {
             super();
-
-            this.properties.constant.value = constant;
+            super.initialize({
+                constant: {
+                    type: PropertyType.NUMBER,
+                    value: 1,
+                    writable: true
+                }
+            });
         }
 
         /**
@@ -32,7 +30,7 @@ module SVM.Kernels {
          */
         public run(x:number[], y:number[]):number
         {
-            var sum = this.properties.constant.value;
+            var sum = this.constant;
 
             for (var i = 0; i < x.length; i++)
             {

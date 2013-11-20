@@ -8,21 +8,16 @@ module SVM.Kernels {
      */
     export class SymmetricTriangleKernel extends BaseKernel implements IKernel
     {
-        public properties = {
-            gamma : {
-                type:'number',
-                value:0
-            }
-        };
-
-        /**
-         * @param gamma
-         */
-        constructor(gamma:number = 1.0)
+        constructor()
         {
             super();
-
-            this.properties.gamma.value = gamma;
+            super.initialize({
+                gamma: {
+                    type: PropertyType.NUMBER,
+                    value: 1.0,
+                    writable: true
+                }
+            });
         }
 
         /**
@@ -39,7 +34,7 @@ module SVM.Kernels {
                 norm += d * d;
             }
 
-            var z = 1.0 - this.properties.gamma.value * Math.sqrt(norm);
+            var z = 1.0 - this.gamma * Math.sqrt(norm);
 
             return (z > 0) ? z : 0;
         }

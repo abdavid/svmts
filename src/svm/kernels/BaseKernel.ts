@@ -5,18 +5,31 @@
 ///<reference path='../../definitions/underscore.d.ts' />
 ///<reference path='../interfaces/IKernel.ts' />
 
+class PropertyType {
+    static NUMBER = 'number';
+    static BOOLEAN = 'boolean';
+    static UNDEFINED = 'undefined';
+}
+
 module SVM.Kernels {
 
     export class BaseKernel implements IInteractableKernel
     {
-        public properties:Object = {};
+        private properties:IKernelPropertyMap = {};
+
+        public initialize(map:IKernelPropertyMap):void
+        {
+            this.properties = map;
+            Object.defineProperties(this, this.properties);
+            console.log('defining getters / setters for %O', this.properties);
+        }
 
         /**
          * @returns {string[]}
          */
         public getProperties():string[]
         {
-            return _.keys(this.properties);
+            return Object.keys(this.properties);
         }
 
         /**
@@ -30,29 +43,16 @@ module SVM.Kernels {
                 return this.properties[name];
             }
 
-            return undefined;
+            return null;
         }
 
         /**
          * @param name
-         * @param value
+         * @returns {any}
          */
-        public setProperty(name:string, value:number):SVM.Kernels.BaseKernel
+        public getPropertyType(name:string):PropertyType
         {
-            if(name in this)
-            {
-                this[name](value);
-            }
-            else if(name in this.properties && 'value' in this.properties[name])
-            {
-                this.properties[name].value = value;
-            }
-            else
-            {
-                throw new Error('Undefined property')
-            }
-
-            return this;
+            return this.properties[name].type || void(name);
         }
     }
 }

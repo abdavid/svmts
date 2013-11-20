@@ -6,21 +6,30 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='./BaseKernel.ts' />
     (function (Kernels) {
+        /**
+        * The spherical kernel comes from a statistics perspective. It is an example
+        * of an isotropic stationary kernel and is positive definite in R^3.
+        */
         var SphericalKernel = (function (_super) {
             __extends(SphericalKernel, _super);
-            function SphericalKernel(sigma) {
-                if (typeof sigma === "undefined") { sigma = 1.0; }
+            function SphericalKernel() {
                 _super.call(this);
-                this.properties = {
+                _super.prototype.initialize.call(this, {
                     sigma: {
-                        type: 'number',
-                        value: 0
+                        type: PropertyType.NUMBER,
+                        value: 1.0,
+                        writable: true
                     }
-                };
-
-                this.properties.sigma.value = sigma;
+                });
             }
+            /**
+            * @param x
+            * @param y
+            * @returns {number}
+            */
             SphericalKernel.prototype.run = function (x, y) {
                 var norm = 0.0;
                 for (var i = 0; i < x.length; i++) {
@@ -30,10 +39,10 @@ var SVM;
 
                 norm = Math.sqrt(norm);
 
-                if (norm >= this.properties.sigma.value) {
+                if (norm >= this.sigma) {
                     return 0;
                 } else {
-                    norm = norm / this.properties.sigma.value;
+                    norm = norm / this.sigma;
                     return 1.0 - 1.5 * norm + 0.5 * norm * norm * norm;
                 }
             };

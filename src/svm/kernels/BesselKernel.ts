@@ -29,31 +29,26 @@ module SVM.Kernels {
      * Frequency-dependent friction in circular pipelines
      * Bessel functions also appear in other problems, such as signal processing (e.g., see FM synthesis, Kaiser window, or Bessel filter).
      */
-    export class BesselKernel extends BaseKernel implements IKernel, IInteractableKernel {
-
-        public properties = {
-            order : {
-                type: 'number',
-                value: 0
-            },
-            sigma : {
-                type: 'number',
-                value: 0
-            }
-        }
-
+    export class BesselKernel extends BaseKernel implements IKernel, IInteractableKernel
+    {
         private baseBessel:BesselHelper;
 
-        /**
-         * @param order
-         * @param sigma
-         */
-        constructor(order:number = 1,sigma:number = 1)
+        constructor()
         {
             super();
+            super.initialize({
+                order : {
+                    type: PropertyType.NUMBER,
+                    value: 1,
+                    writable: true
+                },
+                sigma : {
+                    type: PropertyType.NUMBER,
+                    value: 1,
+                    writable: true
+                }
+            });
 
-            this.properties.order.value = order;
-            this.properties.sigma.value = sigma;
             this.baseBessel = new BesselHelper();
         }
 
@@ -73,7 +68,7 @@ module SVM.Kernels {
 
             norm = Math.sqrt(norm);
 
-            return this.baseBessel.J(this.properties.order.value, this.properties.sigma.value * norm) / Math.pow(norm, -norm * this.properties.order.value);
+            return this.baseBessel.J(this.order, this.sigma * norm) / Math.pow(norm, -norm * this.order);
 
         }
     }

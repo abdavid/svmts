@@ -1,10 +1,22 @@
 var SVM;
 (function (SVM) {
+    ///<reference path='../interfaces/IKernel.ts' />
     (function (Kernels) {
+        /**
+        * Tensor Product combination of Kernels.
+        */
         var TensorKernel = (function () {
+            /**
+            * @param kernels
+            */
             function TensorKernel(kernels) {
                 this._kernels = kernels;
             }
+            /**
+            * @param x
+            * @param y
+            * @returns {number}
+            */
             TensorKernel.prototype.run = function (x, y) {
                 var product = 1.0;
                 for (var i = 0; i < this._kernels.length; i++) {

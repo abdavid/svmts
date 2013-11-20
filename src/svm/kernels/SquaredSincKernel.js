@@ -6,21 +6,29 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='./BaseKernel.ts' />
     (function (Kernels) {
+        /**
+        * Squared Sinc Kernel.
+        */
         var SquaredSincKernel = (function (_super) {
             __extends(SquaredSincKernel, _super);
-            function SquaredSincKernel(gamma) {
-                if (typeof gamma === "undefined") { gamma = 1.0; }
+            function SquaredSincKernel() {
                 _super.call(this);
-                this.properties = {
+                _super.prototype.initialize.call(this, {
                     gamma: {
-                        type: 'number',
-                        value: 0
+                        type: PropertyType.NUMBER,
+                        value: 1.0,
+                        writable: true
                     }
-                };
-
-                this.properties.gamma.value = gamma;
+                });
             }
+            /**
+            * @param x
+            * @param y
+            * @returns {number}
+            */
             SquaredSincKernel.prototype.run = function (x, y) {
                 var norm = 0.0, d;
                 for (var i = 0; i < x.length; i++) {
@@ -28,8 +36,8 @@ var SVM;
                     norm += d * d;
                 }
 
-                var num = this.properties.gamma.value * Math.sqrt(norm);
-                var den = this.properties.gamma.value * this.properties.gamma.value * norm;
+                var num = this.gamma * Math.sqrt(norm);
+                var den = this.gamma * this.gamma * norm;
 
                 return Math.sin(num) / den;
             };

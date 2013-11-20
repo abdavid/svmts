@@ -8,21 +8,16 @@ module SVM.Kernels {
      */
     export class SquaredSincKernel extends BaseKernel implements IKernel
     {
-        public properties = {
-            gamma: {
-                type:'number',
-                value:0
-            }
-        };
-
-        /**
-         * @param gamma
-         */
-        constructor(gamma:number = 1.0)
+        constructor()
         {
             super();
-
-            this.properties.gamma.value = gamma;
+            super.initialize({
+                gamma: {
+                    type: PropertyType.NUMBER,
+                    value: 1.0,
+                    writable: true
+                }
+            });
         }
 
         /**
@@ -39,8 +34,8 @@ module SVM.Kernels {
                 norm += d * d;
             }
 
-            var num = this.properties.gamma.value * Math.sqrt(norm);
-            var den = this.properties.gamma.value * this.properties.gamma.value * norm;
+            var num = this.gamma * Math.sqrt(norm);
+            var den = this.gamma * this.gamma * norm;
 
             return Math.sin(num) / den;
         }

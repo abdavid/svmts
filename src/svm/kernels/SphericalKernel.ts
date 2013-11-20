@@ -10,21 +10,16 @@ module SVM.Kernels {
      */
     export class SphericalKernel extends BaseKernel implements IKernel
     {
-        public properties = {
-            sigma: {
-                type:'number',
-                value:0
-            }
-        };
-
-        /**
-         * @param sigma
-         */
-        constructor(sigma:number = 1.0)
+        constructor()
         {
             super();
-
-            this.properties.sigma.value = sigma;
+            super.initialize({
+                sigma: {
+                    type: PropertyType.NUMBER,
+                    value: 1.0,
+                    writable: true
+                }
+            });
         }
 
         /**
@@ -43,13 +38,13 @@ module SVM.Kernels {
 
             norm = Math.sqrt(norm);
 
-            if(norm >= this.properties.sigma.value)
+            if(norm >= this.sigma)
             {
                 return 0;
             }
             else
             {
-                norm = norm / this.properties.sigma.value;
+                norm = norm / this.sigma;
                 return 1.0 - 1.5 * norm + 0.5 * norm * norm * norm;
             }
 

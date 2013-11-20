@@ -6,27 +6,21 @@ module SVM.Kernels
 {
     export class PolynominalKernel extends BaseKernel implements IKernel, IDistance
     {
-        public properties = {
-            degree : {
-                type: 'number',
-                value: 0
-            },
-            constant : {
-                type: 'number',
-                value: 0
-            }
-        }
-
-        /**
-         * @param degree
-         * @param constant
-         */
-        constructor(degree:number = 1.0, constant:number = 1.0)
+        constructor()
         {
             super();
-
-            this.setProperty('degree', degree);
-            this.setProperty('constant', constant);
+            super.initialize({
+                degree: {
+                    type: PropertyType.NUMBER,
+                    value: 1.0,
+                    writable: true
+                },
+                constant: {
+                    type: PropertyType.NUMBER,
+                    value: 1.0,
+                    writable: true
+                }
+            });
         }
 
         /**
@@ -38,12 +32,12 @@ module SVM.Kernels
          */
         public run(x:number[], y:number[]):number
         {
-            var sum = this.properties.constant.value;
+            var sum = this.constant;
             for(var i = 0; i < x.length; i++)
             {
                 sum += x[i] * y[i];
             }
-            return Math.pow(sum, this.properties.degree.value);
+            return Math.pow(sum, this.degree);
         }
 
         /**
@@ -56,7 +50,7 @@ module SVM.Kernels
          */
         public distance(x:number[], y:number[]):number
         {
-            var q = 1.0 / this.properties.degree.value;
+            var q = 1.0 / this.degree;
 
             return Math.pow(this.run(x, x), q) + Math.pow(this.run(y, y), q) - 2.0 * Math.pow(this.run(x, y), q);
         }

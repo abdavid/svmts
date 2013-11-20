@@ -6,21 +6,30 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    /**
+    * Created by davidatborresen on 9/3/13.
+    */
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='./BaseKernel.ts' />
     (function (Kernels) {
         var TStudentKernel = (function (_super) {
             __extends(TStudentKernel, _super);
-            function TStudentKernel(degree) {
-                if (typeof degree === "undefined") { degree = 1; }
+            function TStudentKernel() {
                 _super.call(this);
-                this.properties = {
+
+                _super.prototype.initialize.call(this, {
                     degree: {
                         type: 'number',
-                        value: 0
+                        value: 1,
+                        writable: true
                     }
-                };
-
-                this.properties.degree.value = degree;
+                });
             }
+            /**
+            * @param x
+            * @param y
+            * @returns {number}
+            */
             TStudentKernel.prototype.run = function (x, y) {
                 var norm = 0.0;
                 for (var i = 0; i < x.length; i++) {
@@ -29,7 +38,7 @@ var SVM;
                 }
                 norm = Math.sqrt(norm);
 
-                return 1.0 / (1.0 + Math.pow(norm, this.properties.degree.value));
+                return 1.0 / (1.0 + Math.pow(norm, this.degree));
             };
             return TStudentKernel;
         })(Kernels.BaseKernel);

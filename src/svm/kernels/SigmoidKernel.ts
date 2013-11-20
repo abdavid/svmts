@@ -18,27 +18,21 @@ module SVM.Kernels {
      */
     export class SigmoidKernel extends BaseKernel implements IKernel
     {
-        public properties = {
-            alpha:{
-                type:'number',
-                value: 0
-            },
-            constant:{
-                type:'number',
-                value: 0
-            }
-        };
-
-        /**
-         * @param alpha
-         * @param constant
-         */
-        constructor(alpha:number = 0.01, constant:number = -Math.E)
+        constructor()
         {
             super();
-
-            this.properties.alpha.value = alpha;
-            this.properties.constant.value = constant;
+            super.initialize({
+                alpha: {
+                    type: PropertyType.NUMBER,
+                    value: 0.01,
+                    writable: true
+                },
+                constant: {
+                    type: PropertyType.NUMBER,
+                    value: -Math.E,
+                    writable: true
+                }
+            });
         }
 
         /**
@@ -57,7 +51,7 @@ module SVM.Kernels {
                 sum += x[i] * y[i];
             }
 
-            return this.tanh(this.properties.alpha.value * sum + this.properties.constant.value);
+            return this.tanh(this.alpha * sum + this.constant);
         }
 
         /**

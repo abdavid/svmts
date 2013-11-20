@@ -6,21 +6,29 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    /**
+    * Created by davidatborresen on 9/3/13.
+    */
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='./BaseKernel.ts' />
     (function (Kernels) {
         var WaveKernel = (function (_super) {
             __extends(WaveKernel, _super);
-            function WaveKernel(sigma) {
-                if (typeof sigma === "undefined") { sigma = 1; }
+            function WaveKernel() {
                 _super.call(this);
-                this.properties = {
+                _super.prototype.initialize.call(this, {
                     sigma: {
                         type: 'number',
-                        value: 0
+                        value: 1,
+                        writable: true
                     }
-                };
-
-                this.properties.sigma.value = sigma;
+                });
             }
+            /**
+            * @param x
+            * @param y
+            * @returns {number}
+            */
             WaveKernel.prototype.run = function (x, y) {
                 var norm = 0.0;
                 for (var i = 0; i < x.length; i++) {
@@ -28,10 +36,10 @@ var SVM;
                     norm += d * d;
                 }
 
-                if (this.properties.sigma.value == 0 || norm == 0) {
+                if (this.sigma == 0 || norm == 0) {
                     return 0;
                 } else {
-                    return (this.properties.sigma.value / norm) * Math.sin(norm / this.properties.sigma.value);
+                    return (this.sigma / norm) * Math.sin(norm / this.sigma);
                 }
             };
             return WaveKernel;

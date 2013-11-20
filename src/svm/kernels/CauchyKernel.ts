@@ -14,20 +14,18 @@ module SVM.Kernels {
      * long-tailed kernel and can be used to give long-range influence and sensitivity
      * over the high dimension space.
      */
-    export class CauchyKernel extends BaseKernel implements IKernel {
-
-        public properties = {
-            sigma : {
-                type: 'number',
-                value: 0
-            }
-        }
-
-        constructor(sigma:number = 1)
+    export class CauchyKernel extends BaseKernel implements IKernel
+    {
+        constructor()
         {
             super();
-
-            this.properties.sigma.value = sigma;
+            super.initialize({
+                sigma: {
+                    type: PropertyType.NUMBER,
+                    value: 1,
+                    writable: true
+                }
+            });
         }
 
         public run(x:number[], y:number[]):number
@@ -46,7 +44,7 @@ module SVM.Kernels {
                 norm += d * d;
             }
 
-            return (1.0 / (1.0 + norm / this.properties.sigma.value));
+            return (1.0 / (1.0 + norm / this.sigma));
 
         }
     }

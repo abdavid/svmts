@@ -6,20 +6,31 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    /**
+    * Created by davidatborresen on 9/3/13.
+    */
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='./BaseKernel.ts' />
     (function (Kernels) {
+        /**
+        * @class CauchyKernel
+        *
+        * @summary
+        * The Cauchy kernel comes from the Cauchy distribution (Basak, 2008). It is a
+        * long-tailed kernel and can be used to give long-range influence and sensitivity
+        * over the high dimension space.
+        */
         var CauchyKernel = (function (_super) {
             __extends(CauchyKernel, _super);
-            function CauchyKernel(sigma) {
-                if (typeof sigma === "undefined") { sigma = 1; }
+            function CauchyKernel() {
                 _super.call(this);
-                this.properties = {
+                _super.prototype.initialize.call(this, {
                     sigma: {
-                        type: 'number',
-                        value: 0
+                        type: PropertyType.NUMBER,
+                        value: 1,
+                        writable: true
                     }
-                };
-
-                this.properties.sigma.value = sigma;
+                });
             }
             CauchyKernel.prototype.run = function (x, y) {
                 if (x == y) {
@@ -32,7 +43,7 @@ var SVM;
                     norm += d * d;
                 }
 
-                return (1.0 / (1.0 + norm / this.properties.sigma.value));
+                return (1.0 / (1.0 + norm / this.sigma));
             };
             return CauchyKernel;
         })(Kernels.BaseKernel);

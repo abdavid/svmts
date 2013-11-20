@@ -6,28 +6,57 @@ var __extends = this.__extends || function (d, b) {
 };
 var SVM;
 (function (SVM) {
+    /**
+    * Created by davidatborresen on 9/3/13.
+    */
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='./BaseKernel.ts' />
     (function (Kernels) {
+        /**
+        * @class BesselKernel
+        * @link http://en.wikipedia.org/wiki/Bessel_function
+        *
+        * @summary
+        * Bessel's equation arises when finding separable solutions to Laplace's equation and the Helmholtz equation in cylindrical or spherical coordinates.
+        * Bessel functions are therefore especially important for many problems of wave propagation and static potentials.
+        * In solving problems in cylindrical coordinate systems, one obtains Bessel functions of integer order (α = n); in spherical problems,
+        * one obtains half-integer orders (α = n+1/2).
+        *
+        * @problems
+        * Electromagnetic waves in a cylindrical waveguide
+        * Pressure amplitudes of inviscid rotational flows
+        * Heat conduction in a cylindrical object
+        * Modes of vibration of a thin circular (or annular) artificial membrane (such as a drum or other membranophone)
+        * Diffusion problems on a lattice
+        * Solutions to the radial Schrödinger equation (in spherical and cylindrical coordinates) for a free particle
+        * Solving for patterns of acoustical radiation
+        * Frequency-dependent friction in circular pipelines
+        * Bessel functions also appear in other problems, such as signal processing (e.g., see FM synthesis, Kaiser window, or Bessel filter).
+        */
         var BesselKernel = (function (_super) {
             __extends(BesselKernel, _super);
-            function BesselKernel(order, sigma) {
-                if (typeof order === "undefined") { order = 1; }
-                if (typeof sigma === "undefined") { sigma = 1; }
+            function BesselKernel() {
                 _super.call(this);
-                this.properties = {
+                _super.prototype.initialize.call(this, {
                     order: {
-                        type: 'number',
-                        value: 0
+                        type: PropertyType.NUMBER,
+                        value: 1,
+                        writable: true
                     },
                     sigma: {
-                        type: 'number',
-                        value: 0
+                        type: PropertyType.NUMBER,
+                        value: 1,
+                        writable: true
                     }
-                };
+                });
 
-                this.properties.order.value = order;
-                this.properties.sigma.value = sigma;
                 this.baseBessel = new BesselHelper();
             }
+            /**
+            * @param x
+            * @param y
+            * @returns {number}
+            */
             BesselKernel.prototype.run = function (x, y) {
                 var norm = 0.0;
                 for (var i = 0; i < x.length; i++) {
@@ -37,7 +66,7 @@ var SVM;
 
                 norm = Math.sqrt(norm);
 
-                return this.baseBessel.J(this.properties.order.value, this.properties.sigma.value * norm) / Math.pow(norm, -norm * this.properties.order.value);
+                return this.baseBessel.J(this.order, this.sigma * norm) / Math.pow(norm, -norm * this.order);
             };
             return BesselKernel;
         })(Kernels.BaseKernel);
@@ -46,6 +75,12 @@ var SVM;
         var BesselHelper = (function () {
             function BesselHelper() {
             }
+            /**
+            * Bessel function of order 0.
+            * @param x
+            * @returns {number}
+            * @constructor
+            */
             BesselHelper.prototype.J0 = function (x) {
                 var ax = Math.abs(x);
 
@@ -66,6 +101,11 @@ var SVM;
                 }
             };
 
+            /**
+            * Bessel function of order 1.
+            * @param x
+            * @constructor
+            */
             BesselHelper.prototype.J1 = function (x) {
                 var ax = Math.abs(x), y, ans1, ans2;
 

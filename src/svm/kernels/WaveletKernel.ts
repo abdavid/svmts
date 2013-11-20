@@ -5,37 +5,27 @@ module SVM.Kernels
 {
     export class WaveletKernel extends BaseKernel implements IKernel
     {
-        public properties = {
-            dilation: {
-                type:'number',
-                value:0
-            },
-            translation: {
-                type:'number',
-                value:0
-            },
-            invariant:{
-                type:'boolean',
-                value: true
-            }
-        };
-
-        private _mother:Function;
-
-        /**
-         * @param dilation
-         * @param translation
-         * @param invariant
-         * @param mother
-         */
-        constructor(dilation:number = 1.0, translation:number = 1.0, invariant:boolean = true, mother:Function = null)
+        constructor()
         {
             super();
 
-            this.properties.invariant.value = invariant;
-            this.properties.dilation.value = dilation;
-            this.properties.translation.value = translation
-            this._mother = mother || this.mother;
+            super.initialize({
+                dilation: {
+                    type:'number',
+                    value:1.0,
+                    writable:true
+                },
+                translation: {
+                    type:'number',
+                    value:1.0,
+                    writable:true
+                },
+                invariant:{
+                    type:'boolean',
+                    value: false,
+                    writable:false
+                }
+            });
         }
 
         /**
@@ -47,19 +37,19 @@ module SVM.Kernels
         {
             var prod = 1.0;
 
-            if(this.properties.invariant)
+            if(this.invariant)
             {
                 for(var i = 0; i < x.length; i++)
                 {
-                    prod *= (this._mother((x[i] - this.properties.translation.value) / this.properties.dilation.value)) *
-                        (this._mother((y[i] - this.properties.translation.value) / this.properties.dilation.value));
+                    prod *= (this.mother((x[i] - this.translation) / this.dilation)) *
+                        (this.mother((y[i] - this.translation) / this.dilation));
                 }
             }
             else
             {
                 for(var i = 0; i < x.length; i++)
                 {
-                    prod *= this._mother((x[i] - y[i] / this.properties.dilation.value));
+                    prod *= this.mother((x[i] - y[i] / this.dilation));
                 }
             }
 

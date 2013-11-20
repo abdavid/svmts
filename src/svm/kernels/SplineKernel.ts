@@ -8,6 +8,11 @@ module SVM.Kernels {
      */
     export class SplineKernel extends BaseKernel implements IKernel
     {
+        constructor()
+        {
+            super();
+        }
+
         /**
          * @param x
          * @param y

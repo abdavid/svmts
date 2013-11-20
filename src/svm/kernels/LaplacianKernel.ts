@@ -10,29 +10,23 @@ module SVM.Kernels {
     /**
      * Laplacian Kernel.
      */
-    export class LaplacianKernel extends BaseKernel implements IKernel, IDistance {
-
-        public properties = {
-            gamma : {
-                type: 'number',
-                value: 0
-            },
-            sigma : {
-                type: 'number',
-                value: 0
-            }
-        }
-
-        /**
-         * @param gamma
-         * @param sigma
-         */
-        constructor(gamma:number = 1, sigma:number = 1)
+    export class LaplacianKernel extends BaseKernel implements IKernel, IDistance
+    {
+        constructor()
         {
             super();
-
-            this.setProperty('sigma',sigma);
-            this.setProperty('gamma',gamma);
+            super.initialize({
+                gamma : {
+                    type: PropertyType.NUMBER,
+                    value: 1,
+                    writable: true
+                },
+                sigma : {
+                    type: PropertyType.NUMBER,
+                    value: 1,
+                    writable: true
+                }
+            });
         }
 
         /**
@@ -56,7 +50,7 @@ module SVM.Kernels {
 
             norm = Math.sqrt(norm);
 
-            return Math.exp(-this.properties.gamma.value * norm);
+            return Math.exp(-this.gamma * norm);
         }
 
         /**
@@ -83,7 +77,7 @@ module SVM.Kernels {
 
             norm = Math.sqrt(norm);
 
-            return (1.0 / -this.properties.gamma.value) * Math.log(1.0 - 0.5 * norm);
+            return (1.0 / -this.gamma) * Math.log(1.0 - 0.5 * norm);
         }
     }
 }

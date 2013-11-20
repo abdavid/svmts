@@ -1,12 +1,13 @@
 /**
  * Created by davidatborresen on 09.09.13.
  */
+///<reference path='../interfaces/IKernel.ts' />
 ///<reference path='../interfaces/ICanvasRenderer.ts' />
 ///<reference path='../interfaces/ISupportVectorMachineLearning.ts' />
 
 
 ///<reference path='../base/Generic.ts' />
-///<reference path='.././underscore.d.ts' />
+///<reference path='../../definitions/underscore.d.ts' />
 
 ///<reference path='../SupportVectorMachine.ts' />
 ///<reference path='../learning/SequentialMinimalOptimization.ts' />
@@ -271,7 +272,15 @@ module SVM.Renderer {
                 }
 
                 var property = this.teacher.kernel.getProperty(propertyName);
-                propertiesString += propertyName + ' = ' + property.value.toPrecision(2);
+                if(property.type === PropertyType.NUMBER)
+                {
+                    propertiesString += propertyName + ' = ' + property.value.toPrecision(2);
+                }
+                else
+                {
+                    propertiesString += propertyName + ' = ' + property.value.toString();
+                }
+
             });
 
             this.context.fillText('Kernel properties: ' + propertiesString,10, SVM.getHeight() - 60);

@@ -1,7 +1,20 @@
 var SVM;
 (function (SVM) {
+    /**
+    * Created by davidatborresen on 09.09.13.
+    */
+    ///<reference path='../interfaces/IKernel.ts' />
+    ///<reference path='../interfaces/ICanvasRenderer.ts' />
+    ///<reference path='../interfaces/ISupportVectorMachineLearning.ts' />
+    ///<reference path='../base/Generic.ts' />
+    ///<reference path='../../definitions/underscore.d.ts' />
+    ///<reference path='../SupportVectorMachine.ts' />
+    ///<reference path='../learning/SequentialMinimalOptimization.ts' />
     (function (Renderer) {
         var Canvas = (function () {
+            /**
+            * @param teacher
+            */
             function Canvas(teacher) {
                 this.canvas = document.createElement('canvas');
                 this.canvas.height = SVM.getHeight();
@@ -12,7 +25,16 @@ var SVM;
                 this.context = this.canvas.getContext('2d');
 
                 this.teacher = teacher;
+                //new CanvasLoader(this.context);
             }
+            /**
+            * @interface ICanvasRenderer
+            * @param matrix
+            * @param color
+            * @returns {SVM.Renderer.Canvas}
+            *
+            * Paints the decision background
+            */
             Canvas.prototype.drawBackground = function (matrix, color) {
                 var _this = this;
                 matrix.forEach(function (V, i) {
@@ -24,6 +46,11 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface ICanvasRenderer
+            * @returns {SVM.Renderer.Canvas}
+            * Draw the axis
+            */
             Canvas.prototype.drawAxis = function () {
                 this.context.beginPath();
                 this.context.strokeStyle = 'rgb(50,50,50)';
@@ -37,6 +64,10 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface ICanvasRenderer
+            * @returns {SVM.Renderer.Canvas}
+            */
             Canvas.prototype.drawMargin = function () {
                 var xs = [-5, 5], ys = [0, 0];
 
@@ -47,12 +78,15 @@ var SVM;
                 this.context.lineWidth = 1;
                 this.context.beginPath();
 
+                // wx+b=0 line
                 this.context.moveTo(xs[0], ys[0]);
                 this.context.lineTo(xs[1], ys[1]);
 
+                // wx+b=1 line
                 this.context.moveTo(xs[0], (ys[0] - 1.0 / this.teacher.machine.getWeight(1)));
                 this.context.lineTo(xs[1], (ys[1] - 1.0 / this.teacher.machine.getWeight(1)));
 
+                // wx+b=-1 line
                 this.context.moveTo(xs[0], (ys[0] + 1.0 / this.teacher.machine.getWeight(1)));
                 this.context.lineTo(xs[1], (ys[1] + 1.0 / this.teacher.machine.getWeight(1)));
                 this.context.stroke();
@@ -81,12 +115,21 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface ICanvasRenderer
+            * @returns {SVM.Renderer.Canvas}
+            */
             Canvas.prototype.clearCanvas = function () {
                 this.context.clearRect(0, 0, SVM.getWidth(), SVM.getHeight());
 
                 return this;
             };
 
+            /**
+            * Renders the result to a canvas
+            * @interface IRenderer
+            * @returns {SVM.Renderer.Canvas}
+            */
             Canvas.prototype.render = function () {
                 this.clearCanvas();
 
@@ -111,6 +154,10 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface IRenderer
+            * @returns {SVM.Renderer.Canvas}
+            */
             Canvas.prototype.drawDataPoints = function () {
                 this.context.strokeStyle = 'rgb(0,0,0)';
 
@@ -135,6 +182,10 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface IRenderer
+            * @returns {SVM.Renderer.Canvas}
+            */
             Canvas.prototype.drawStatus = function () {
                 var _this = this;
                 this.context.fillStyle = 'rgb(0,0,0)';
@@ -155,7 +206,11 @@ var SVM;
                     }
 
                     var property = _this.teacher.kernel.getProperty(propertyName);
-                    propertiesString += propertyName + ' = ' + property.value.toPrecision(2);
+                    if (property.type === PropertyType.NUMBER) {
+                        propertiesString += propertyName + ' = ' + property.value.toPrecision(2);
+                    } else {
+                        propertiesString += propertyName + ' = ' + property.value.toString();
+                    }
                 });
 
                 this.context.fillText('Kernel properties: ' + propertiesString, 10, SVM.getHeight() - 60);
@@ -167,6 +222,15 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface IRenderer
+            * @param x
+            * @param y
+            * @param w
+            * @param h
+            * @param radius
+            * @returns {SVM.Renderer.Canvas}
+            */
             Canvas.prototype.drawBubble = function (x, y, w, h, radius) {
                 var r = x + w, b = y + h;
 
@@ -189,6 +253,14 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface IRenderer
+            * @param x
+            * @param y
+            * @param w
+            * @param h
+            * @returns {SVM.Renderer.Canvas}
+            */
             Canvas.prototype.drawRect = function (x, y, w, h, stroke) {
                 if (typeof stroke === "undefined") { stroke = false; }
                 this.context.beginPath();
@@ -203,6 +275,13 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface IRenderer
+            * @param x
+            * @param y
+            * @param r
+            * @returns {SVM.Renderer.Canvas}
+            */
             Canvas.prototype.drawCircle = function (x, y, r) {
                 this.context.beginPath();
                 this.context.arc(x, y, r, 0, Math.PI * 2, true);
