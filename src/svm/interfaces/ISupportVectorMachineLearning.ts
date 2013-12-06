@@ -16,9 +16,9 @@ interface ISupportVectorMachineLearning {
     outputs:number[];
     biasLower:number;
     biasUpper:number;
-    kernel:IInteractableKernel;
+    kernel:IKernel;
 
-    run(computeError:boolean):void;
+    run(computeError?:boolean):number;
     getComplexity():number;
     setComplexity(c:number):void;
 }

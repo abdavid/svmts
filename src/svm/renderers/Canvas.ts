@@ -1,20 +1,18 @@
 /**
  * Created by davidatborresen on 09.09.13.
  */
+///<reference path='../interfaces/IKernel.ts' />
 ///<reference path='../interfaces/ICanvasRenderer.ts' />
 ///<reference path='../interfaces/ISupportVectorMachineLearning.ts' />
-
-
-///<reference path='../base/Generic.ts' />
-///<reference path='.././underscore.d.ts' />
+///<reference path='../../definitions/underscore.d.ts' />
 
 ///<reference path='../SupportVectorMachine.ts' />
 ///<reference path='../learning/SequentialMinimalOptimization.ts' />
 
+import Base = require('../kernels/Base');
+import SVM = require('../SupportVectorMachine')
 
-module SVM.Renderer {
-
-    export class Canvas implements ICanvasRenderer {
+export class Canvas implements ICanvasRenderer {
 
         teacher:ISupportVectorMachineLearning;
         canvas:HTMLCanvasElement;
@@ -34,8 +32,6 @@ module SVM.Renderer {
             this.context = this.canvas.getContext('2d');
 
             this.teacher = teacher;
-
-            //new CanvasLoader(this.context);
         }
 
         /**
@@ -90,8 +86,8 @@ module SVM.Renderer {
         {
             var xs = [-5, 5], ys = [0, 0];
 
-            ys[0] = (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[0]) / this.teacher.machine.getWeight(1);
-            ys[1] = (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[1]) / this.teacher.machine.getWeight(1);
+            ys[0] = SVM.getScale() * (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[0]) / this.teacher.machine.getWeight(1);
+            ys[1] = SVM.getScale() * (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[1]) / this.teacher.machine.getWeight(1);
 
             this.context.fillStyle = 'rgb(0,0,0)';
             this.context.lineWidth = 1;
@@ -198,7 +194,8 @@ module SVM.Renderer {
                 .drawBackground(resultsB, 'rgb(250,150,150)')
                 .drawDataPoints()
                 .drawAxis()
-                .drawStatus();
+                .drawStatus()
+                .drawMargin();
 
             return this;
         }
@@ -260,18 +257,26 @@ module SVM.Renderer {
                     numsupp++;
                 }
             }
+
             this.context.fillText("Using " + this.teacher.kernel.constructor.name, 10, SVM.getHeight() - 80);
 
             var propertiesString = '';
-            this.teacher.kernel.getProperties().forEach((propertyName)=>
+            this.teacher.kernel.getAttributes().forEach((propertyName)=>
             {
                 if(propertiesString.length > 0)
                 {
                     propertiesString += ', ';
                 }
 
-                var property = this.teacher.kernel.getProperty(propertyName);
-                propertiesString += propertyName + ' = ' + property.value.toPrecision(2);
+                var property = this.teacher.kernel.getAttribute(propertyName);
+                if(property.type === Base.PropertyType.NUMBER)
+                {
+                    propertiesString += propertyName + ' = ' + this.teacher.kernel[property.name].toPrecision(2);
+                }
+                else
+                {
+                    propertiesString += propertyName + ' = ' + this.teacher.kernel[property.name].toString();
+                }
             });
 
             this.context.fillText('Kernel properties: ' + propertiesString,10, SVM.getHeight() - 60);
@@ -357,4 +362,3 @@ module SVM.Renderer {
             return this;
         }
     }
-}

@@ -1,11 +1,9 @@
 ///<reference path='./../interfaces/ISupportVectorMachineLearning.ts' />
 ///<reference path='./../interfaces/IKernel.ts' />
 
-///<reference path='.././parallel/Parallel.ts' />
-///<reference path='../base/Generic.ts' />
+///<reference path='../base/HashSet.ts' />
 ///<reference path='../SupportVectorMachine.ts' />
 ///<reference path='../utils/helpers.ts' />
-
 /**
  * @summary
  * Sequential Minimal Optimization (SMO) Algorithm
@@ -78,9 +76,10 @@
  *
  **/
 
-module SVM.Learning {
+import Generic = require('../base/HashSet');
 
-    export class SequentialMinimalOptimization implements ISupportVectorMachineLearning {
+export class SequentialMinimalOptimization implements ISupportVectorMachineLearning
+{
 
         // Training data
         public inputs:number[][];
@@ -88,6 +87,7 @@ module SVM.Learning {
 
         public alphaA:Float64Array;//number[];
         public alphaB:Float64Array;//number[];
+
         public errors:Float64Array;//number[];
 
         public biasLower:number;
@@ -106,10 +106,11 @@ module SVM.Learning {
         private biasLowerIndex:number;
         private biasUpperIndex:number;
 
-        private I0:SVM.Generic.HashSet;
-        private I1:SVM.Generic.HashSet;
-        private I2:SVM.Generic.HashSet;
-        private I3:SVM.Generic.HashSet;
+
+        private I0:Generic.HashSet;
+        private I1:Generic.HashSet;
+        private I2:Generic.HashSet;
+        private I3:Generic.HashSet;
 
         /**
          * @param machine
@@ -120,22 +121,22 @@ module SVM.Learning {
         {
             if(machine === null)
             {
-                throw new Error('Machine is null');
+                throw 'Machine is null';
             }
 
             if(inputs === null)
             {
-                throw new Error('Inputs is null');
+                throw 'Inputs is null';
             }
 
             if(outputs === null)
             {
-                throw new Error('Outputs is null');
+                throw 'Outputs is null';
             }
 
             if(inputs.length !== outputs.length)
             {
-                throw new Error('The number of inputs and outputs does not match. ' + inputs.length + ' != ' + outputs.length);
+                throw 'The number of inputs and outputs does not match. ' + inputs.length + ' != ' + outputs.length;
             }
 
             if(machine.getInputCount() > 0)
@@ -144,7 +145,7 @@ module SVM.Learning {
                 {
                     if(inputs[i].length !== machine.getInputCount())
                     {
-                        throw new Error('The size of the input vectors does not match the expected number of inputs of the machine');
+                        throw 'The size of the input vectors does not match the expected number of inputs of the machine';
                     }
                 }
             }
@@ -183,7 +184,7 @@ module SVM.Learning {
         {
             if(value <= 0)
             {
-                throw new Error('Out of range');
+                throw 'Out of range';
             }
 
             this.cost = value;
@@ -197,7 +198,7 @@ module SVM.Learning {
         {
             if(value <= 0)
             {
-                throw new Error('Out of range');
+                throw 'Out of range';
             }
 
             this.epsilon = value;
@@ -220,7 +221,7 @@ module SVM.Learning {
         {
             if(value <= 0)
             {
-                throw new Error('Out of range');
+                throw 'Out of range';
             }
 
             this.tolerance = value;
@@ -247,7 +248,7 @@ module SVM.Learning {
          *
          * Reference: http://www.cs.iastate.edu/~honavar/keerthi-svm.pdf
          */
-        public run(computeError:boolean = false):number
+        public run(computeError?:boolean):number
         {
             var N = this.inputs.length;
 
@@ -255,10 +256,10 @@ module SVM.Learning {
             this.alphaB = new Float64Array(N);//SVM.Util.arrayPopulate(N, 0);
             this.errors = new Float64Array(N);//SVM.Util.arrayPopulate(N, 0);
 
-            this.I0 = new SVM.Generic.HashSet();
-            this.I1 = new SVM.Generic.HashSet();
-            this.I2 = new SVM.Generic.HashSet();
-            this.I3 = new SVM.Generic.HashSet();
+            this.I0 = new Generic.HashSet();
+            this.I1 = new Generic.HashSet();
+            this.I2 = new Generic.HashSet();
+            this.I3 = new Generic.HashSet();
 
             for(var i = 0; i < N; i++)
             {
@@ -1078,5 +1079,4 @@ module SVM.Learning {
             return true;
         }
     }
-}
 

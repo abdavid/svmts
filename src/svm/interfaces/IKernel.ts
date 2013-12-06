@@ -11,18 +11,24 @@ interface IKernel {
     run(x:number[], y:number[]):number;
 }
 
+
 interface IInteractableKernel
 {
-    properties:Object;
-    getProperties():string[];
-    getProperty(name:string):IKernelProperty;
-    setProperty(name:string, value:number):void;
+    getAttributes():string[];
+    getAttribute(name:string):IKernelProperty;
+    getAttributeType(name:string):string;
+    getAttributeBy(property:string):Object;
 }
 
-interface IKernelProperty
+interface IKernelProperty extends PropertyDescriptor
 {
-    name:string;
-    value:number;
+    type:string;
+    name?:string;
+}
+
+interface IKernelPropertyMap extends PropertyDescriptor
+{
+    [s: string]: IKernelProperty;
 }
 
 interface IEstimable {

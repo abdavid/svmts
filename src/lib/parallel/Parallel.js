@@ -1,3 +1,7 @@
+/**
+* Created by davidatborresen on 14.09.13.
+*/
+///<reference path='../../definitions/underscore.d.ts' />
 var P;
 (function (P) {
     var isNode = typeof module !== 'undefined' && module.exports;
@@ -21,12 +25,21 @@ var P;
             this.requiredScripts = [];
             this.requiredFunctions = [];
         }
+        /**
+        * @returns {{synchronous: boolean}}
+        * @private
+        */
         Thread.prototype._getDefaultOptions = function () {
             return {
                 synchronous: true
             };
         };
 
+        /**
+        * @param cb
+        * @returns {string}
+        * @private
+        */
         Thread.prototype._getWorkerSource = function (cb) {
             var preStr = '';
             var importScripts = '';
@@ -50,6 +63,11 @@ var P;
             }
         };
 
+        /**
+        * @param cb
+        * @returns {*}
+        * @private
+        */
         Thread.prototype._spawnWorker = function (cb) {
             var wrk;
             var src = this._getWorkerSource(cb);
@@ -91,6 +109,12 @@ var P;
             return wrk;
         };
 
+        /**
+        * @param i
+        * @param cb
+        * @param done
+        * @private
+        */
         Thread.prototype._spawnMapWorker = function (i, cb, done) {
             var _this = this;
             var wrk = this._spawnWorker(cb);
@@ -111,6 +135,12 @@ var P;
             }
         };
 
+        /**
+        * @param data
+        * @param cb
+        * @param done
+        * @private
+        */
         Thread.prototype._spawnReduceWorker = function (data, cb, done) {
             var _this = this;
             var wrk = this._spawnWorker(cb);
@@ -132,6 +162,9 @@ var P;
             }
         };
 
+        /**
+        * @returns {P.Thread}
+        */
         Thread.prototype.require = function () {
             var args = [];
             for (var _i = 0; _i < (arguments.length - 0); _i++) {
@@ -154,6 +187,12 @@ var P;
             return this;
         };
 
+        /**
+        * @param fromInclusive
+        * @param toExclusive
+        * @param fn
+        * @returns {P.Thread}
+        */
         Thread.prototype.for = function (fromInclusive, toExclusive, fn) {
             var _this = this;
             return this.spawn(function () {
@@ -164,6 +203,10 @@ var P;
             });
         };
 
+        /**
+        * @param cb
+        * @returns {P.Thread}
+        */
         Thread.prototype.map = function (cb) {
             var _this = this;
             if (!this.data.length) {
@@ -193,6 +236,10 @@ var P;
             return this;
         };
 
+        /**
+        * @param cb
+        * @returns {P.Thread}
+        */
         Thread.prototype.spawn = function (cb) {
             var _this = this;
             var newOp = new Operation();
@@ -220,6 +267,10 @@ var P;
             return this;
         };
 
+        /**
+        * @param cb
+        * @returns {Parallel}
+        */
         Thread.prototype.reduce = function (cb) {
             var _this = this;
             if (!this.data.length) {
@@ -256,6 +307,11 @@ var P;
             return this;
         };
 
+        /**
+        * @param cb
+        * @param errCb
+        * @returns {P.Thread}
+        */
         Thread.prototype.then = function (cb, errCb) {
             var _this = this;
             var newOp = new Operation();
@@ -283,6 +339,10 @@ var P;
             this._resolved = 0;
             this._result = null;
         }
+        /**
+        * @param err
+        * @param res
+        */
         Operation.prototype.resolve = function (err, res) {
             if (!err) {
                 this._resolved = 1;
@@ -304,6 +364,11 @@ var P;
             this._errCallbacks = [];
         };
 
+        /**
+        * @param cb
+        * @param errCb
+        * @returns {Operation}
+        */
         Operation.prototype.then = function (cb, errCb) {
             if (typeof cb === "undefined") { cb = null; }
             if (typeof errCb === "undefined") { errCb = null; }

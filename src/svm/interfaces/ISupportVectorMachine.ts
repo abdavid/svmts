@@ -4,6 +4,10 @@
 /**
  * Common interface for Support Vector Machines
  */
+///<reference path='./ICollection.ts' />
+///<reference path='./IRenderer.ts' />
+
+
 interface ISupportVectorMachine {
 
     /**
@@ -31,4 +35,35 @@ interface ISupportVectorMachine {
 
     setThreshold(bias:number):void
     getThreshold():number;
+}
+
+interface ISVM {
+
+    getWidth():number;
+    setWidth(value:number);
+
+    getHeight():number;
+    setHeight(value:number);
+
+    getDensity():number;
+    setDensity(value:number);
+
+    getScale():number;
+    setScale(value:number);
+
+    setTeacher(teacher:ISupportVectorMachineLearning):ISVM;
+
+    setKernel(kernel:IKernel):ISVM;
+    getKernel():IKernel;
+
+    setKernelProperties(properties:IKernelProperty[]):ISVM;
+    setKernelProperty(name:string, value:any):ISVM;
+
+    train(inputs:number[], labels:number[]):number[][];
+    retrain():ISVM;
+
+    setRenderer(renderer:IRenderer):ISVM;
+    render():IRenderer;
+
+
 }
