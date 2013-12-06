@@ -1,7 +1,19 @@
 var SVM;
 (function (SVM) {
+    /**
+    * Created by davidatborresen on 09.09.13.
+    */
+    ///<reference path='../interfaces/IVideoRenderer.ts' />
+    ///<reference path='../interfaces/ISupportVectorMachineLearning.ts' />
+    ///<reference path='../base/Generic.ts' />
+    ///<reference path='.././underscore.d.ts' />
+    ///<reference path='../SupportVectorMachine.ts' />
+    ///<reference path='../learning/SequentialMinimalOptimization.ts' />
     (function (Renderer) {
         var Video = (function () {
+            /**
+            * @param teacher
+            */
             function Video(teacher) {
                 this.video = document.createElement('video');
                 this.video.height = SVM.getHeight();
@@ -13,7 +25,13 @@ var SVM;
 
                 this.teacher = teacher;
             }
+            /**
+            * @interface IRenderer
+            * @returns {SVM.Renderer.Video}
+            * Renders the result to a canvas
+            */
             Video.prototype.render = function () {
+                //this.clearVideo();
                 var resultsA = [], resultsB = [];
                 for (var x = 0.0; x <= SVM.getWidth(); x += SVM.getDensity()) {
                     for (var y = 0.0; y <= SVM.getHeight(); y += SVM.getDensity()) {
@@ -35,6 +53,10 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface IRenderer
+            * @returns {SVM.Renderer.Video}
+            */
             Video.prototype.drawDataPoints = function () {
                 this.context.strokeStyle = 'rgb(0,0,0)';
 
@@ -59,6 +81,10 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface IRenderer
+            * @returns {SVM.Renderer.Video}
+            */
             Video.prototype.drawStatus = function () {
                 var _this = this;
                 this.context.fillStyle = 'rgb(0,0,0)';
@@ -91,6 +117,15 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface IRenderer
+            * @param x
+            * @param y
+            * @param w
+            * @param h
+            * @param radius
+            * @returns {SVM.Renderer.Video}
+            */
             Video.prototype.drawBubble = function (x, y, w, h, radius) {
                 var r = x + w, b = y + h;
 
@@ -113,6 +148,14 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface IRenderer
+            * @param x
+            * @param y
+            * @param w
+            * @param h
+            * @returns {SVM.Renderer.Video}
+            */
             Video.prototype.drawRect = function (x, y, w, h, stroke) {
                 if (typeof stroke === "undefined") { stroke = false; }
                 this.context.beginPath();
@@ -127,6 +170,13 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface IRenderer
+            * @param x
+            * @param y
+            * @param r
+            * @returns {SVM.Renderer.Video}
+            */
             Video.prototype.drawCircle = function (x, y, r) {
                 this.context.beginPath();
                 this.context.arc(x, y, r, 0, Math.PI * 2, true);
@@ -137,6 +187,10 @@ var SVM;
                 return this;
             };
 
+            /**
+            * @interface IVideoRenderer
+            * @returns {Blob}
+            */
             Video.prototype.snapShot = function () {
                 return new Blob();
             };

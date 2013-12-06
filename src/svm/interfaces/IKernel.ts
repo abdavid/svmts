@@ -14,14 +14,15 @@ interface IKernel {
 
 interface IInteractableKernel
 {
-    getProperties():string[];
-    getProperty(name:string):IKernelProperty;
-    getPropertyType(name:string):PropertyType;
+    getAttributes():string[];
+    getAttribute(name:string):IKernelProperty;
+    getAttributeType(name:string):string;
+    getAttributeBy(property:string):Object;
 }
 
 interface IKernelProperty extends PropertyDescriptor
 {
-    type:PropertyType;
+    type:string;
     name?:string;
 }
 

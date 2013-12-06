@@ -4,11 +4,16 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         concat: {
             options: {
-                separator: ';'
+                separator: "\n",
+                stripBanners: true
             },
-            dist: {
+            basic: {
                 src: ['src/svm/**/*.js'],
                 dest: 'dist/<%= pkg.name %>.js'
+            },
+            nodePacker: {
+                src: ['dist/<%= pkg.name %>.js','src/nodePacker.js'],
+                dest: 'dist/<%= pkg.name %>.packed.js'
             }
         },
         uglify: {
@@ -23,7 +28,7 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+                    'dist/<%= pkg.name %>.min.js': ['<%= concat.nodePacker.dest %>']
                 }
             }
         }
