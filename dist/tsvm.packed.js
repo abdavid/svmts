@@ -1,3 +1,5 @@
+//# sourceMappingURL=App.js.map
+
 define(["require", "exports", './kernels/Base', './learning/SequentialMinimalOptimization', './renderers/Canvas', './engine/KernelSupportVectorMachine', './SupportVectorMachine'], function(require, exports, __Kernel__, __Learning__, __Renderer__, __Engine__, __SELF__) {
     ///<reference path='./../definitions/require.d.ts' />
     ///<reference path='./interfaces/ICollection.ts' />
@@ -815,9 +817,7 @@ define(["require", "exports"], function(require, exports) {
 
 ///<reference path='../../definitions/underscore.d.ts' />
 ///<reference path='../interfaces/IKernel.ts' />
-define(["require", "exports", "underscore"], function(require, exports, _____) {
-    var _ = _____;
-
+define(["require", "exports", "underscore"], function(require, exports, _) {
     var PropertyType = (function () {
         function PropertyType() {
         }
@@ -1204,6 +1204,18 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
         function Gaussian(sigma) {
             if (typeof sigma === "undefined") { sigma = 1; }
             _super.call(this);
+            this.attributes = [
+                {
+                    name: 'gamma',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                },
+                {
+                    name: 'sigma',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                }
+            ];
 
             this.sigma = sigma;
         }
@@ -1343,6 +1355,18 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
             if (typeof alpha === "undefined") { alpha = 1; }
             if (typeof beta === "undefined") { beta = 1; }
             _super.call(this);
+            this.attributes = [
+                {
+                    name: 'alpha',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                },
+                {
+                    name: 'beta',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                }
+            ];
 
             this.alpha = alpha;
             this.beta = beta;
@@ -1426,6 +1450,18 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
             if (typeof gamma === "undefined") { gamma = 1; }
             if (typeof sigma === "undefined") { sigma = 1; }
             _super.call(this);
+            this.attributes = [
+                {
+                    name: 'gamma',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                },
+                {
+                    name: 'sigma',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                }
+            ];
 
             this.gamma = gamma;
             this.sigma = sigma;
@@ -1710,11 +1746,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    ///<reference path='../interfaces/IKernel.ts' />
-    ///<reference path='./Base.ts' />
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     /**
     * @class Sigmoid
     * Sigmoid kernel of the form k(x,z) = tanh(a * x'z + c).
@@ -1734,21 +1766,33 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
             if (typeof alpha === "undefined") { alpha = 0.01; }
             if (typeof constant === "undefined") { constant = -Math.E; }
             _super.call(this);
+            this.attributes = [
+                {
+                    name: 'constant',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                },
+                {
+                    name: 'alpha',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                }
+            ];
 
             this.alpha = alpha;
             this.constant = constant;
         }
         Object.defineProperty(Sigmoid.prototype, "alpha", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._alpha;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._alpha = value;
             },
             enumerable: true,
@@ -1757,16 +1801,16 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
 
 
         Object.defineProperty(Sigmoid.prototype, "constant", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._constant;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._constant = value;
             },
             enumerable: true,
@@ -1819,9 +1863,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     /**
     * The spherical kernel comes from a statistics perspective. It is an example
     * of an isotropic stationary kernel and is positive definite in R^3.
@@ -1834,20 +1876,27 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
         function Spherical(sigma) {
             if (typeof sigma === "undefined") { sigma = 1.0; }
             _super.call(this);
+            this.attributes = [
+                {
+                    name: 'sigma',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                }
+            ];
 
             this.sigma = sigma;
         }
         Object.defineProperty(Spherical.prototype, "sigma", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._sigma;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._sigma = value;
             },
             enumerable: true,
@@ -1890,15 +1939,13 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     /**
     * Infinite Spline Kernel function.
     */
-    var SplineKernel = (function (_super) {
-        __extends(SplineKernel, _super);
-        function SplineKernel() {
+    var Spline = (function (_super) {
+        __extends(Spline, _super);
+        function Spline() {
             _super.call(this);
         }
         /**
@@ -1906,7 +1953,7 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
         * @param y
         * @returns {number}
         */
-        SplineKernel.prototype.run = function (x, y) {
+        Spline.prototype.run = function (x, y) {
             var k = 1;
             for (var i = 0; i < x.length; i++) {
                 var min = Math.min(x[i], y[i]);
@@ -1917,9 +1964,9 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
 
             return k;
         };
-        return SplineKernel;
+        return Spline;
     })(Kernel.Base);
-    exports.SplineKernel = SplineKernel;
+    exports.Spline = Spline;
 });
 //# sourceMappingURL=Spline.js.map
 
@@ -1931,9 +1978,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     /**
     * Squared Sinc Kernel.
     */
@@ -1945,20 +1990,27 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
         function SquaredSinc(gamma) {
             if (typeof gamma === "undefined") { gamma = 1; }
             _super.call(this);
+            this.attributes = [
+                {
+                    name: 'gamma',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                }
+            ];
 
             this.gamma = gamma;
         }
         Object.defineProperty(SquaredSinc.prototype, "gamma", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._gamma;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._gamma = value;
             },
             enumerable: true,
@@ -1997,9 +2049,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     /**
     * Symmetric Triangle Kernel.
     */
@@ -2011,20 +2061,27 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
         function SymmetricTriangle(gamma) {
             if (typeof gamma === "undefined") { gamma = 1.0; }
             _super.call(this);
+            this.attributes = [
+                {
+                    name: 'gamma',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                }
+            ];
 
             this.gamma = gamma;
         }
         Object.defineProperty(SymmetricTriangle.prototype, "gamma", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._gamma;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._gamma = value;
             },
             enumerable: true,
@@ -2060,11 +2117,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    ///<reference path='../interfaces/IKernel.ts' />
-    ///<reference path='./Base.ts' />
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     var TStudent = (function (_super) {
         __extends(TStudent, _super);
         /**
@@ -2073,20 +2126,27 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
         function TStudent(degree) {
             if (typeof degree === "undefined") { degree = 1; }
             _super.call(this);
+            this.attributes = [
+                {
+                    name: 'degree',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                }
+            ];
 
             this.degree = degree;
         }
         Object.defineProperty(TStudent.prototype, "degree", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._degree;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._degree = value;
             },
             enumerable: true,
@@ -2163,11 +2223,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    ///<reference path='../interfaces/IKernel.ts' />
-    ///<reference path='./Base.ts' />
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     var Wave = (function (_super) {
         __extends(Wave, _super);
         /**
@@ -2176,20 +2232,27 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
         function Wave(sigma) {
             if (typeof sigma === "undefined") { sigma = 1; }
             _super.call(this);
+            this.attributes = [
+                {
+                    name: 'sigma',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                }
+            ];
 
             this.sigma = sigma;
         }
         Object.defineProperty(Wave.prototype, "sigma", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._sigma;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._sigma = value;
             },
             enumerable: true,
@@ -2244,6 +2307,23 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
             if (typeof translation === "undefined") { translation = 1.0; }
             if (typeof invariant === "undefined") { invariant = false; }
             _super.call(this);
+            this.attributes = [
+                {
+                    name: 'dialation',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                },
+                {
+                    name: 'translation',
+                    type: Kernel.PropertyType.NUMBER,
+                    writable: true
+                },
+                {
+                    name: 'invariant',
+                    type: Kernel.PropertyType.BOOLEAN,
+                    writable: true
+                }
+            ];
 
             this.dialation = dialation;
             this.translation = translation;
@@ -3115,9 +3195,8 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
 ///<reference path='../interfaces/IKernel.ts' />
 ///<reference path='../interfaces/ICanvasRenderer.ts' />
 ///<reference path='../interfaces/ISupportVectorMachineLearning.ts' />
+///<reference path='../../definitions/underscore.d.ts' />
 define(["require", "exports", '../kernels/Base', '../SupportVectorMachine'], function(require, exports, __Base__, __SVM__) {
-    ///<reference path='../base/Generic.ts' />
-    ///<reference path='../../definitions/underscore.d.ts' />
     ///<reference path='../SupportVectorMachine.ts' />
     ///<reference path='../learning/SequentialMinimalOptimization.ts' />
     var Base = __Base__;
@@ -3182,8 +3261,8 @@ define(["require", "exports", '../kernels/Base', '../SupportVectorMachine'], fun
         Canvas.prototype.drawMargin = function () {
             var xs = [-5, 5], ys = [0, 0];
 
-            ys[0] = (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[0]) / this.teacher.machine.getWeight(1);
-            ys[1] = (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[1]) / this.teacher.machine.getWeight(1);
+            ys[0] = SVM.getScale() * (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[0]) / this.teacher.machine.getWeight(1);
+            ys[1] = SVM.getScale() * (-this.teacher.biasLower - this.teacher.machine.getWeight(0) * xs[1]) / this.teacher.machine.getWeight(1);
 
             this.context.fillStyle = 'rgb(0,0,0)';
             this.context.lineWidth = 1;
@@ -3260,7 +3339,7 @@ define(["require", "exports", '../kernels/Base', '../SupportVectorMachine'], fun
                 }
             }
 
-            this.drawBackground(resultsA, 'rgb(150,250,150)').drawBackground(resultsB, 'rgb(250,150,150)').drawDataPoints().drawAxis().drawStatus();
+            this.drawBackground(resultsA, 'rgb(150,250,150)').drawBackground(resultsB, 'rgb(250,150,150)').drawDataPoints().drawAxis().drawStatus().drawMargin();
 
             return this;
         };
@@ -3308,6 +3387,7 @@ define(["require", "exports", '../kernels/Base', '../SupportVectorMachine'], fun
                     numsupp++;
                 }
             }
+
             this.context.fillText("Using " + this.teacher.kernel.constructor.name, 10, SVM.getHeight() - 80);
 
             var propertiesString = '';

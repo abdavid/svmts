@@ -7,11 +7,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    ///<reference path='../interfaces/IKernel.ts' />
-    ///<reference path='./Base.ts' />
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     var TStudent = (function (_super) {
         __extends(TStudent, _super);
         /**
@@ -31,16 +27,16 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
             this.degree = degree;
         }
         Object.defineProperty(TStudent.prototype, "degree", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._degree;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._degree = value;
             },
             enumerable: true,

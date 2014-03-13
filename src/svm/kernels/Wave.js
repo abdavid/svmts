@@ -7,11 +7,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    ///<reference path='../interfaces/IKernel.ts' />
-    ///<reference path='./Base.ts' />
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     var Wave = (function (_super) {
         __extends(Wave, _super);
         /**
@@ -31,16 +27,16 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
             this.sigma = sigma;
         }
         Object.defineProperty(Wave.prototype, "sigma", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._sigma;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._sigma = value;
             },
             enumerable: true,

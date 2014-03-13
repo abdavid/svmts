@@ -7,11 +7,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    ///<reference path='../interfaces/IKernel.ts' />
-    ///<reference path='./Base.ts' />
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     /**
     * @class Sigmoid
     * Sigmoid kernel of the form k(x,z) = tanh(a * x'z + c).
@@ -48,16 +44,16 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
             this.constant = constant;
         }
         Object.defineProperty(Sigmoid.prototype, "alpha", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._alpha;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._alpha = value;
             },
             enumerable: true,
@@ -66,16 +62,16 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
 
 
         Object.defineProperty(Sigmoid.prototype, "constant", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._constant;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._constant = value;
             },
             enumerable: true,

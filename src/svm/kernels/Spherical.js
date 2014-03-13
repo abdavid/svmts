@@ -6,9 +6,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     /**
     * The spherical kernel comes from a statistics perspective. It is an example
     * of an isotropic stationary kernel and is positive definite in R^3.
@@ -32,16 +30,16 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
             this.sigma = sigma;
         }
         Object.defineProperty(Spherical.prototype, "sigma", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._sigma;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._sigma = value;
             },
             enumerable: true,

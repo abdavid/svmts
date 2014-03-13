@@ -7,11 +7,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    ///<reference path='../interfaces/IKernel.ts' />
-    ///<reference path='./Base.ts' />
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     /**
     * Generalized Histogram Intersection Kernel.
     *
@@ -46,16 +42,16 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
             this.beta = beta;
         }
         Object.defineProperty(HistogramIntersection.prototype, "alpha", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._alpha;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._alpha = value;
             },
             enumerable: true,
@@ -64,16 +60,16 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
 
 
         Object.defineProperty(HistogramIntersection.prototype, "beta", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._beta;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._beta = value;
             },
             enumerable: true,

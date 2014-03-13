@@ -3,9 +3,7 @@
 */
 ///<reference path='../../definitions/underscore.d.ts' />
 ///<reference path='../interfaces/IKernel.ts' />
-define(["require", "exports", "underscore"], function(require, exports, _____) {
-    var _ = _____;
-
+define(["require", "exports", "underscore"], function(require, exports, _) {
     var PropertyType = (function () {
         function PropertyType() {
         }

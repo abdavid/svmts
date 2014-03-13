@@ -25,7 +25,7 @@ require.config({
 
 require([
     './svm/SupportVectorMachine',
-    './svm/kernels/Sigmoid',
+    './svm/kernels/HistogramIntersection',
     'jquery',
     'underscore'
 ], function (_SVM, Kernel, $, _)
@@ -61,7 +61,7 @@ require([
         .setHeight(550)
         .setWidth(550)
         .setScale(40)
-        .setKernel(new Kernel.Sigmoid)
+        .setKernel(new Kernel.HistogramIntersection)
         .train(inputs, labels)
         .render();
 

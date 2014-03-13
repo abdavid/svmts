@@ -1,3 +1,10 @@
+/**
+* Created by davidatborresen on 03.12.13.
+*/
+/// <reference path="./definitions/require.d.ts" />
+/// <reference path="./definitions/underscore.d.ts" />
+/// <reference path="./definitions/jquery.d.ts" />
+
 require.config({
     paths: {
         'jquery': 'lib/jquery/jquery',
@@ -15,7 +22,7 @@ require.config({
 
 require([
     './svm/SupportVectorMachine',
-    './svm/kernels/Sigmoid',
+    './svm/kernels/HistogramIntersection',
     'jquery',
     'underscore'
 ], function (_SVM, Kernel, $, _) {
@@ -46,7 +53,7 @@ require([
     labels[8] = -1;
     labels[9] = -1;
 
-    var graph = _SVM.setHeight(550).setWidth(550).setScale(40).setKernel(new Kernel.Sigmoid()).train(inputs, labels).render();
+    var graph = _SVM.setHeight(550).setWidth(550).setScale(40).setKernel(new Kernel.HistogramIntersection).train(inputs, labels).render();
 
     var kernel = _SVM.getKernel();
 

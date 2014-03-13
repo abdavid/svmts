@@ -6,9 +6,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     /**
     * Squared Sinc Kernel.
     */
@@ -31,16 +29,16 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
             this.gamma = gamma;
         }
         Object.defineProperty(SquaredSinc.prototype, "gamma", {
-            get: /**
+            /**
             * @returns {number}
             */
-            function () {
+            get: function () {
                 return this._gamma;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._gamma = value;
             },
             enumerable: true,
