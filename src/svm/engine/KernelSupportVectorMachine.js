@@ -7,10 +7,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './SupportVectorMachine'], function(require, exports, __Engine__) {
-    ///<reference path='../interfaces/IKernel.ts' />
-    var Engine = __Engine__;
-
+define(["require", "exports", './SupportVectorMachine'], function(require, exports, Engine) {
     var KernelSupportVectorMachine = (function (_super) {
         __extends(KernelSupportVectorMachine, _super);
         /**

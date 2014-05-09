@@ -1,21 +1,7 @@
 /**
 * Created by davidatborresen on 9/3/13.
 */
-define(["require", "exports", './kernels/Base', './learning/SequentialMinimalOptimization', './renderers/Canvas', './engine/KernelSupportVectorMachine', './SupportVectorMachine'], function(require, exports, __Kernel__, __Learning__, __Renderer__, __Engine__, __SELF__) {
-    ///<reference path='./../definitions/require.d.ts' />
-    ///<reference path='./interfaces/ICollection.ts' />
-    ///<reference path='./interfaces/IRenderer.ts' />
-    ///<reference path='./interfaces/ISupportVectorMachine.ts' />
-    ///<reference path='./engine/KernelSupportVectorMachine.ts' />
-    ///<reference path='./kernels/Linear.ts' />
-    ///<reference path='./learning/SequentialMinimalOptimization.ts' />
-    ///<reference path='./utils/helpers.ts' />
-    var Kernel = __Kernel__;
-    var Learning = __Learning__;
-    var Renderer = __Renderer__;
-    var Engine = __Engine__;
-    var SELF = __SELF__;
-
+define(["require", "exports", './kernels/Base', './learning/SequentialMinimalOptimization', './renderers/Canvas', './engine/KernelSupportVectorMachine', './SupportVectorMachine'], function(require, exports, Kernel, Learning, Renderer, Engine, SELF) {
     var _kernel = null;
     var _machine = null;
     var _teacher = null;

@@ -5,12 +5,7 @@
 ///<reference path='../interfaces/ICanvasRenderer.ts' />
 ///<reference path='../interfaces/ISupportVectorMachineLearning.ts' />
 ///<reference path='../../definitions/underscore.d.ts' />
-define(["require", "exports", '../kernels/Base', '../SupportVectorMachine'], function(require, exports, __Base__, __SVM__) {
-    ///<reference path='../SupportVectorMachine.ts' />
-    ///<reference path='../learning/SequentialMinimalOptimization.ts' />
-    var Base = __Base__;
-    var SVM = __SVM__;
-
+define(["require", "exports", '../kernels/Base', '../SupportVectorMachine'], function(require, exports, Base, SVM) {
     var Canvas = (function () {
         /**
         * @param teacher
@@ -167,6 +162,7 @@ define(["require", "exports", '../kernels/Base', '../SupportVectorMachine'], fun
                     this.context.fillStyle = 'rgb(200,100,100)';
                 }
 
+                // distinguish support vectors
                 if (this.teacher.alphaA[i] > 1e-2 || this.teacher.alphaB[i] > 1e-2) {
                     this.context.lineWidth = 3;
                 } else {

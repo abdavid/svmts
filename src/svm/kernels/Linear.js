@@ -6,9 +6,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-define(["require", "exports", './Base'], function(require, exports, __Kernel__) {
-    var Kernel = __Kernel__;
-
+define(["require", "exports", './Base'], function(require, exports, Kernel) {
     var Linear = (function (_super) {
         __extends(Linear, _super);
         /**
@@ -28,16 +26,16 @@ define(["require", "exports", './Base'], function(require, exports, __Kernel__) 
             this.constant = constant;
         }
         Object.defineProperty(Linear.prototype, "constant", {
-            get: /**
+            /**
             * @returns {*}
             */
-            function () {
+            get: function () {
                 return this._constant;
             },
-            set: /**
+            /**
             * @param value
             */
-            function (value) {
+            set: function (value) {
                 this._constant = value;
             },
             enumerable: true,

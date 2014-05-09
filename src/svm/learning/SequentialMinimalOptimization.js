@@ -1,82 +1,6 @@
 ///<reference path='./../interfaces/ISupportVectorMachineLearning.ts' />
 ///<reference path='./../interfaces/IKernel.ts' />
-define(["require", "exports", '../base/HashSet'], function(require, exports, __Generic__) {
-    ///<reference path='../base/HashSet.ts' />
-    ///<reference path='../SupportVectorMachine.ts' />
-    ///<reference path='../utils/helpers.ts' />
-    /**
-    * @summary
-    * Sequential Minimal Optimization (SMO) Algorithm
-    *
-    * @remark
-    * The SMO algorithm is an algorithm for solving large quadratic programming (QP)
-    * optimization problems, widely used for the training of support vector machines.
-    * First developed by John C. Platt in 1998, SMO breaks up large QP problems into
-    * a series of smallest possible QP problems, which are then solved analytically.
-    *
-    * @para
-    * This class incorporates modifications in the original SMO algorithm to solve
-    * regression problems as suggested by Alex J. Smola and Bernhard Scholkopf and
-    * further modifications for better performance by Shevade et al.
-    *
-    * @para
-    * Portions of this implementation has been based on the GPL code by Sylvain Roy in SMOreg.java, a
-    * part of the Weka software package. It is, thus, available under the same GPL license. This file is
-    * not linked against the rest of the Accord.NET Framework and can only be used in GPL aplications.
-    * This class is only available in the special Accord.MachineLearning.GPL assembly, which has to be
-    * explictly selected in the framework installation. Before linking against this assembly, please
-    * read the http://www.gnu.org/copyleft/gpl.html license for more details. This
-    * assembly also should have been distributed with a copy of the GNU GPLv3 alongside with it.
-    *
-    * @references
-    * A. J. Smola and B. Scholkopf. A Tutorial on Support Vector Regression. NeuroCOLT2 Technical Report Series, 1998.
-    * - http://www.kernel-machines.org/publications/SmoSch98c
-    *
-    * S.K. Shevade et al. Improvements to SMO Algorithm for SVM Regression, 1999.
-    * - http://drona.csa.iisc.ernet.in/~chiru/papers/ieee_smo_reg.ps.gz
-    *
-    * S. S. Keerthi et al. Improvements to Platt's SMO Algorithm for SVM Classifier Design.* Technical Report CD-99-14.
-    * - http://www.cs.iastate.edu/~honavar/keerthi-svm.pdf
-    *
-    * G. W. Flake, S. Lawrence. Efficient SVM Regression Training with SMO.
-    * - http://www.keerthis.com/smoreg_ieee_shevade_00.pdf
-    *
-    *
-    * Example regression problem. Suppose we are trying to model the following equation: f(x, y) = 2x + y
-    * @example
-    *
-    *  var inputs = //(x, y)
-    *  [
-    *      [0,1], //2*0+1 = 1
-    *      [4,3], //2*4+3 = 11
-    *      [8,-8], //2*8-8 = 8
-    *      [2,2], //2*2+2 = 6
-    *      [6,1], //2*6+1 = 13
-    *      [5,4], //2*5+4 = 14
-    *      [9,1], //2*9+1 = 19
-    *      [1,6] //2*0+1 = 8
-    *  ]
-    *
-    *  var outputs = //f(x, y)
-    *  [
-    *      1, 11, 8, 6, 13, 14, 19, 8
-    *  ]
-    *
-    *   // Create a Kernel Support Vector Machine for the given inputs
-    *   var machine = new KernelSupportVectorMachine(new PolynominalKernel(2), 2);
-    *
-    *   // Instantiate a new learning algorithm for SVMs
-    *   var learn = new SequentialMinimalOptimization(svm, inputs, outputs);
-    *
-    *   // Run the learning algorithm
-    *   var error = learn.run();
-    *
-    *   // Compute the decision output for one of the input vectors
-    *   var decision = machine.compute(inputs[0]); // 1.0003849827673186
-    *
-    **/
-    var Generic = __Generic__;
-
+define(["require", "exports", '../base/HashSet'], function(require, exports, Generic) {
     var SequentialMinimalOptimization = (function () {
         /**
         * @param machine
@@ -207,9 +131,9 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
         SequentialMinimalOptimization.prototype.run = function (computeError) {
             var N = this.inputs.length;
 
-            this.alphaA = new Float64Array(N);
-            this.alphaB = new Float64Array(N);
-            this.errors = new Float64Array(N);
+            this.alphaA = new Float64Array(N); //SVM.Util.arrayPopulate(N, 0);
+            this.alphaB = new Float64Array(N); //SVM.Util.arrayPopulate(N, 0);
+            this.errors = new Float64Array(N); //SVM.Util.arrayPopulate(N, 0);
 
             this.I0 = new Generic.HashSet();
             this.I1 = new Generic.HashSet();
@@ -257,6 +181,7 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
             // greater than zero will be stored as only those are actually required during evaluation.
             var list = [];
             for (var i = 0; i < N; i++) {
+                // Only store vectors with multipliers > 0
                 if (this.alphaA[i] > 0 || this.alphaB[i] > 0) {
                     list.push(i);
                 }
@@ -284,6 +209,7 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
         SequentialMinimalOptimization.prototype.examineExample = function (i2) {
             var alpha2A = this.alphaA[i2], alpha2B = this.alphaB[i2], e2 = 0.0, epsilon = this.getEpsilon(), tolerance = this.getTolerance();
 
+            //region Compute example error
             if (this.I0.contains(i2)) {
                 // Value is cached
                 e2 = this.errors[i2];
@@ -291,6 +217,7 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
                 // Value is not cached and should be computed
                 this.errors[i2] = e2 = this.outputs[i2] - this.compute(this.inputs[i2]);
 
+                // Update thresholds
                 if (this.I1.contains(i2)) {
                     if (e2 + epsilon < this.biasUpper) {
                         this.biasUpper = e2 + epsilon;
@@ -315,6 +242,7 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
             //the best i1 to joint optimize when appropriate.
             var i1 = -1, optimal = true;
 
+            // In case i2 is in the first set of indices:
             if (this.I0.contains(i2)) {
                 if (0 < alpha2A && alpha2A < this.cost) {
                     if (this.biasLower - (e2 - epsilon) > 2.0 * tolerance) {
@@ -377,10 +305,25 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
                 throw new Error('BOM! I missed');
             }
 
+            //end region
             if (optimal) {
                 // The examples are already optimal.
                 return 0;
             } else {
+                /*new P.Thread({
+                inputs: inputs,
+                labels: labels
+                })
+                .require(this.takeStep)
+                .spawn(function(data)
+                {
+                
+                })
+                .then(function(data)
+                {
+                console.log(data);
+                })*/
+                // Optimize i1 and i2
                 if (this.takeStep(i1, i2)) {
                     return 1;
                 }
@@ -440,6 +383,8 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
             // Kernel evaluation
             var k11 = this.kernel.run(this.inputs[i1], this.inputs[i1]), k12 = this.kernel.run(this.inputs[i1], this.inputs[i2]), k22 = this.kernel.run(this.inputs[i2], this.inputs[i2]), eta = k11 + k22 - 2.0 * k12, gamma = alpha1a - alpha1b + alpha2a - alpha2b;
 
+            //        console.profileEnd();
+            // Assume the kernel is positive definite.
             if (eta < 0) {
                 eta = 0;
             }
@@ -448,6 +393,7 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
             var case1 = false, case2 = false, case3 = false, case4 = false, changed = false, finished = false, L, H, a1, a2;
 
             while (!finished) {
+                //  !case1 && (alpha1a > 0 || (alpha1b == 0 && delta > 0)) && (alpha2a > 0 || (alpha2b == 0 && delta < 0))
                 if (!case1 && (alpha1a > 0 || (alpha1b == 0 && delta > 0)) && (alpha2a > 0 || (alpha2b == 0 && delta < 0))) {
                     // Compute L and H (wrt alpha1, alpha2)
                     L = Math.max(0, gamma - this.cost);
@@ -475,6 +421,7 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
 
                         a1 = alpha1a - (a2 - alpha2a);
 
+                        // Update alpha1, alpha2 if change is larger than some epsilon
                         if (Math.abs(a1 - alpha1a) > this.roundingEpsilon || Math.abs(a2 - alpha2a) > this.roundingEpsilon) {
                             alpha1a = a1;
                             alpha2a = a2;
@@ -511,6 +458,7 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
                         }
                         a1 = alpha1a + (a2 - alpha2b);
 
+                        // Update alpha1, alpha2* if change is larger than some epsilon
                         if (Math.abs(a1 - alpha1a) > this.roundingEpsilon || Math.abs(a2 - alpha2b) > this.roundingEpsilon) {
                             alpha1a = a1;
                             alpha2b = a2;
@@ -547,6 +495,7 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
                         }
                         a1 = alpha1b + (a2 - alpha2a);
 
+                        // Update alpha1*, alpha2 if change is larger than some epsilon
                         if (Math.abs(a1 - alpha1b) > this.roundingEpsilon || Math.abs(a2 - alpha2a) > this.roundingEpsilon) {
                             alpha1b = a1;
                             alpha2a = a2;
@@ -584,6 +533,7 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
 
                         a1 = alpha1b - (a2 - alpha2b);
 
+                        // Update alpha1*, alpha2* if change is larger than some epsilon
                         if (Math.abs(a1 - alpha1b) > this.roundingEpsilon || Math.abs(a2 - alpha2b) > this.roundingEpsilon) {
                             alpha1b = a1;
                             alpha2b = a2;
@@ -602,6 +552,7 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
                 delta += eta * ((alpha2a - alpha2b) - (this.alphaA[i2] - this.alphaB[i2]));
             }
 
+            // If nothing has changed, return false.
             if (!changed) {
                 return false;
             }
@@ -651,6 +602,9 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
             this.alphaA[i2] = alpha2a;
             this.alphaB[i2] = alpha2b;
 
+            // #endregion
+            // #region Update the sets of indices
+            // Update the sets of indices (for i1)
             if ((0 < alpha1a && alpha1a < this.cost) || (0 < alpha1b && alpha1b < this.cost)) {
                 this.I0.add(i1);
             } else {
@@ -675,6 +629,7 @@ define(["require", "exports", '../base/HashSet'], function(require, exports, __G
                 this.I3.remove(i1);
             }
 
+            // Update the sets of indices (for i2)
             if ((0 < alpha2a && alpha2a < this.cost) || (0 < alpha2b && alpha2b < this.cost)) {
                 this.I0.add(i2);
             } else {

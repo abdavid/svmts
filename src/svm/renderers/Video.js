@@ -1,10 +1,10 @@
+/**
+* Created by davidatborresen on 09.09.13.
+*/
+///<reference path='../interfaces/IVideoRenderer.ts' />
+///<reference path='../interfaces/ISupportVectorMachineLearning.ts' />
 var SVM;
 (function (SVM) {
-    /**
-    * Created by davidatborresen on 09.09.13.
-    */
-    ///<reference path='../interfaces/IVideoRenderer.ts' />
-    ///<reference path='../interfaces/ISupportVectorMachineLearning.ts' />
     ///<reference path='../base/Generic.ts' />
     ///<reference path='.././underscore.d.ts' />
     ///<reference path='../SupportVectorMachine.ts' />
@@ -67,6 +67,7 @@ var SVM;
                         this.context.fillStyle = 'rgb(200,100,100)';
                     }
 
+                    // distinguish support vectors
                     if (this.teacher.alphaA[i] > 1e-2 || this.teacher.alphaB[i] > 1e-2) {
                         this.context.lineWidth = 3;
                     } else {
