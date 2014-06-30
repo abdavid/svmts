@@ -8,7 +8,7 @@
     "main": "./dist/tsvm",
     "repository": {
         "type": "git",
-        "url": "git@codebasehq.com:dev-at-david/misc/svmts.git"
+        "url": "git@github.com/abdavid/svmts.git"
     },
     "engine": {
         "node": ">=0.5"
